@@ -20,8 +20,11 @@ Hooks into APIs to provide a UI for the API backend
 
 # This is an MD5SUM of the Pipeline Scanner Zip
 SAST_MD5SUM = "92a99cfa495d948f6ad72afd9668a939"
+API_W_MD5SUM = ""
+API_W_C_MD5SUM = ""
+
 print("==============================================================")
-print("================  Veracode SAST Installer ====================")
+print("================ Veracode Script Installer ===================")
 print("==============================================================")
 
 # Variable declarations
@@ -68,7 +71,7 @@ if(debug):
     print("[Debug] Name of the platform architecture: ", platform.architecture())
     print("[Debug] Name of the User logged in: ", os.getlogin())
     print("[Debug] User Home: ", os.path.expanduser('~'))
-    print("[Debug] [Windows] Location of credentials file if present: ", os.path.expanduser('~') + "\.veracode\credentials")
+#    print("[Debug] [Windows] Location of credentials file if present: ", os.path.expanduser('~') + "\.veracode\credentials")
 
 ################################################################################################################################################################################################################################
 # Enviornment Conditional Logic ################################################################################################################################################################################################
@@ -84,15 +87,15 @@ if(debug):
         # Request the user to go to the platform and generate API keys, and provide them into the script, the script will initialize the credentials file
 
 if(osname == "nt" or osplatform == "Windows"):
-    print("You are running a windows based machine")
+    if(debug): print("[Debug] You are running a windows based machine")
     # Windows command block
 
 elif(osname == "posix" or osplatform == "Linux"):
-    print("You are running on a linux based machine")
+    if(debug): print("[Debug] You are running on a linux based machine")
     # linux command block
 
 else:# Todo: add a mac os block
-    print("Your machine is currently undeterminable")
+    if(debug): print("[Debug] Your machine is currently undeterminable")
 
 
 
