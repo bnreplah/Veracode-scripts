@@ -51,6 +51,11 @@ osversion = platform.release()
 osprocess = platform.machine()
 osarch = platform.architecture()
 
+apiconfig = False # default is false, true when the apiconfig has been configured and detected
+
+# poor practice, remove after testing, after sanitization, try to load the API key directly for less storage within the script
+api_id_temp = ""  # temporary string to hold the API ID
+api_key_temp = "" # temporary string to hold the API KEY
 
 ################################################################################################################################################################################################################################
 # Enviornment Conditional Logic ################################################################################################################################################################################################
@@ -150,6 +155,11 @@ print("\n\nIn order to use this script, you need to have the proper veracode per
 
 #TODO: Use API Wrapper to see if the credentials are correct
 #TODO: Get the available permissions from API
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# C# wrapper method
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
