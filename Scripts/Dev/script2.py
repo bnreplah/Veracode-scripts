@@ -24,6 +24,27 @@ print("==============================================================")
 print("================  Veracode SAST Installer ====================")
 print("==============================================================")
 
+# Variable declarations
+debug = True # Current default is true, later change this to False
+osname = os.name
+osplatform = platform.system()
+osversion = platform.release()
+osprocess = platform.machine()
+osarch = platform.architecture()
+
+apiconfig = False # default is false, true when the apiconfig has been configured and detected
+
+# Determine username
+username = os.getlogin()
+userhome = os.path.expanduser('~')
+
+# poor practice, remove after testing, after sanitization, try to load the API key directly for less storage within the script
+api_id_temp = ""  # temporary string to hold the API ID
+api_key_temp = "" # temporary string to hold the API KEY
+
+
+
+
 # step one:
 #           Check to see operating system
 #           Get API credentials
@@ -39,23 +60,15 @@ print("==============================================================")
 
 # Check to see the operating system
 print("\n\n==============  Determining operating system =================\n\n")
-print("Name of the operating system: ", os.name)
-print("Name of the OS System is running on: ", platform.system())
-print("Name of the Operating System version: ", platform.release())
-print("Name of the platform Machine: ", platform.machine())
-print("Name of the platform architecture: ", platform.architecture())
-
-osname = os.name
-osplatform = platform.system()
-osversion = platform.release()
-osprocess = platform.machine()
-osarch = platform.architecture()
-
-apiconfig = False # default is false, true when the apiconfig has been configured and detected
-
-# poor practice, remove after testing, after sanitization, try to load the API key directly for less storage within the script
-api_id_temp = ""  # temporary string to hold the API ID
-api_key_temp = "" # temporary string to hold the API KEY
+if(debug):
+    print("[Debug] Name of the operating system: ", os.name)
+    print("[Debug] Name of the OS System is running on: ", platform.system())
+    print("[Debug] Name of the Operating System version: ", platform.release())
+    print("[Debug] Name of the platform Machine: ", platform.machine())
+    print("[Debug] Name of the platform architecture: ", platform.architecture())
+    print("[Debug] Name of the User logged in: ", os.getlogin())
+    print("[Debug] User Home: ", os.path.expanduser('~'))
+    print("[Debug] [Windows] Location of credentials file if present: ", os.path.expanduser('~') + "\.veracode\credentials")
 
 ################################################################################################################################################################################################################################
 # Enviornment Conditional Logic ################################################################################################################################################################################################
