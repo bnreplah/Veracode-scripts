@@ -1,0 +1,3 @@
+[submodule "Scripts/Ref/veracode-api-py"]
+	path = Scripts/Ref/veracode-api-py
+	url = https://github.com/veracode/veracode-api-py
