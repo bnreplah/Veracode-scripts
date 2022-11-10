@@ -5,10 +5,16 @@
 # Manager:  Justin Yao
 # Date:     09/06/22
 #
+import os  # Used to determine the operating system and for running shell commands
+import platform  # Used to determine the operating system
 import subprocess
-import platform                                                # Used to determine the operating system
-import os                                                      # Used to determine the operating system and for running shell commands
- 
+
+#import docker
+import veracode_api_py
+from veracode_api_py import apihelper
+
+#client = docker.from_env()
+
 """DOCSCRIPT:
 The purpose of this script is to provide a convenient script that runs checks and installs 
 the various veracode SaaS on the computer. It provides walk throughs to specify what is needed next and where to get it
@@ -17,25 +23,28 @@ Also checks the application for the proper build software, installs them if nece
 Hooks into APIs to provide a UI for the API backend
 
 """
-
+description = """The purpose of this script is ....
+"""
 # This is an MD5SUM of the Pipeline Scanner Zip
-SAST_MD5SUM = "92a99cfa495d948f6ad72afd9668a939"
-API_W_MD5SUM = ""
-API_W_C_MD5SUM = ""
+
+
 
 print("==============================================================")
 print("================ Veracode Script Installer ===================")
 print("==============================================================")
 
 # Variable declarations
-debug = True # Current default is true, later change this to False
+DEBUG = True # Current default is true, later change this to False
 osname = os.name
 osplatform = platform.system()
 osversion = platform.release()
 osprocess = platform.machine()
 osarch = platform.architecture()
-
+vApiHelper = apihelper.APIHelper()
+veracodeAPI = veracode_api_py.VeracodeAPI()
 apiconfig = False # default is false, true when the apiconfig has been configured and detected
+
+
 
 # Determine username
 username = os.getlogin()
@@ -45,6 +54,64 @@ userhome = os.path.expanduser('~')
 api_id_temp = ""  # temporary string to hold the API ID
 api_key_temp = "" # temporary string to hold the API KEY
 
+################################################################################################################################################################################################################################
+# Menu ##################################################################################################################################################################################################
+################################################################################################################################################################################################################################
+# Move down later
+
+menuRun = True
+while(menuRun):
+    print("=====================================================================================")
+    print("Python UI Wrapper Script ------------------------------------------------------------")
+    print(description)
+    print("=====================================================================================")
+    print(" \t\t1) Healthcheck APIs")
+    print(" \t\t2) Application and Sandbox APIs")
+    print(" \t\t3) Policy APIs")
+    print(" \t\t4) Findings and Reporting APIs")
+    print(" \t\t5) Collection APIs")
+    print(" \t\t6) Identity APIs ")
+    print(" \t\t7) SCA APIs - Must be human user to use these, not API user")
+    print(" \t\t8) dynamic APIs ")
+    print(" \t\t9) Upload and Scan")
+    print(" \t\t10) Pipeline Scan ")
+    print(" \t\t11) SCA Agent-Based Scan")
+    print("=====================================================================================")
+   
+    # !!!!!!!!!!!!!!!! USER INPUT !!!!!!!!!!!!!!!!!!!!!!!!! #
+    #########################################################
+    selectedMenuOption = int(input("Your Selection [1-11]: "))
+    while (selectedMenuOption < 1 or selectedMenuOption > 11 ):
+        print("Invalid input")
+        selectedMenuOption = int(input("Your Selection [1-11]: "))
+    ###########################################################
+
+    if(selectedMenuOption == 1):
+        print("Healthcheck APIs")
+    elif(selectedMenuOption == 2):
+        print("Application and Sandbox APIs")
+    elif(selectedMenuOption == 3):
+        print("Policy APIs")
+    elif(selectedMenuOption == 4):
+        print("Findings and Reporting APIs")
+    elif(selectedMenuOption == 5):
+        print("Collection APIs")
+    elif(selectedMenuOption == 6):
+        print("Identity APIs")
+    elif(selectedMenuOption == 7):
+        print("SCA APIs")
+    elif(selectedMenuOption == 8):
+        print("Dynamic APIs")
+    elif(selectedMenuOption == 9):
+        print("Upload and Scan")    
+    elif(selectedMenuOption == 10):
+        print("Pipeline Scan")
+    elif(selectedMenuOption == 11):
+        print("SCA Agent-Based Scan")
+
+    os.system("pause")
+    menuRun = False
+    # if(DEBUG): menuRun = True
 
 
 
@@ -63,7 +130,7 @@ api_key_temp = "" # temporary string to hold the API KEY
 
 # Check to see the operating system
 print("\n\n==============  Determining operating system =================\n\n")
-if(debug):
+if(DEBUG):
     print("[Debug] Name of the operating system: ", os.name)
     print("[Debug] Name of the OS System is running on: ", platform.system())
     print("[Debug] Name of the Operating System version: ", platform.release())
@@ -86,16 +153,22 @@ if(debug):
     # otherwise prompt the user for the creation of a credentials file
         # Request the user to go to the platform and generate API keys, and provide them into the script, the script will initialize the credentials file
 
+# Testing to see if java runs
+#os.system("java --version")
+
+
+if(DEBUG): os.system("pause")
+
 if(osname == "nt" or osplatform == "Windows"):
-    if(debug): print("[Debug] You are running a windows based machine")
+    if(DEBUG): print("[Debug] You are running a windows based machine")
     # Windows command block
 
 elif(osname == "posix" or osplatform == "Linux"):
-    if(debug): print("[Debug] You are running on a linux based machine")
+    if(DEBUG): print("[Debug] You are running on a linux based machine")
     # linux command block
 
 else:# Todo: add a mac os block
-    if(debug): print("[Debug] Your machine is currently undeterminable")
+    if(DEBUG): print("[Debug] Your machine is currently undeterminable")
 
 
 
@@ -104,7 +177,7 @@ else:# Todo: add a mac os block
 # API Credentials  #############################################################################################################################################################################################################
 ################################################################################################################################################################################################################################
 
-
+if(DEBUG): os.system("pause")
 print("\n\nIn order to use this script, you need to have the proper veracode permissions")
 #TODO: check prerequesites:
 #       - Check OS
@@ -137,7 +210,7 @@ print("\n\nIn order to use this script, you need to have the proper veracode per
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Docker method
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+if(DEBUG): os.system("pause")
 #TODO: Check to see if docker is installed
 #TODO: Check to see if the operating system is supported
 #TODO: Check to see if the docker installation is possible
@@ -181,7 +254,7 @@ print("\n\nIn order to use this script, you need to have the proper veracode per
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Install SRCCLR
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+if(DEBUG): os.system("pause")
 #TODO: Get source clear agent for the os
 #TODO: Instructions for installation
 #TODO: Query token and pass to srcclr activate command

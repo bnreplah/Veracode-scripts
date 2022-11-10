@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Scripts/Ref/veracode-api-py"
+    ]
+}
