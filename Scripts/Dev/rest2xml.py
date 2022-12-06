@@ -1,3 +1,18 @@
+# Authored: Jin Mok & Ben Halpern 
+# Team: CSE 
+# Date 12/06/2022
+# Manager: Justin Yao - Veracode, Manager of Security Consulting Department. 
+#
+# Abstract: Veracode's Admin XML API can GET, PUT, POST requests, however, Admin XML API will be deprecated and will be replaced by REST API. 
+#           Equivalent to Admin XML API for REST API will be Identity REST API. This script will be using veracode_api_py by Tim Jarrett and Chris Tyson's Github Repository and expanded
+#           and currently in progress to be utilized for all the accounts to easily transition from XML to REST API. 
+#
+#   -- Please note that Postman or Insomnia can also be used to call REST API. 
+# Postman Authentication.js https://gist.github.com/ctcampbell/c82d895b0940c08408fb1800aa6718b0
+# Veracode Postman Instruction: https://github.com/veracode/veracode-postman
+# Veracode Community https://community.veracode.com/s/question/0D52T000051M7rsSAC/easily-use-the-rest-apis-with-postman-with-this-tip
+
+
 import os
 import json
 import re
