@@ -182,11 +182,11 @@ for j in teams_parsed:
     temp_teams.team_id = j['team_id']
     temp_teams.team_legacy_id = j['team_legacy_id']
     temp_teams.team_name = j['team_name']
-    temp_teams.business_unit = j['business_unit']
+    #temp_teams.business_unit = j['business_unit']
     temp_teams.organization = j['organization']['org_name']
     temp_teams.org_id = j['organization']['org_id']
     temp_teams.org_legacy_id = j['organization']['org_legacy_id']
-    temp_teams.business_unit = j['member_only']
+    temp_teams.member_only = j['member_only']
     temp_teams._links = list(j['_links'])
     apiTeams.append(temp_teams)
 
