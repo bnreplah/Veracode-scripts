@@ -1,4 +1,12 @@
-#! /env/python3
+#! /env/python3.10
+# ======================================
+#     ##########        #####
+#     ##      ##       ## ###
+#     ##      ##          ###
+#     ##      ##          ###
+#     ##########      ###########
+# ===========   Veracode   =============   
+# ======================================
 # File:   
 # Authors:  
 #    - Ben Halpern - Veracode
@@ -53,7 +61,15 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 
 
 
-#
+# The idea:
+#          There is a global call cache object that holds the actual call and it's parsed data within it
+#          There is a Call Object and a Call Class Object
+#                   The Call Object will hold meta data and is what is passed to the call stack with an instance of the class in the call list
+#                   The Call Object is the executor of the Call Class Object
+#                       The Call Class Object is the specific class object for that grouping or action.
+#                       Each will share the same variable names and methods, however the difference is in the constants and the actual code within each action
+#                       They have the option to be menu driven or automated ( need to figure this switch out )
+#                       The reason for the same variable names and  methods being used is so that the calls can be made as the object is passed as a parameter in the call stack
 #
 #
 #
@@ -68,6 +84,37 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 #
 #
 #
+# HealthCheck API
+#
+#
+#
+#
+#
+#
+#
+# 
+# Application and Sandbox APIs
+#
+#
+#
+#
+#
+#
+# Policy APIs
+#
+#
+#
+#
+#
+#
+#
+# Findings and Reporting APIs
+#
+#
+#
+#
+#
+# Collection APIs
 #
 #
 #
@@ -78,6 +125,7 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 #
 #
 #
+# Identity APIs
 #
 #
 #
@@ -86,6 +134,7 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 #
 #
 #
+# SCA APIs
 #
 #
 #
@@ -93,6 +142,7 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 #
 #
 #
+# Dynamic APIs
 #
 #
 #
@@ -100,14 +150,48 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 #
 #
 #
+# Upload and Scan
 #
 #
 #
+#
+#
+# Pipeline Scan
+#
+#
+#
+#
+#
+#
+#
+# SCA Agent-Based Scan
+#
+#
+#
+
+
+####################################################################################################################
+## Template Classes
+####################################################################################################################
+
+
+
+
+
+
+
+
+
 
 ####################################################################################################################
 ##  Classes
 ####################################################################################################################
 
+##
+#
+#
+#
+##
 class CallCache:
 
     # Precondition: Default constructor
@@ -129,7 +213,15 @@ class CallCache:
 
 
 
+
+##
+#
+#
+#
+##
 class CallOBj:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         # Call Variables
         self.rawCall = str()
@@ -150,8 +242,14 @@ class CallOBj:
 
 
 
-
+##
+#
+#
+#
+##
 class CallChain:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.callStack = []
         self.topIndex = int()
@@ -160,311 +258,641 @@ class CallChain:
 
 
 
-        
 
 
 
-
-
+##
+#
+#
+#
+##
 class HealtCheckCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__ (self):
         self.currentIndex = int()
         self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
             
+    # Precondition: N/A
+    # Postcondition: Displays the menu and gets the users selected option
     def menu(self):
         pass    
 
+    # Precondition: N/A
+    # Postcondition: returns the interactiveCall variable [True / False]
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition: N/A
+    # Postcondition: Switches the interactiveCall variable on or off
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
 
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
+
+##
+#
+#
+#
+##
 class AppSandBoxCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+
+
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
+
+
+
+##
+#
+#
+#
+##
 class PolicyCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
 
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
-
+##
+#
+#
+#
+##
 class FindingReportingCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
 
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
 
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
+##
+#
+#
+#
+##
 class CollectionCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
+
+##
+#
+#
+#
+##
 class IdentityCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
+##
+#
+#
+#
+##
 class SCACall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
     
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
-
+##
+#
+#
+#
+##
 class DynamicCall:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
 
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
-
+##
+#
+#
+#
+##
 class UploadScan:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
 
+##
+#
+#
+#
+##
 class PipelineScan:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
 
-
+##
+#
+#
+#
+##
 class ContainerScan:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__ (self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
 
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
-
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
 
 
-
+##
+#
+#
+#
+##
 class SCAAgentScan:
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
     def __init__(self):
         self.currentIndex = int()
+        self.interactiveCall = True
+        self.lastOption = int()
         pass
 
+    # Precondition:
+    # Postcondition:
     def next(self, index):
         pass
    
+    # Precondition:
+    # Postcondition:
     def menu(self):
         pass
 
-    
+    # Precondition:
+    # Postcondition:
     def getInteractive(self):
         return self.interactiveCall
 
+    # Precondition:
+    # Postcondition:
     def setInteractive(self):
         self.interactiveCall = not self.interactiveCall
         return self.interactiveCall
 
 
+    # Precondition:
+    # Postcondition:
     def action(self, option, interactive = True):
+        if(interactive):
+            optionSelected = self.menu()
+
+        if():
+            pass
+        elif():
+            pass
+        elif():
+            pass
+
         pass
 
     
@@ -504,7 +932,7 @@ while(menuRun):
     print(" \t\t5) Collection APIs")
     print(" \t\t6) Identity APIs ")
     print(" \t\t7) SCA APIs - Must be human user to use these, not API user")
-    print(" \t\t8) dynamic APIs ")
+    print(" \t\t8) Dynamic APIs ")
     print(" \t\t9) Upload and Scan")
     print(" \t\t10) Pipeline Scan ")
     print(" \t\t11) SCA Agent-Based Scan")
