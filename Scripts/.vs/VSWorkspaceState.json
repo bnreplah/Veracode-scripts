@@ -1,8 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Dev"
+    "\\Dev",
+    "\\Ref",
+    "\\Ref\\veracode-api-py",
+    "\\Ref\\veracode-api-py\\veracode_api_py"
   ],
-  "SelectedNode": "\\Dev\\script2.py",
+  "SelectedNode": "\\Ref\\veracode-api-py\\veracode_api_py\\api.py",
   "PreviewInSolutionExplorer": false
 }

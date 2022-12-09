@@ -1,11 +1,16 @@
 #! /env/python3
-# File:     
-# Author:   Ben Halpern - Veracode
+# File:   
+# Authors:  
+#    - Ben Halpern - Veracode
 # Role:     Associate CSE
 # Manager:  Justin Yao
 # Date:     09/06/22
-#
-import os  # Used to determine the operating system and for running shell commands
+# Version Date: 12/8/2022
+# Version: 0.00.001
+
+
+import os
+from pickle import TRUE  # Used to determine the operating system and for running shell commands
 import platform  # Used to determine the operating system
 import subprocess
 
@@ -46,6 +51,432 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 
 
 
+
+
+#
+#
+#
+#
+# Global Call Object
+#       |           Holds an array of the call objects made in the call history, to be cached and used in subsequent scans
+#       |____________ Call Class Object
+#                           |_______________ Holds parsed call information for that grouping
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+####################################################################################################################
+##  Classes
+####################################################################################################################
+
+class CallCache:
+
+    # Precondition: Default constructor
+    # Postcondition: Instantiates class variables
+    def __init__(self):
+        self.callHist = []
+        self.callObjects = []
+        
+    def addCallHist(self, newCall):
+        # some check that newcall is what it is supposed to be
+
+        # end 
+        # if passes check
+        self.callHist.append(newCall)
+        return True
+
+    def popCallHist(self):
+        self.callHist.pop()
+
+
+
+class CallOBj:
+    def __init__(self):
+        # Call Variables
+        self.rawCall = str()
+        self.call = []
+        self.callJson = str()
+        self.callJsonParsed = []
+        
+        # Error Variables
+        self.error = False
+        self.errorCode = int()
+        self.errorMessage = str()
+
+        # The name of the call class being used
+        self.callClass = str()
+        # Call Chaining, the call added to this list will notify the program that there is another call that follows this one
+        self.callList = []
+
+
+
+
+
+class CallChain:
+    def __init__(self):
+        self.callStack = []
+        self.topIndex = int()
+        self.lastCall = CallOBj()
+        self.interactiveChain = True
+
+
+
+        
+
+
+
+
+
+class HealtCheckCall:
+    def __init__ (self):
+        self.currentIndex = int()
+        self.interactiveCall = True
+        pass
+
+    def next(self, index):
+        pass
+            
+    def menu(self):
+        pass    
+
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+class AppSandBoxCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+class PolicyCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+class FindingReportingCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+class CollectionCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+class IdentityCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+class SCACall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+
+class DynamicCall:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+
+class UploadScan:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+
+class PipelineScan:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+
+
+class ContainerScan:
+    def __init__ (self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+
+
+
+class SCAAgentScan:
+    def __init__(self):
+        self.currentIndex = int()
+        pass
+
+    def next(self, index):
+        pass
+   
+    def menu(self):
+        pass
+
+    
+    def getInteractive(self):
+        return self.interactiveCall
+
+    def setInteractive(self):
+        self.interactiveCall = not self.interactiveCall
+        return self.interactiveCall
+
+
+    def action(self, option, interactive = True):
+        pass
+
+    
+
+
+
+
+
+
+
+
+####################################################################################################################
 
 # Determine username
 username = os.getlogin()
