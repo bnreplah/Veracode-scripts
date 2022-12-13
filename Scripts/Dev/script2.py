@@ -21,7 +21,7 @@ import os
 from pickle import TRUE  # Used to determine the operating system and for running shell commands
 import platform  # Used to determine the operating system
 import subprocess
-
+from queue import Queue
 #import docker
 import veracode_api_py
 from veracode_api_py import apihelper
@@ -181,8 +181,6 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 
 
 
-
-
 ####################################################################################################################
 ##  Classes
 ####################################################################################################################
@@ -200,7 +198,7 @@ class CallCache:
         self.callHist = []
         self.callObjects = []
         
-    def addCallHist(self, newCall):
+    def appCallHist(self, newCall):
         # some check that newcall is what it is supposed to be
 
         # end 
@@ -209,7 +207,9 @@ class CallCache:
         return True
 
     def popCallHist(self):
-        self.callHist.pop()
+        return self.callHist.pop()
+
+
 
 
 
@@ -236,8 +236,7 @@ class CallOBj:
 
         # The name of the call class being used
         self.callClass = str()
-        # Call Chaining, the call added to this list will notify the program that there is another call that follows this one
-        self.callList = []
+     
 
 
 
@@ -251,13 +250,20 @@ class CallChain:
     # Precondition: Default constructor
     # Postcondition: Instantiates class variables
     def __init__(self):
-        self.callStack = []
+        self.callQueue = Queue(maxsize = 0)
         self.topIndex = int()
         self.lastCall = CallOBj()
         self.interactiveChain = True
 
+    def runCall (self):
+        while(not self.callQueue.empty):
+            call = self.callQueue.get()
+            call.run()
 
 
+    def actionCall (self, options, interactive = False):
+        pass
+    
 
 
 
