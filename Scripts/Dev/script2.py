@@ -190,7 +190,7 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 ####################################################################################################################
 
 ###
-##
+## Session Cache
 ##
 ##
 ###
@@ -219,7 +219,7 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 
 
 ###
-##
+## Holds the data of the session call 
 ##
 ##
 ###
