@@ -15,11 +15,15 @@
 
 import os
 import json
-import re
+#import re
 import veracode_api_py
-import veracode_api_signing
+#import veracode_api_signing
 from veracode_api_py import apihelper
 import csv
+#pip install dictionary2xml
+# import dicttoxml
+
+
 
 vAapiHelper = apihelper
 veraApi = veracode_api_py.VeracodeAPI
@@ -197,7 +201,7 @@ for j in teams_parsed:
     temp_teams.team_id = j['team_id']
     temp_teams.team_legacy_id = j['team_legacy_id']
     temp_teams.team_name = j['team_name']
-    temp_teams.business_unit = j['business_unit']
+    #temp_teams.business_unit = j['business_unit']       # error on this line, doesn't seem to be found in the dictionary
     temp_teams.organization = j['organization']['org_name']
     temp_teams.org_id = j['organization']['org_id']
     temp_teams.org_legacy_id = j['organization']['org_legacy_id']
@@ -223,7 +227,8 @@ for i in users_parsed:
     apiUsers.append(temp_user)
 
 
-veracodeAPI.get_teams()
-veracodeAPI.get_business_units()
-veracodeAPI.get_roles()
-veracodeAPI.get_users()
+print(veracodeAPI.get_teams())
+print(veracodeAPI.get_business_units())
+print(veracodeAPI.get_roles())
+print(veracodeAPI.get_users())
+print(apiTeams[0].getteaminfolist())
