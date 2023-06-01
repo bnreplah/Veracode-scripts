@@ -117,7 +117,7 @@ import csv
 
 
 # Configuration switches
-DEBUG = False
+DEBUG = True
 VERBOSE = False
 
 # "blacklist_configuration": {
@@ -285,11 +285,25 @@ def blacklistConfigCSVtoList(blackListCSV = "blacklist.csv"):
         print("The CSV file failed to load", blackListCSV)
 
 
+# Todo: Sanitize the input and the processing of the various components
+#       CWE: 80 present XSS
+#       Todo: 
+#           - ensure thhat baseURL is url encoded
+#           - ensure that teams is a list and formatted as such 
+
 ## Function name: formatRequest
-##
-## Precondition: Takes the components of a singular analysis and bulk creates the request to be sent to the api to configure the analysis, is formatted for scan creation
+##                Ensure that the input is precompiled from the functions otherwise raises risk of injection
+## Precondition:  Takes the components of a singular analysis and bulk creates the request to be sent to the api to configure the analysis, is formatted for scan creation
 ## Postcondition: will format the request with the different components and write out to a input.json file, which can then be used to update/create an analysis
-def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,orgInfo: bool = True,  orgEmailContact: str = '', http_and_https: str = "true" , blacklistConfig: str = '',visibility:bool = True, glBlackListConfig: str = '',  teams: str = '' , scanSchedule: bool = True, schedule: str = ''):
+def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,orgInfo: bool = True,  orgEmailContact: str = '', http_and_https: str = "true" , blacklistConfig: str = blacklistConfigCSVtoJSON("blacklist.csv"),visibility:bool = True, glBlackListConfig: str = blacklistConfigCSVtoJSON("glblacklist.csv"),  teams: str = '' , scanSchedule: bool = True, schedule: str = scheduleNow()):
+    # input validation:
+    if(orgInfo and orgEmailContact.find('@') == -1):
+        return "ERROR: There was an error invalid email provided"
+    
+    if(scanConfiguration and (baseURL.find('.') == -1 or baseURL.find(';') != -1)):
+        return "ERROR: Something went wrong and the baseURL is not formatted correctly"
+    
+    
     scanRequest= '{' 
     scanRequest+= '\"name\": \"{}\"'.format(scanName) 
     if(scanConfiguration):
@@ -328,7 +342,7 @@ def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str =
 # ## Precondition: A test run to create a new Analysis input.json that can be passed to the API to then create a scan. If the blacklist files aren't present, simply remove and leave them as blank
 # ## Postcondition:
 def test():
-    testString = formatRequest("veracode-api-test-002",True,"http://veracode.com",True,"example@example.com", "true",blacklistConfigCSVtoJSON("blacklist-1.csv"),True,blacklistConfigCSVtoJSON("glblacklist-1.csv"),'',False, scheduleScan())
+    testString = formatRequest("veracode-api-test-002",True,"http://veracode.com",True,"example@example.com")
     return testString    
 
 # Main Execution block #####################################################################################

@@ -1,1 +1,18 @@
-{"name": "Veracode","scans": [ { "scan_config_request": { "target_url": { "url": "http://veracode.com","http_and_https": true }, "scan_setting": {   } } }  ],"schedule": {"now": "true", "duration": {"length": 1, "unit": "DAY"}, "end_date": "", "scan_recurrence_schedule": {"recurrence_type": "WEEKLY", "schedule_end_after": 2, "recurrence_internval": 1, "day_of_week": "FRIDAY"}} ,"org_info": { "email": "demo@example.com" }}
+{"name": "veracode-api-test-002","scans": [ { "scan_config_request": { "target_url": { "url": "http://veracode.com","http_and_https": true }, "scan_setting": { "blacklist_configuration": 
+                                    {"black_list": [{
+                "directory_restriction_type": "DIRECTORY_AND_SUBDIRECTORY",
+                "http_and_https": true,
+                "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo"},{
+                "directory_restriction_type": "FOLDER_ONLY",
+                "http_and_https": true,
+                "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo"},{
+                "directory_restriction_type": "FILE",
+                "http_and_https": false,
+                "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo/robots.txt"},{
+                "directory_restriction_type": "FILE",
+                "http_and_https": true,
+                "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo/resources/images/Tokyoship_Talk_icon.svg"}]}  } } }  ],"schedule": {"now": "true", "duration": {"length": "<class 'int'>", "unit": "DAY"}} ,"org_info": { "email": "example@example.com" } ,"visibility": { "setup_type": "SEC_LEADS_ONLY", "team_identifiers": [ ]},"scan_setting": { "blacklist_configuration": 
+                                    {"black_list": [{
+                "directory_restriction_type": "FILE",
+                "http_and_https": false,
+                "url": "http://verademo.bhalpern.vuln.sa.veracode.io/robots.txt"}]} }}

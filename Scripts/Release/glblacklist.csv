@@ -1,0 +1,5 @@
+directory_restriction_type,http_and_https,url
+DIRECTORY_AND_SUBDIRECTORY,TRUE,http://
+FOLDER_ONLY,TRUE,http://
+FILE,FALSE,http://
+FILE,TRUE,http://
