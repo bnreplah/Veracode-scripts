@@ -100,13 +100,8 @@
 #   }
 # }    
 
-#import veracode_api_py
-#from veracode_api_py import apihelper
 import json
 import csv
-#vApiHelper = apihelper.APIHelper()
-#veracodeAPI = veracode_api_py.VeracodeAPI()
-
 #
 # Functions:
 #   MiddleWare:
@@ -122,7 +117,7 @@ import csv
 
 
 # Configuration switches
-DEBUG = True
+DEBUG = False
 VERBOSE = False
 
 # "blacklist_configuration": {
