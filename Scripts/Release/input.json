@@ -1,0 +1,42 @@
+{
+    "name": "veracode-api-test-Mon Jun 12 00:00:01 2023",
+    "scans": [
+        {
+            "scan_config_request": {
+                "target_url": {
+                    "url": "http://veracode.com",
+                    "http_and_https": true
+                },
+                "scan_setting": {
+                    "blacklist_configuration": {
+                        "black_list": [
+                            {
+                                "directory_restriction_type": "DIRECTORY_AND_SUBDIRECTORY",
+                                "http_and_https": true,
+                                "url": "http://example.com/directory/"
+                            },
+                            {
+                                "directory_restriction_type": "FOLDER_ONLY",
+                                "http_and_https": true,
+                                "url": "http://example.com/test/"
+                            },
+                            {
+                                "directory_restriction_type": "FILE",
+                                "http_and_https": false,
+                                "url": "http://example.com/robots.txt"
+                            },
+                            {
+                                "directory_restriction_type": "FILE",
+                                "http_and_https": true,
+                                "url": "http://example.com/testing.txt"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "org_info": {
+        "email": "example@example.com"
+    }
+}
