@@ -177,7 +177,7 @@ def scheduleNow(days: int = 1):
     schedule = {
         "now": "true",
         "duration": {
-            "length": str(int),
+            "length": str(days),
             "unit": "DAY"
         }
     }
@@ -325,7 +325,7 @@ def formatNewRequest(scanName: str,  scanConfiguration: bool = True, baseURL: st
     scanRequest+= '}' 
     # scanRequest.format(scanName, baseURL, http_and_https, blacklistConfig, orgEmailContact ,  glBlackListConfig)
     file = open("input.json", "w")
-    file.write(scanRequest)
+    file.write(scanRequest) # add json dumps before writing out to file
     file.close()
     return scanRequest
 
