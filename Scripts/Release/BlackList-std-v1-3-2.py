@@ -235,6 +235,8 @@ def blacklistConfigCSVtoList(blackListCSV = "blacklist.csv"):
 def formatOrgInfo(orgEmailContact):
     return {"org_info": {"email": orgEmailContact}}
 
+def formatVisbilityData(setup_type = "SEC_LEADS_ONLY", teams = []):
+    return {"visibility": { "setup_type": setup_type, "team_identifiers": teams}}
 
 def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,
                   orgInfo: bool = False, orgInfoData: dict = { "org_info": { "email": "example@email.com", "owner": "" } },
