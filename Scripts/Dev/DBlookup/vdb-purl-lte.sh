@@ -1,18 +1,22 @@
 #!/bin/bash
 
 echo "PURL lookup"
-purl=$1
-
-# Check to see if there is an argument is passed
-if [ -n $purl ]; then
-	echo "" 
-else
+if [ -z $1 ]; then
 	echo "Please enter a parameter"
 	read purl
+else
+
+	purl=$1
+fi
+# Check to see if there is an argument is passed
+if [ -n $purl ]; then
+	echo "Input recieved" 
+# else
+# 	echo "Please enter a parameter"
+# 	read purl
 fi
 
-if  [ $( echo $purl | cut -d ':' -f1 ) == 'pkg' ]
-then	
+if  [[ $( echo $purl | cut -d ':' -f1 ) == 'pkg' ]]; then	
 	echo "====== PURL identified ======"
 	echo $(echo $purl | cut -d ':' -f2 | cut -d '/' -f1) 
 	if [ "$(echo $purl | cut -d ':' -f2 | cut -d '/' -f1)" == "maven" ]
