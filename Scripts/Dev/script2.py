@@ -11,7 +11,6 @@
 # Authors:  
 #    - Ben Halpern - Veracode
 # Role:     Associate CSE
-# Manager:  Justin Yao
 # Date:     09/06/22
 # Version Date: 12/8/2022
 # Version: 0.00.002
