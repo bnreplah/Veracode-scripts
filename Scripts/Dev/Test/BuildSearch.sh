@@ -1,5 +1,8 @@
 #!/bin/bash
-
+# Use this script to search and see the buildlist scan names 
+# The script can be modified to parse out the data from the buildinfo 
+# PoC outputting details to output.json
+#
 #provide the location of the veracode java api location
 VeracodeJavaWrapper=VeracodeJavaAPI.jar
 found=1
@@ -27,6 +30,13 @@ if [[ -z $searchname ]]; then
         echo "Policy Compliance Status: " $policyComplianceStatus
         echo "Results Ready: "$resultsReady
 
+        echo "{" > output.json
+        echo "'scanname': '"$scanName"'," >> output.json
+        echo "'buildid': '"$buildid"'," >> output.json
+        echo "'launchdate': '"$launchdate"'," >> output.json
+        echo "'policycompliancestatus': '"$policyComplianceStatus"'," >> output.json
+        echo "'resultsready': "$resultsReady"," >> output.json
+        echo "}" >> output.json
 fi
 
 #searchname=$2
@@ -44,6 +54,7 @@ readarray -d '' -t buildnames < <( java -jar $VeracodeJavaWrapper -action getbui
 
 for name in ${buildnames[@]};
 do
+        #echo $name
         if [[ $searchname == $name ]]; then
                 #echo "Found"
                 #echo $2 ":" $name
@@ -60,3 +71,4 @@ else
         echo "Build Match Not Found"
         exit 0
 fi
+#TODO: pull the build id and see if it passed policy and pull the last date
