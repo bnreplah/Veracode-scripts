@@ -1,4 +1,5 @@
 # BlackList-std.py
+#   Version std-v00.02.3
 #   standalone 
 #   Description:
 #       This script is for creating and formatting a blacklist for a Veracode Dynamic Web Application Scan
@@ -113,13 +114,26 @@
 #from veracode_api_py import apihelper
 import json
 import csv
+import datetime
 #vApiHelper = apihelper.APIHelper()
 #veracodeAPI = veracode_api_py.VeracodeAPI()
+
+#
+# Functions:
+#       isTrue():                   converts boolean to lowercase
+#       scheduleScan():             formats the schedule scan json for the scan request
+#       scheduleNow():              formats a schedule now json for the scan request
+#       blacklistConfigCSVtoJSON(): creates a formatted bulk blacklist configuration using the csv passed to it   
+#       blacklistConfigCSVtoList(): creates a parallel list from the blacklist csv
+#       formatRequest():            formats the request for creation of or updating of a dynamic scan 
+#       test():                     test function
+#
+#
 
 
 # Configuration switches
 DEBUG = True
-VERBOSE = False
+VERBOSE = True
 
 # "blacklist_configuration": {
 #       "black_list": [
@@ -138,17 +152,24 @@ if(DEBUG):
         print(f"Using CSV file named {blacklistFileName}. Please ensure that the file is located in the same directory")
 
 # Middleware
+### Function name: isTrue
+###
+### Precondition: takes a boolean
+### Postcondition: return lowercase boolean string
 def isTrue(value):
     if (str(value).casefold() == "true"):
-        return "true"
+        return True
     else:
-        return "false"
+        return False
 
 # checks to see last line
-# Todo: Improve this block    
-# Todo:
 
-def scheduleScan(startNow = "true", length = 1, unit = "DAY", end_date = "", recurrence_type = "WEEKLY", schedule_end_after = 2, reccurence_interval = 1, day_of_week = "FRIDAY"):
+
+### Function name:
+###
+### Precondition:
+### Postcondition:
+def scheduleScan(startNow: bool = True, length = 1, unit = "DAY", start_date = datetime.date.isoformat(datetime.date(2023, 12, 30)), end_date = datetime.date.isoformat((datetime.date(2023, 12, 31)) ), recurrence_type = "WEEKLY", schedule_end_after = 2, reccurence_interval = 1, day_of_week = "FRIDAY"):
 #       "schedule": {
 #     "now": true,
 #     "duration": {
@@ -163,147 +184,183 @@ def scheduleScan(startNow = "true", length = 1, unit = "DAY", end_date = "", rec
 #       "day_of_week": "FRIDAY"
 #     }
 #   }
-    schedule = {
+    schedule = { "schedule": {
         "now": startNow,
         "duration": {
             "length": length,
             "unit": unit
         },
-        "end_date": end_date,
+        "scheduled": True,
         "scan_recurrence_schedule": {
             "recurrence_type": recurrence_type,
             "schedule_end_after": schedule_end_after,
             "recurrence_internval": reccurence_interval,
             "day_of_week": day_of_week
         }
-    }
+    }}
 
-    scheduleStr = "\"schedule\": " + json.dumps(schedule) 
-    print(scheduleStr)
+    if(startNow == "false"):
+        schedule["schedule"].update({"start_date": start_date, "end_date": end_date})
+    # remove after testing
+    scheduleStr = schedule
+    if(DEBUG): print(scheduleStr)
     return scheduleStr
 
+### Function name: Schedule Now
+### Precondition: takes a number of days for duration
+### Postcondition: returns a schedule now schedule formatted to be inserted into the format json
+def scheduleNow(nowB: str = isTrue(False), days: int = 1):
+    schedule = {"schedule": {
+        "now": nowB,
+        "duration": {
+            "length": str(days),
+            "unit": "DAY"
+        }
+    }}
+    # remove after testing
+    scheduleStr =  schedule 
+    if(DEBUG): print(scheduleStr)
+    return (scheduleStr)
 
 
-## Function name: 
-##
-## Precondition:
-## Postcondition:
+
+
+
+### Function name: blacklistConfigCSVtoJSON
+### Precondition:
+### Postcondition:
 def blacklistConfigCSVtoJSON(blackListCSV: str = "blacklist.csv"):
     # initialization of variables ##########################################################################
     if(DEBUG): lineCount = 0
     
     # Todo: check to see if the last line is blank
-    # identifying the last line of the csv ##################
-    fileLastLine = open(blackListCSV, "r")
-    lastLine = fileLastLine.readlines()[-1]
-    if(lastLine == None or lastLine == str()):
-        print("Error: Last Line is blank")
-    fileLastLine.close()
-    #########################################################
-    
-    # intializing configuration block
-    blacklist_configuration='''"blacklist_configuration": 
-                                {"black_list": ['''
-    # End initialization of variables ######################################################################
+    try:
+        # identifying the last line of the csv ##################
+        fileLastLine = open(blackListCSV, "r")
+        lastLine = fileLastLine.readlines()[-1]
+        if(lastLine == None or lastLine == str()):
+            print("Error: Last Line is blank")
+        fileLastLine.close()
+        #########################################################
+        
+        # intializing configuration block
+        blacklist_configuration= { "blacklist_configuration": {"black_list": [] } }
+        # End initialization of variables ######################################################################
 
-    # Todo: check to see if the CSV file exists, if not error or default to user input 
-    # Opening up the CSV ###################################################################################
-    
-    with open(blackListCSV, mode = 'r') as file:
-        csvFile = csv.DictReader(file)
-        # Looping through the csvFile converted to a Dictionary ############################################
-        for lines in csvFile:
-            #print(lines)
-            if(DEBUG): 
-                lineCount+= 1
+        # Todo: check to see if the CSV file exists, if not error or default to user input 
+        # Opening up the CSV ###################################################################################
+        
+        with open(blackListCSV, mode = 'r') as file:
+            csvFile = csv.DictReader(file)
+            # Looping through the csvFile converted to a Dictionary ############################################
+            for lines in csvFile:
+                #print(lines)
+                if(DEBUG): 
+                    lineCount+= 1
+                    
+                blacklist_configuration["blacklist_configuration"]["black_list"].append({"directory_restriction_type": "{}".format(lines['directory_restriction_type']), "http_and_https": "{}".format(isTrue(lines['http_and_https'])), "url": "{}".format(lines['url'])})    
+               
                 
+                # if is the last entry of the csv file, then close out the array and add a comma
+                if(lastLine.partition(',')[0] == lines['directory_restriction_type']  and lastLine.partition(',')[2].partition(',')[0] == lines['http_and_https'] and lastLine.partition(',')[2].partition(',')[2] == lines['url']):
+                    break
                 
-            blacklist_configuration += '{'
-            blacklist_configuration+= '''
-            "directory_restriction_type": "{directory_restriction_type}",
-            "http_and_https": {http_and_https},
-            "url": "{url}"'''.format(directory_restriction_type=lines['directory_restriction_type'], http_and_https=isTrue(lines['http_and_https']), url=lines['url'] )
-            blacklist_configuration+='}'
-            
-            # if is the last entry of the csv file, then close out the array and add a comma
-            if(lastLine.partition(',')[0] == lines['directory_restriction_type']  and lastLine.partition(',')[2].partition(',')[0] == lines['http_and_https'] and lastLine.partition(',')[2].partition(',')[2] == lines['url']):
-                blacklist_configuration+=']}'
-            # else add a comma after the curly braces
-            else:
-                blacklist_configuration+=','
-        # End for Loop #####################################################################################
-
-    # End reading CSV ######################################################################################    
-    return blacklist_configuration
+            # End for Loop #####################################################################################
+        # End reading CSV ######################################################################################    
+        if(DEBUG):
+            print(json.dumps(blacklist_configuration))
+        return blacklist_configuration
+    except:
+        print("The CSV file failed to load", blackListCSV)
+        return 1
 
 
-## Function name: 
-##
-## Precondition: Takes the components of a singular analysis and bulk creates the request to be sent to the api to configure the analysis, is formatted for scan creation
-## Postcondition: will format the request with the different components and write out to a input.json file, which can then be used to update/create an analysis
-def FormatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,orgInfo: bool = True,  orgEmailContact: str = '', http_and_https: str = "true" , blacklistConfig: str = '',visibility:bool = True, glBlackListConfig: str = '',  teams: str = '' , scanSchedule: bool = True, schedule: str = ''):
-    scanRequest= '{' 
-    scanRequest+= '\"name\": \"{}\",'.format(scanName) 
-    if(scanConfiguration):
-        scanRequest+= '\"scans\": [ { \"scan_config_request\": { \"target_url\": {'
-        scanRequest+= ' \"url\": \"{}\",'.format(baseURL) 
-        scanRequest+= '\"http_and_https\": {}'.format(http_and_https) 
-        scanRequest+= ' }' 
-        scanRequest+= ', \"scan_setting\": {' 
-        scanRequest+= ' {} '.format((blacklistConfig))
-        scanRequest+= ' } } } ' 
-        scanRequest+=' ]'
-    if(scanSchedule):
-        scanRequest+= '{}'.format(schedule)
-    if(orgInfo):
-        scanRequest+=' ,\"org_info\": {' 
-        scanRequest+= ' \"email\": \"{}\"'.format(orgEmailContact) 
-        scanRequest+= ' }'
-    if(visibility):
-        scanRequest += ' ,\"visibility\": { \"setup_type\": \"SEC_LEADS_ONLY\", \"team_identifiers\": ['
-        scanRequest+= '{} ]'.format(teams) 
-        scanRequest+= '},'
-        scanRequest += '\"scan_setting\": {' 
-        scanRequest+= ' {} '.format(glBlackListConfig)
-        scanRequest+= '}'
-    scanRequest+= '}' 
-    # scanRequest.format(scanName, baseURL, http_and_https, blacklistConfig, orgEmailContact ,  glBlackListConfig)
-    file = open("input.json", "w")
-    file.write(scanRequest)
-    file.close()
-    return scanRequest
 
 
-## Function name: 
-##
-## Precondition:
-## Postcondition:
+### Function name: blacklistConfigCSVtoList
+###
+### Precondition:
+### Postcondition: returns a tuple of parallel arrays of each from the blacklist csv
 def blacklistConfigCSVtoList(blackListCSV = "blacklist.csv"):
     urls = []
+    http_and_https = []
+    directory_restriction_types = []
     try:
         with open(blackListCSV, mode = 'r') as file:
             csvFile = csv.DictReader(file)
             for lines in csvFile:
                 urls.append(lines['url'])
+                http_and_https.append(lines['http_and_https'])
+                directory_restriction_types.append(lines['directory_restriction_type'])
+
             if(DEBUG):
                 print("[DEBUG]:: " , urls)
-            return urls
+
+            return urls, http_and_https, directory_restriction_types
     except:
         print("The CSV file failed to load", blackListCSV)
 
+def formatOrgInfo(orgEmailContact):
+    return {"org_info": {"email": orgEmailContact}}
 
 
-# ## Function name: 
+def formatVisibilityInfo(setupType: str, teamIdentifiers):
+    pass
+
+
+# Todo: Modularize and send out
+
+## Function name: formatRequest
+##
+## Precondition: Takes the components of a singular analysis and bulk creates the request to be sent to the api to configure the analysis, is formatted for scan creation
+## Postcondition: will format the request with the different components and write out to a input.json file, which can then be used to update/create an analysis
+def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,
+                  orgInfo: bool = False, orgInfoData: dict = { "org_info": { "email": "example@email.com", "owner": "" } },
+                      http_and_https: str = isTrue(True) , blacklistConfig: dict = { "blacklist_configuration": {"black_list": [] } } ,
+                      visibility:bool = False, visibilityData: dict = {"visibility": { "setup_type": "SEC_LEADS_ONLY", "team_identifiers": []}},
+                        glScanSetting: bool = False, glScanSettingData: dict = {}, scanSchedule: bool = True, 
+                        scheduleData: dict = scheduleScan("false")):
+
+
+    scanRequest= { "name": scanName } 
+    #scanRequest+= '"name": "{}"'.format(scanName) 
+    if(scanConfiguration):
+        scanConfig = { "scans": [ {"scan_config_request": { "target_url": { "url": "{}".format(baseURL), "http_and_https": "{}".format(http_and_https)  }, "scan_setting": { } }} ] }
+        ((scanConfig["scans"][0])["scan_config_request"])["scan_setting"].update( blacklistConfig)
+        scanRequest.update(scanConfig)
+    if(scanSchedule):
+        scanRequest.update(scheduleData)
+    if(orgInfo):
+        scanRequest.update(orgInfoData)
+    if(visibility):
+        scanRequest.update(visibilityData)
+    if(glScanSetting):
+        scanRequest.update(glScanSettingData) 
+    # scanRequest.format(scanName, baseURL, http_and_https, blacklistConfig, orgEmailContact ,  glBlackListConfig)
+    file = open("input.json", "w")
+    if(DEBUG and VERBOSE): print(json.dumps(scanRequest))
+    # default writes out to file
+    if(DEBUG):
+        print("Wrote output to file ", file.name)
+    json.dump(scanRequest, file)
+    #file.write(scanRequest)
+    file.close()
+    return json.dumps(scanRequest)
+
+
+
+# ## Function name: test 
 # ##
-# ## Precondition:
+# ## Precondition: A test run to create a new Analysis input.json that can be passed to the API to then create a scan. If the blacklist files aren't present, simply remove and leave them as blank
 # ## Postcondition:
 def test():
-    testString = FormatRequest("Veracode",False,"http://veracode.com",True,"demo@example.com", "true",'',True, '','',True, scheduleScan())
+    testString = formatRequest("veracode-api-test-005",True,"http://veracode.com",True,{ "org_info": { "email": "example@email.com", "owner": "example" } }, isTrue(True) ,blacklistConfigCSVtoJSON("blacklist-1.csv"),True)#,False ,blacklistConfigCSVtoJSON("glblacklist-1.csv"),'',False, scheduleScan())
+    if(DEBUG): print(testString)
     return testString    
 
-
-
 # Main Execution block #####################################################################################
-if(DEBUG):
-    #scheduleScan()
-    print(test())
+test()
+
+
+
+

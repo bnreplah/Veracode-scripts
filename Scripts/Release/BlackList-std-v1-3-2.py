@@ -279,6 +279,32 @@ def createSimpleScan(name, scanConfig, baseURL, blackListprovided):
         return formatRequest(name, scanConfig, baseURL)
 
 
+# def formatRequest(scanName: str,  scanConfiguration: bool = True, baseURL: str = '' ,
+#                   orgInfo: bool = False, orgInfoData: dict = { "org_info": { "email": "example@email.com", "owner": "" } },
+#                       http_and_https: str = isTrue(True) , blacklistConfig: dict = { "blacklist_configuration": {"black_list": [] } } ,
+#                       visibility:bool = False, visibilityData: dict = {"visibility": { "setup_type": "SEC_LEADS_ONLY", "team_identifiers": []}},
+#                         glScanSetting: bool = False, glScanSettingData: dict = {}, scanSchedule: bool = True, 
+#                         scheduleData: dict = scheduleNow()):
+
+
+# def UI():
+
+#     #what actions do you want to take
+
+
+
+#     analysisName = input("Please enter an Analysis name: ")
+#     scanConfig = input()
+#     baseUrl = input()
+#     orgInfo = input()
+#     orgInfoData = input()
+#     http_and_https = input()
+#     blacklistConfig = input()
+#     visibility = input()
+#     visibilitData = input()
+#     glScanSetting = input()
+
+
 
 createSimpleScan("analysis-test-name" + str(datetime.date.today()), True, "http://example.com/",True)
 

@@ -1,0 +1,20 @@
+{"name": "Verademo-DA002","scans": [ { " scan_config_request": { "target_url": { "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo","http_and_https": true }, "scan_setting": { "blacklist_configuration": 
+                                {
+                                    "black_list": [{
+            "directory_restriction_type": "DIRECTORY_AND_SUBDIRECTORY",
+            "http_and_https": true,
+            "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo"},{
+            "directory_restriction_type": "FOLDER_ONLY",
+            "http_and_https": true,
+            "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo"},{
+            "directory_restriction_type": "FILE",
+            "http_and_https": false,
+            "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo/robots.txt"},{
+            "directory_restriction_type": "FILE",
+            "http_and_https": true,
+            "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo/resources/images/Tokyoship_Talk_icon.svg"}]}  } } }  ], "org_info": { "email": "bhalpern@veracode.com" }, "visibility": { "setup_type": "SEC_LEADS_ONLY", "team_identifiers": [] },"scan_setting": { "blacklist_configuration": 
+                                {
+                                    "black_list": [{
+            "directory_restriction_type": "FILE",
+            "http_and_https": false,
+            "url": "http://verademo.bhalpern.vuln.sa.veracode.io/robots.txt"}]} } }

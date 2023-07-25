@@ -1,0 +1,5 @@
+directory_restriction_type,http_and_https,url
+DIRECTORY_AND_SUBDIRECTORY,TRUE,http://verademo.bhalpern.vuln.sa.veracode.io/verademo
+FOLDER_ONLY,TRUE,http://verademo.bhalpern.vuln.sa.veracode.io/verademo
+FILE,FALSE,http://verademo.bhalpern.vuln.sa.veracode.io/verademo/robots.txt
+FILE,TRUE,http://verademo.bhalpern.vuln.sa.veracode.io/verademo/resources/images/Tokyoship_Talk_icon.svg

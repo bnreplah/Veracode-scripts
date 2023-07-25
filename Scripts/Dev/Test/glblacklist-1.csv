@@ -1,0 +1,2 @@
+directory_restriction_type,http_and_https,url
+FILE,FALSE,http://verademo.bhalpern.vuln.sa.veracode.io/robots.txt

@@ -1,0 +1,22 @@
+{
+    "_links": {
+        "root": {
+            "href": "/"
+        },
+        "self": {
+            "href": "/scans/57e72c0a-9d3b-428e-95a4-9a408c158c3c/findings"
+        },
+        "help": {
+            "href": "https://help.veracode.com/reader/tS9CaFwL4_lbIEWWomsJoA/ovfZGgu96UINQxIuTqRDwg"
+        }
+    },
+    "scan_id": "57e72c0a-9d3b-428e-95a4-9a408c158c3c",
+    "scan_status": "SUCCESS",
+    "message": "Scan successful. Results size: 42 bytes",
+    "modules": [
+        "Python files within 54c19ce3-61ff-49f7-a07b-4fa32d874cad.zip"
+    ],
+    "modules_count": 1,
+    "findings": [],
+    "selected_modules": []
+}

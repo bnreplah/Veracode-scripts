@@ -42,7 +42,15 @@ description = """The purpose of this script is ....
 # This is an MD5SUM of the Pipeline Scanner Zip
 
 
-
+print("======================================")
+print("     ##########        #####          ")
+print("     ##      ##       ## ###          ")
+print("     ##      ##          ###          ")
+print("     ##      ##          ###          ")
+print("     ##########      ###########      ")
+print(" ===========   Veracode   =============     ")
+print(" ======================================      ")
+print("\n\n")
 print("==============================================================")
 print("================ Veracode Script Installer ===================")
 print("==============================================================")
@@ -57,9 +65,23 @@ osarch = platform.architecture()
 vApiHelper = apihelper.APIHelper()
 veracodeAPI = veracode_api_py.VeracodeAPI()
 apiconfig = False # default is false, true when the apiconfig has been configured and detected
+username = os.getlogin()
+userhome = os.path.expanduser('~')
+credpath = os.path.join( userhome, '.veracode', 'credentials' )
+verapath = os.path.join( userhome, '.veracode' )
 
+if(DEBUG):
+    print("OS Name: " + osname)
+    print("OS Platform: " + osplatform)
+    print("OS Version: " + osversion)
+    print("OS Process: " + osprocess)
+    print("OS Architecture: " ,osarch)
+    print("Username: " + username)
+    print("User Home: " + userhome)
+    print("Credential location " + credpath )
+    print("Veracode folder" + verapath)
 
-
+    
 
 
 # The idea:
@@ -920,9 +942,9 @@ apiconfig = False # default is false, true when the apiconfig has been configure
 
 ####################################################################################################################
 
-# Determine username
-username = os.getlogin()
-userhome = os.path.expanduser('~')
+## Determine username
+#username = os.getlogin()
+#userhome = os.path.expanduser('~')
 
 # poor practice, remove after testing, after sanitization, try to load the API key directly for less storage within the script
 api_id_temp = ""  # temporary string to hold the API ID
