@@ -5,7 +5,7 @@
 # If the build name is not found and one is provided, will return with Build match not found and the exit code 1
 
 #provide the location of the veracode java api location
-VeracodeJavaWrapper=./src/bin/VeracodeJavaAPI.jar
+VeracodeJavaWrapper=../src/bin/VeracodeJavaAPI.jar
 
 
 found=1

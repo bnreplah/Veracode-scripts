@@ -8,7 +8,7 @@
 #vid=""
 #vkey=""
 appname="$1"
-buildname="$2"
+#buildname="$2"
 
 #PRESCAN_SLEEP_TIME=60
 SCAN_SLEEP_TIME=120
@@ -29,7 +29,7 @@ fi
 
 #app_ID=$( java -verbose -jar VeracodeJavaAPI.jar -action GetAppList | grep -w "$appname" | sed -n 's/.* app_id=\"\([0-9]*\)\" .*/\1/p' )
 app_ID=$(  java -verbose -jar VeracodeJavaAPI.jar -action GetAppList | grep $appname | sed -n 's/.* app_id=\"\([0-9]*\)\" .*/\1/p' | sed '2 d' )
-build_ID=$( java -verbose -jar VeracodeJavaAPI.jar -appid $app_ID -action GetBuildList | grep "<build " | grep $buildname | cut -d '"' -f2 )
+build_ID=$( java -verbose -jar VeracodeJavaAPI.jar -appid $app_ID -action GetBuildInfo | grep "<build " | grep $buildname | cut -d '"' -f2 )
 #build_ID=$( java -verbose -jar VeracodeJavaAPI.jar -appid $app_ID -action GetBuildList | grep -w "$buildname" | sed -n 's/.* build_id=\"\([0-9]*\)\" .*/\1/p' )
 #policy_updated_date=$( java -verbose -jar VeracodeJavaAPI.jar -appid $app_ID -action GetBuildList | grep -w "$buildname" | sed -n 's/.* policy_updated_date=\"\([0-9]*\)\" .*/\1/p' )
 
