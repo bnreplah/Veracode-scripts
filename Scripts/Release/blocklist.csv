@@ -1,0 +1,5 @@
+directory_restriction_type,http_and_https,url
+DIRECTORY_AND_SUBDIRECTORY,TRUE,http://example.com/verademo
+FOLDER_ONLY,TRUE,http://example.com/verademo
+FILE,FALSE,http://example.com/verademo/robots.txt
+FILE,TRUE,http://example.com/verademo/resources/images/Tokyoship_Talk_icon.svg
