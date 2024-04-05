@@ -11,24 +11,30 @@
 #
 #
 
-import veracode_api_py
-from veracode_api_py import apihelper
 import json
 #import DASTRequest
 #import BulkDynHelper
 import DASTStatus
+import DASTTests
+import DASTRequest
+import DASTHooks
+import DASTWebApp
+import DASTAPIHelper
 #
 #
 #
 #
 #
 #
+DEBUG = True
+
+def __main__():
+    pass
 
 
-
-
-
-vApiHelper = apihelper.APIHelper()
-veracodeAPI = veracode_api_py.VeracodeAPI()
+if (not DEBUG):
+    __main__()
+else:
+    DASTAPIHelper.debug()
 
 
