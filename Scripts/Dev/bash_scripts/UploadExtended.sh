@@ -7,7 +7,7 @@
 # $4 Tags
 #
 createAppArgs="-appname $1 -businessunit $3 "
-updateAppArgs="-businessunit $3 -tags $4 -businessowner"
+updateAppArgs="-businessunit $3 -tags $4" # -custom_field_name	-custom_field_value "
 update="$5"
 installWrapper(){
         
