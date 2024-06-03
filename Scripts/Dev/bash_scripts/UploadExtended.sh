@@ -8,7 +8,7 @@
 #
 createAppArgs="-appname $1 -businessunit $3 "
 updateAppArgs="-businessunit $3 -tags $4 -businessowner"
-
+update="$5"
 installWrapper(){
         
     echo "Downloading the latest version of the Veracode Java API Wrapper"
