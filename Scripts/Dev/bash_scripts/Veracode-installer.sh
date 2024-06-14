@@ -3,6 +3,8 @@
 
 help(){
     echo "Veracode Simple Installer"
+    echo "Unofficial Veracode Tool Installer"
+    echo "--------------------------------------------------------------------------------------------"
     echo "--install-sca-ci              | Install and scan in the current directory"
     echo "--install-sca-cli             | Install the linux SCA "
     echo "--force-install-vcli-local    | Install veracode cli and don't try to move into path"
@@ -12,6 +14,15 @@ help(){
     echo "--clone-python-api-py         | Clone the Veracode API Py Library"
 
 }
+
+# Set these if you want to run to run anything authenticated, othewise set these in the enviornment
+#SRCCLR_API_TOKEN=""
+#VERACODE_API_KEY_ID=""
+#VERACODE_API_KEY_=""
+
+# Alternatively use:
+#    srcclr activate     - to configure the SCA Agent in a CLI
+#    veracode configure  - to configure the Veracode CLI
 
 
 # Precondition:
