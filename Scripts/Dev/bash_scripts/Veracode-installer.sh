@@ -5,10 +5,12 @@ help(){
     echo "Veracode Simple Installer"
     echo "--install-sca-ci              | Install and scan in the current directory"
     echo "--install-sca-cli             | Install the linux SCA "
-    echo "--force-install-local         | Install veracode cli and don't try to move into path"
-    echo "--force-install               | Install veracode cli and try to move into path"
-    echo "--install-api-wrapper         |"
-    echo "--install-pipeline-scanner    |"
+    echo "--force-install-vcli-local    | Install veracode cli and don't try to move into path"
+    echo "--force-install-vcli          | Install veracode cli and try to move into path"
+    echo "--install-java-api-wrapper    | Install the latest Java API Wrapper"
+    echo "--install-pipeline-scanner    | Install the latest pipeline scanner"
+    echo "--clone-python-api-py         | Clone the Veracode API Py Library"
+
 }
 
 
@@ -104,7 +106,7 @@ while [[ $# -gt 0 ]]; do
                 unzip -o pipeline-scan-LATEST.zip
                 shift 1
                 ;;
-            --install-api-wrapper)
+            --install-java-api-wrapper)
                 echo "Downloading the latest version of the Veracode Java API Wrapper"
                 WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
                 if `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar`; then
