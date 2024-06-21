@@ -2,6 +2,5 @@
     "python.analysis.extraPaths": [
         "./Scripts/Ref/veracode-api-py"
     ],
-    "veracode.credsFile": "C:\\Users\\bhalpern\\.veracode\\credentials",
     "veracode.pipelineScanResultsFilename": "results.json"
 }
