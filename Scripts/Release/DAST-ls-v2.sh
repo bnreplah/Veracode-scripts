@@ -5,6 +5,7 @@
 # Install HTTPie: https://docs.veracode.com/r/c_httpie_tool
 # Install Python Authentication Library: https://docs.veracode.com/r/t_install_api_authen
 # Version 2.0.0
+# Author: Ben Halpern (CSE)
 # Variable configuration and initailization
 ################################################################################
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
