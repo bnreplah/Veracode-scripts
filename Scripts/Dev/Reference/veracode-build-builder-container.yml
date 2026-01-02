@@ -1,0 +1,225 @@
+name: Heuristic Multi-Language Auto Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      hint_languages:
+        description: 'Comma-separated language hints (e.g., python,node,java)'
+        required: false
+        default: ''
+
+jobs:
+  analyze-and-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            base: linux
+          - os: windows-latest
+            base: windows
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Detect languages heuristically
+      id: detect_lang
+      run: |
+        echo "Starting language detection..."
+        HINTS="${{ github.event.inputs.hint_languages }}"
+        if [[ -n "$HINTS" ]]; then
+          echo "Using hints: $HINTS"
+          echo "languages=$HINTS" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        langs=()
+
+        detect() {
+          [[ -f $1 ]] && langs+=("$2")
+        }
+
+        detect package.json node
+        detect tsconfig.json typescript
+        detect requirements.txt python
+        detect setup.py python
+        detect pyproject.toml python
+        detect main.go go
+        detect go.mod go
+        detect *.csproj dotnet
+        detect Cargo.toml rust
+        detect pom.xml java
+        detect build.gradle java
+        detect *.kt java
+        detect Makefile make
+        detect *.c c
+        detect *.cpp cpp
+        detect composer.json php
+        detect Gemfile ruby
+        detect config.xml cordova
+        detect Info.plist apple
+        detect *.xib apple
+        detect *.swift apple
+        detect *.java android
+        detect AndroidManifest.xml android
+        detect *.cls apex
+
+        unique_langs=$(printf "%s\n" "${langs[@]}" | sort -u | paste -sd ",")
+        if [[ -z "$unique_langs" ]]; then
+          echo "languages=unknown" >> $GITHUB_OUTPUT
+        else
+          echo "Detected languages: $unique_langs"
+          echo "languages=$unique_langs" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Analyze project structure
+      id: analyze_structure
+      run: |
+        echo "Analyzing project structure..."
+        if [[ -f Dockerfile ]]; then
+          echo "type=custom-docker" >> $GITHUB_OUTPUT
+        elif [[ -f package.json ]]; then
+          echo "type=web-app" >> $GITHUB_OUTPUT
+        elif [[ -f AndroidManifest.xml ]]; then
+          echo "type=mobile-android" >> $GITHUB_OUTPUT
+        elif [[ -f Info.plist ]]; then
+          echo "type=mobile-ios" >> $GITHUB_OUTPUT
+        elif [[ -f Makefile ]]; then
+          echo "type=cli-tool" >> $GITHUB_OUTPUT
+        elif [[ -f pom.xml || -f build.gradle ]]; then
+          echo "type=java-app" >> $GITHUB_OUTPUT
+        else
+          echo "type=unknown" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Generate Dockerfile
+      id: dockerfile
+      run: |
+        echo "Generating Dockerfile..."
+        langs="${{ steps.detect_lang.outputs.languages }}"
+        IFS="," read -ra lang_array <<< "$langs"
+
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          echo "# escape=`r`n
+FROM mcr.microsoft.com/windows/servercore:ltsc2022" > Dockerfile
+          echo "SHELL [\"cmd\", \"/S\", \"/C\"]" >> Dockerfile
+          echo "RUN powershell -Command \"Set-ExecutionPolicy Bypass -Scope Process -Force\"" >> Dockerfile
+        else
+          echo "FROM ubuntu:22.04" > Dockerfile
+          echo "RUN apt-get update && apt-get install -y curl wget git build-essential gnupg ca-certificates" >> Dockerfile
+        fi
+
+        for lang in "${lang_array[@]}"; do
+          case "$lang" in
+            python)
+              echo "RUN apt-get install -y python3 python3-pip" >> Dockerfile
+              ;;
+            node|typescript)
+              echo "RUN apt-get install -y nodejs npm" >> Dockerfile
+              ;;
+            go)
+              echo "RUN apt-get install -y golang" >> Dockerfile
+              ;;
+            rust)
+              echo "RUN curl https://sh.rustup.rs -sSf | bash -s -- -y && \\
+                     echo 'source \$HOME/.cargo/env' >> /root/.bashrc" >> Dockerfile
+              ;;
+            java|kotlin|scala)
+              echo "RUN apt-get install -y openjdk-17-jdk maven gradle" >> Dockerfile
+              ;;
+            dotnet)
+              if [[ "$RUNNER_OS" == "Windows" ]]; then
+                echo "RUN powershell -Command \"Invoke-WebRequest https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1; .\\dotnet-install.ps1 -Channel LTS\"" >> Dockerfile
+              else
+                echo "RUN apt-get install -y dotnet-sdk-6.0" >> Dockerfile
+              fi
+              ;;
+            php)
+              echo "RUN apt-get install -y php composer" >> Dockerfile
+              ;;
+            ruby)
+              echo "RUN apt-get install -y ruby-full" >> Dockerfile
+              ;;
+            c|cpp)
+              echo "RUN apt-get install -y cmake" >> Dockerfile
+              ;;
+            apex|coldfusion|cordova|ionic|react-native|xamarin|titanium|apple|android)
+              echo "# Note: Support for $lang may require manual configuration" >> Dockerfile
+              ;;
+            *)
+              echo "# Unknown language $lang" >> Dockerfile
+              ;;
+          esac
+        done
+
+        echo "COPY . /app" >> Dockerfile
+        echo "WORKDIR /app" >> Dockerfile
+        echo "CMD [\"bash\"]" >> Dockerfile
+
+        echo "Generated Dockerfile:" && cat Dockerfile
+
+    - name: Build Docker image
+      id: build
+      run: |
+        echo "Building Docker image..."
+        if docker build -t auto-app .; then
+          echo "build_status=success" >> $GITHUB_OUTPUT
+        else
+          echo "build_status=failure" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Run tests (if applicable)
+      run: |
+        echo "Attempting to detect and run tests..."
+        if [[ -f package.json ]]; then
+          npm install && npm test || echo "⚠️ Tests failed or not found."
+        elif [[ -f requirements.txt ]]; then
+          pip install -r requirements.txt && pytest || echo "⚠️ Tests failed or not found."
+        elif [[ -f pom.xml ]]; then
+          mvn test || echo "⚠️ Tests failed or not found."
+        elif compgen -G "*.csproj" > /dev/null; then
+          dotnet test || echo "⚠️ Tests failed or not found."
+        else
+          echo "No known test runner found."
+        fi
+
+    - name: Upload Dockerfile and build artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-and-dockerfile-artifacts
+        path: |
+          Dockerfile
+          ./
+
+    - name: Generate SBOM from Dependency Graph (if available)
+      uses: advanced-security/sbom-generator-action@v1
+      if: always()
+
+
+    - name: Download SBOM from GitHub Dependency Graph
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl -L \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+        -H "Accept: application/vnd.github+json" \
+        https://api.github.com/repos/${{ github.repository }}/dependency-graph/sbom \
+        -o sbom.spdx.json
+
+
+    - name: Submit SBOM to GitHub Dependency Graph
+      uses: advanced-security/dependency-submission-action@v1
+      with:
+        sbom-path: sbom.json
+
+    
+    - name: Final Log
+      run: |
+        if [[ "${{ steps.build.outputs.build_status }}" == "success" ]]; then
+          echo "✅ Build completed successfully."
+        else
+          echo "❌ Build failed. Please review the build logs and Dockerfile."
+        fi

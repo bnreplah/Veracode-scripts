@@ -1,0 +1,626 @@
+{
+	"info": {
+		"_postman_id": "182d10f6-7943-4cba-8e7c-5a02dc276da5",
+		"name": "PetStoreAPI",
+		"description": "HAR To Postman Generated Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36930881"
+	},
+	"item": [
+		{
+			"name": "Uptime",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL1}}/admin/run/uptime",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"admin",
+						"run",
+						"uptime"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL1}}/admin/run/uptime",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"admin",
+								"run",
+								"uptime"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "67"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.0.2 Python/3.9.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 21 Oct 2021 18:51:00 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "\" 11:51:00 up 19 min,  0 users,  load average: 0.01, 0.05, 0.02\\n\""
+				}
+			]
+		},
+		{
+			"name": "Get Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidXNlcjEiLCJleHAiOjE2MzQ4Mzc3MzN9.lggK__NFRFXvGvtj1BQxDism32FZjR0tqZeiYAH2kPI"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "successfully / 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidXNlcjEiLCJleHAiOjE2MzQ4Mzc3MzN9.lggK__NFRFXvGvtj1BQxDism32FZjR0tqZeiYAH2kPI"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "459"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.0.2 Python/3.9.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 21 Oct 2021 18:50:51 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "[\n {\n  \"email\": \"dcrocket@veracode.com\",\n  \"firstname\": \"davey\",\n  \"id\": 1,\n  \"lastname\": \"Crocket\",\n  \"password\": \"password123\",\n  \"phone\": \"777.555.1212\",\n  \"userStatus\": 1,\n  \"username\": \"weld_pond\"\n },\n {\n  \"email\": \"dcrocket@veracode.com\",\n  \"firstname\": \"Davey\",\n  \"id\": 5,\n  \"lastname\": \"Crocket\",\n  \"password\": \"password123\",\n  \"phone\": \"777.555.1212\",\n  \"userStatus\": null,\n  \"username\": \"aaa\"\n }\n]"
+				}
+			]
+		},
+		{
+			"name": "Post User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"weld_pond@veracode.com\",\r\n    \"firstname\": \"Chris\",\r\n    \"id\": 1,\r\n    \"lastname\": \"Wysopal\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2222\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"weld_pond\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Post User",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"someone@veracode.com\",\r\n    \"firstname\": \"John\",\r\n    \"lastname\": \"Doe\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2222\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"someone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				},
+				{
+					"name": "Post User already exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"weld_pond@veracode.com\",\r\n    \"firstname\": \"Chris\",\r\n    \"id\": 1,\r\n    \"lastname\": \"Wysopal\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2222\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"weld_pond\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"status": "CONFLICT",
+					"code": 409,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "33"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.0.2 Python/3.6.8"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 19 Jul 2024 20:46:11 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"User Already Exist\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"weld_pond@veracode.com\",\r\n    \"firstname\": \"Chris\",\r\n    \"id\": 1,\r\n    \"lastname\": \"Wysopal\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2222\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"weld_pond\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user/login",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"V3RAC0d3\",\r\n    \"username\": \"someone\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user/login",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Put User",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"someone@veracode.com\",\r\n    \"firstname\": \"John\",\r\n    \"id\": 2,\r\n    \"lastname\": \"Doe\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2223\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"someone\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user/:username",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": "someone"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Put User",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"someone@veracode.com\",\r\n    \"firstname\": \"John\",\r\n    \"lastname\": \"Doe\",\r\n    \"password\": \"V3RAC0d3\",\r\n    \"phone\": \"555.111.2224\",\r\n    \"userStatus\": 1,\r\n    \"username\": \"someone\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user/:username",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "someone"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NjcxMzY4LCJqdGkiOiJlMDgzOTA2ZS0yNjJjLTQ4YjctYTZiMi1kMTUxMGMzOTFmZDYiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhMSIsIm5iZiI6MTYzNDY3MTM2OCwiZXhwIjoxNjM0NjcyMjY4fQ.enRfKbIHqX7bcJy_cFfXRjcjmCsbVRpxNg6vTM4aqkw"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user/:username",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": "weld_pond"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get User",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NjcxMzY4LCJqdGkiOiJlMDgzOTA2ZS0yNjJjLTQ4YjctYTZiMi1kMTUxMGMzOTFmZDYiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhMSIsIm5iZiI6MTYzNDY3MTM2OCwiZXhwIjoxNjM0NjcyMjY4fQ.enRfKbIHqX7bcJy_cFfXRjcjmCsbVRpxNg6vTM4aqkw"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user/:username",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "someone"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL1}}/api/v1/user/:username",
+					"host": [
+						"{{baseURL1}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": "weld_pond"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Delete User",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjM0NzM5MTA2LCJqdGkiOiJkZjdhYmE1Zi02NmI0LTQ2YjEtYjQ5NC03MDM4NzViMTg5NzkiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoiYWFhIiwibmJmIjoxNjM0NzM5MTA2fQ.OKWdiwGKDHFrVy7CdSqMGM08xNQpsh2Ri4S2mA6dNDs"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL1}}/api/v1/user/:username",
+							"host": [
+								"{{baseURL1}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "someone"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL1",
+			"value": "http://petstoreapi.bhalpern.vuln.sa.veracode.io:5000",
+			"type": "any"
+		}
+	]
+}

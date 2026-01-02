@@ -1,0 +1,97 @@
+name: Verademo
+steps:
+  - name: first
+    type: Bash
+    execution:
+      onStart:
+        - >-
+          echo "Starting Execution of Veracode Pipeline (MSAPP Center)"
+      onExecute:
+        - >-
+          WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
+          echo '[INFO] ------------------------------------------------------------------------'
+          echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
+          if `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar`; then
+                chmod 755 VeracodeJavaAPI.jar
+                echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
+          else
+                echo '[ERROR] DOWNLOAD FAILED'
+                exit 1
+          fi
+
+      onSuccess:
+        - >-
+          echo "Succesfully downloaded the Veracode Wrapper"
+      onFailure:
+        - >-
+          echo "Failed to download the veracode wrapper"
+      onComplete:
+        - echo "First step is complete"
+
+  - name: variable_selection
+    type: Bash
+    configuration:
+      inputSteps:
+        - name: first
+      environmentVariables:
+        forceFail:
+          default: 'false'
+          description: set to 'true' to force the step to fail.
+          values:
+            - 'false'
+            - 'true'
+    execution:
+      onStart:
+        - 'if [ ${forceFail} == "true" ]; then exit 1; fi'
+      onExecute:
+        - echo "This step will succeed"
+      onFailure:
+        - echo "step has failed."
+      onSuccess:
+        - echo "step has succeeded."
+      onComplete:
+        - >-
+          echo "onComplete executes regardless of success or failure. forceFail
+          is ${forceFail}"
+  - name: add_run_variable
+    type: Bash
+    configuration:
+      inputSteps:
+        - name: first
+    execution:
+      onStart:
+        - echo "This step will save a value to a run variable."
+      onExecute:
+        - >-
+          add_run_variables step_info="runNumber $run_number, step_name $step_name, pipeline_name $pipeline_name"
+  - name: write_to_resource
+    type: Bash
+    configuration:
+      inputSteps:
+        - name: add_run_variable
+        - name: variable_selection
+      outputResources:
+        - name: Verademo_bag
+    execution:
+      onStart:
+        - echo "Printing the run variable 'step_info' from previous step"
+        - 'echo "${step_info}"'
+      onExecute:
+        - echo "Updating resource Verademo_bag with new key/value pairs"
+        - write_output Verademo_bag "timestamp=$(date +%s)"
+        - >-
+          write_output Verademo_bag
+          "releaseVersion=${pipeline_name}.${run_number}"
+        - 'write_output Verademo_bag "stepInfo=${step_info}"'
+  
+  - name: read_from_resource
+    type: Bash
+    configuration:
+      inputResources:
+        - name: Verademo_bag
+    execution:
+      onExecute:
+        - echo "printing resource details"
+        - 'echo "Release Version is -- ${res_Verademo_bag_releaseVersion}"'
+        - 'echo "Release timestamp is -- ${res_Verademo_bag_timestamp}"'
+        - 'echo "Step Info is -- ${res_Verademo_bag_stepInfo}"'

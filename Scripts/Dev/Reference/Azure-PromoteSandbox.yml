@@ -1,0 +1,61 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+
+
+- task: Bash@3
+  name: promoteSandbox
+  env:
+    VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+    VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "----------------------------------------------"
+      echo "[precheck]: Checking Python version "
+      python --version
+      echo "[precheck]: Checking Pip is installed"
+      pip --help
+      echo "[precheck]: Checking Pip version"
+      pip --version
+      echo "[Installing]: Installing veracode api signing library"
+      pip install veracode-api-signing
+      echo "[Installing]: Installing Httpie"
+      pip install httpie
+      echo "------------------------------------------------"
+      echo "[Run]: Initializing application name from enviornment variable and gathering guid"
+      echo "Application name: $(APP_NAME)"
+      http -v --download --check-status --ignore-stdin --auth-type veracode_hmac -o veracode-tmp.txt https://api.veracode.com/appsec/v1/applications?name=$(APP_NAME) 
+      ls
+      echo "[DEBUG]: contents of veracode-tmp.txt"
+      cat veracode-tmp.txt | jq
+      echo "[Found]: Application Guid: "
+      jq -r '._embedded.applications[0].guid' veracode-tmp.txt
+      app_guid=$(jq -r '._embedded.applications[0].guid' veracode-tmp.txt)
+      echo "[Run]: Initializing Sandbox name from enviornment variable and gathering guid"
+      echo "App Guid: $app_guid"
+      sandbox_name=$(SANDBOX_NAME)
+      echo "Sandbox Name $sandbox_name"
+      http -v --download --check-status --ignore-stdin --auth-type veracode_hmac https://api.veracode.com/appsec/v1/applications/$app_guid/sandboxes -o veracode-tmp.txt
+      echo "[Found]: Sandbox Guid: "
+      cat veracode-tmp.txt | jq -r --arg name "$sandbox_name" '.["_embedded"]["sandboxes"][] | select(.name == $name) | .guid'
+      guid=$(cat veracode-tmp.txt | jq -r --arg name "$sandbox_name" '.["_embedded"]["sandboxes"][] | select(.name == $name) | .guid')
+      if [ -n "$guid" ]; then
+        echo "GUID for sandbox '$sandbox_name' $guid"
+        echo "[Run]: Promoting Scan"
+        http -v  --check-status --ignore-stdin --auth-type veracode_hmac POST https://api.veracode.com/appsec/v1/applications/$app_guid/sandboxes/$guid/promote
+      else
+        echo "Sandbox '$sandbox_name' not found."
+      fi
+      
+
+  

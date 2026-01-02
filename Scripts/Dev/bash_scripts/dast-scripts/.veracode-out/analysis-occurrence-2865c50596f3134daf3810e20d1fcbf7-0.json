@@ -1,0 +1,113 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/2865c50596f3134daf3810e20d1fcbf7/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/fc3b598c1c4e504ae6bbf14cc3ee9c01"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/6d38fd63ee2c9d996820f259e5db7470"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/6d38fd63ee2c9d996820f259e5db7470/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/fc3b598c1c4e504ae6bbf14cc3ee9c01/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/fc3b598c1c4e504ae6bbf14cc3ee9c01?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/fc3b598c1c4e504ae6bbf14cc3ee9c01?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2025-04-17T22:07:37Z[UTC]",
+      "last_modified_on" : "2025-04-17T22:11:59Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf", "access_api_spec_detail" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "fc3b598c1c4e504ae6bbf14cc3ee9c01",
+      "scheduled_end_date" : "2025-04-19T22:07:10Z[UTC]",
+      "start_date" : "2025-04-17T22:11:32Z[UTC]",
+      "end_date" : "2025-04-17T22:11:37Z[UTC]",
+      "expected_publish_date" : "2025-04-22T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 1,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://petstoreapi.bhalpern.vuln.sa.veracode.io:500_1741197437054",
+      "scan_id" : "6d38fd63ee2c9d996820f259e5db7470",
+      "target_url" : "http://petstoreapi.bhalpern.vuln.sa.veracode.io:5000",
+      "analysis_id" : "991ea5435aef21705842feb3f2d655ff",
+      "analysis_name" : "Petstore Test 3-5-25",
+      "analysis_occurrence_id" : "2865c50596f3134daf3810e20d1fcbf7",
+      "analysis_occurrence_status" : "VERIFICATION_FAILED",
+      "duration" : "4s",
+      "summary" : {
+        "start" : "2025-04-17T22:11:32.179Z",
+        "initial_start_time" : "2025-04-17T22:11:32.179Z",
+        "end" : "2025-04-17T22:11:37.147Z",
+        "total_duration" : 4968,
+        "duration" : 4968,
+        "completed" : true,
+        "exit_status" : "FAILED_CONNECTION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "TARGET_URL_NETWORK_ERROR" ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "AUTO",
+      "scan_type" : "API_SCAN",
+      "enterprise_mode" : false,
+      "api_scan_setting" : {
+        "spec_id" : "118dea736c5ecf97896d049ac9eb11ae",
+        "spec_type" : "POSTMAN_2_1",
+        "spec_name" : "PetStoreAPI.postman_collection.json",
+        "file_name" : "PetStoreAPI.postman_collection.json",
+        "custom_base_url" : "http://petstoreapi.bhalpern.vuln.sa.veracode.io:5000",
+        "visibility" : {
+          "setup_type" : "SEC_LEADS_ONLY",
+          "team_identifiers" : [ ]
+        }
+      },
+      "scheduled_start_date" : "2025-04-17T22:07:37Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

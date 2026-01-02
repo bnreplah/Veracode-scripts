@@ -1,0 +1,10 @@
+<teamlist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://analysiscenter.veracode.com/schema/teamlist/3.0" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/teamlist/3.0 https://analysiscenter.veracode.com/resource/3.0/teamlist.xsd" teamlist_version="3.0" account_id="<account id>"><team team_id="3432eaf1-2c39-45ce-992b-8aab3d878587" team_name="Team 3" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="41679e9b-d551-4481-bf16-af1e9d9d0b3d" team_name="Physical Penetration Testing" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="4669e3a6-7780-419e-bd02-9edadeb1a499" team_name="Demo Team" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="4bad988a-894b-4e36-ab62-9eb44e53fd87" team_name="Team 1" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="7cc821b9-aa04-40dd-915e-f4f51496e16c" team_name="Physical Penetration Testing 03" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="a6d98eb4-a4e7-4185-b1a4-70b852f16014" team_name="Team 4" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="ad4371a7-a901-419e-ac91-0b9dc6b31ce5" team_name="QA Team" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="caf0eb1c-e0e0-4166-8b10-bef1928d4da8" team_name="Release Team" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="dd58bed9-aeb6-48ad-ade8-9c82eb655db1" team_name="Team 2" creation_date="09&#x2f;06&#x2f;2019"/>
+<team team_id="f1a06e49-2c5c-46ec-a981-7bf72082a0b8" team_name="Security Team" creation_date="09&#x2f;06&#x2f;2019"/></teamlist>

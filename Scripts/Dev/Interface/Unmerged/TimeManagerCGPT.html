@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Engineering Command Center</title>
+<!-- Note the use of 2 external libraries, they should be tested before use-->  
+  <!-- <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script> -->
+
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div id="app" class="max-w-6xl mx-auto p-6"></div>
+
+  <script>
+    // State
+    let tasks = [];
+    let interruptions = [];
+    let activeTimer = null;
+    let timeElapsed = 0;
+    let timerInterval = null;
+    let focusMode = false;
+    let completedToday = 0;
+
+    const app = document.getElementById("app");
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function addTask(text) {
+      if (!text.trim()) return;
+      tasks.push({
+        id: Date.now(),
+        text,
+        completed: false,
+        timeSpent: 0,
+        priority: "medium"
+      });
+      render();
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map(task => {
+        if (task.id === id) {
+          const updated = { ...task, completed: !task.completed };
+          if (updated.completed && !task.completed) {
+            completedToday++;
+          } else if (!updated.completed && task.completed) {
+            completedToday = Math.max(0, completedToday - 1);
+          }
+          return updated;
+        }
+        return task;
+      });
+      render();
+    }
+
+    function deleteTask(id) {
+      const task = tasks.find(t => t.id === id);
+      if (task?.completed) {
+        completedToday = Math.max(0, completedToday - 1);
+      }
+      tasks = tasks.filter(t => t.id !== id);
+      render();
+    }
+
+    function startTimer(taskId) {
+      if (activeTimer === taskId) {
+        clearInterval(timerInterval);
+        activeTimer = null;
+      } else {
+        clearInterval(timerInterval);
+        activeTimer = taskId;
+        timeElapsed = 0;
+        timerInterval = setInterval(() => {
+          timeElapsed++;
+          render();
+        }, 1000);
+      }
+      render();
+    }
+
+    function logInterruption(text) {
+      if (!text.trim()) return;
+      interruptions.push({
+        id: Date.now(),
+        text,
+        time: new Date().toLocaleTimeString()
+      });
+      render();
+    }
+
+    function clearInterruptions() {
+      interruptions = [];
+      render();
+    }
+
+    function toggleFocusMode() {
+      focusMode = !focusMode;
+      render();
+    }
+
+    function render() {
+      const pendingTasks = tasks.filter(t => !t.completed);
+      const completedTasks = tasks.filter(t => t.completed);
+
+      app.innerHTML = `
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Engineering Command Center</h1>
+          <p class="text-gray-600">Manage everything from one place. No more drowning in endless piles.</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-blue-100 p-4 rounded-lg flex items-center">
+            <i data-lucide="target" class="text-blue-600 mr-2"></i>
+            <div>
+              <div class="text-2xl font-bold text-blue-800">${pendingTasks.length}</div>
+              <div class="text-blue-600 text-sm">Pending Tasks</div>
+            </div>
+          </div>
+          <div class="bg-green-100 p-4 rounded-lg flex items-center">
+            <i data-lucide="check-circle" class="text-green-600 mr-2"></i>
+            <div>
+              <div class="text-2xl font-bold text-green-800">${completedToday}</div>
+              <div class="text-green-600 text-sm">Completed Today</div>
+            </div>
+          </div>
+          <div class="bg-orange-100 p-4 rounded-lg flex items-center">
+            <i data-lucide="zap" class="text-orange-600 mr-2"></i>
+            <div>
+              <div class="text-2xl font-bold text-orange-800">${interruptions.length}</div>
+              <div class="text-orange-600 text-sm">Interruptions</div>
+            </div>
+          </div>
+          <div class="bg-purple-100 p-4 rounded-lg flex items-center">
+            <i data-lucide="brain" class="text-purple-600 mr-2"></i>
+            <div>
+              <div class="text-2xl font-bold text-purple-800">${focusMode ? "ON" : "OFF"}</div>
+              <div class="text-purple-600 text-sm">Focus Mode</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Main Task Panel -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Add Task -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h2 class="text-xl font-semibold mb-4">Add New Task</h2>
+              <div class="flex gap-2">
+                <input id="newTask" type="text" placeholder="What needs to be done?"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                <button id="addTaskBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                  <i data-lucide="plus"></i> Add
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Tasks -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h2 class="text-xl font-semibold mb-4">Current Tasks (${pendingTasks.length})</h2>
+              <div class="space-y-3">
+                ${pendingTasks.map(task => `
+                  <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <button data-action="toggleTask" data-id="${task.id}" class="text-gray-400 hover:text-green-600">
+                      <i data-lucide="circle"></i>
+                    </button>
+                    <span class="flex-1">${task.text}</span>
+                    <div class="flex items-center gap-2">
+                      ${activeTimer === task.id ? `<span class="text-blue-600 font-mono">${formatTime(timeElapsed)}</span>` : ""}
+                      <button data-action="startTimer" data-id="${task.id}" class="p-2 rounded ${activeTimer === task.id ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"} hover:opacity-80">
+                        <i data-lucide="${activeTimer === task.id ? "pause" : "play"}"></i>
+                      </button>
+                      <button data-action="deleteTask" data-id="${task.id}" class="p-2 text-gray-400 hover:text-red-600">
+                        <i data-lucide="trash-2"></i>
+                      </button>
+                    </div>
+                  </div>
+                `).join("")}
+                ${pendingTasks.length === 0 ? `<div class="text-center py-8 text-gray-500">🎉 No pending tasks! Time to add some or take a break.</div>` : ""}
+              </div>
+            </div>
+
+            <!-- Completed Tasks -->
+            ${completedTasks.length > 0 ? `
+              <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4 text-green-700">Completed Today (${completedTasks.length})</h2>
+                <div class="space-y-2">
+                  ${completedTasks.slice(-5).map(task => `
+                    <div class="flex items-center gap-3 p-2 text-gray-600">
+                      <i data-lucide="check-circle" class="text-green-500"></i>
+                      <span class="line-through">${task.text}</span>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            ` : ""}
+          </div>
+
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <!-- Focus Mode -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h3 class="text-lg font-semibold mb-3">Focus Mode</h3>
+              <button id="focusModeBtn" class="w-full py-3 px-4 rounded-lg font-medium ${focusMode ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"} hover:opacity-80">
+                ${focusMode ? "Focus Mode ON" : "Activate Focus Mode"}
+              </button>
+              <p class="text-sm text-gray-600 mt-2">${focusMode ? "Minimize distractions and stay in the zone!" : "Block distractions and enter deep work mode"}</p>
+            </div>
+
+            <!-- Interruptions -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h3 class="text-lg font-semibold mb-3">Log Interruptions</h3>
+              <div class="space-y-3">
+                <input id="newInterruption" type="text" placeholder="Quick note about interruption..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"/>
+                <button id="logInterruptionBtn" class="w-full py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 text-sm">Log It</button>
+              </div>
+              ${interruptions.length > 0 ? `
+                <div class="mt-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium">Today's Interruptions</span>
+                    <button id="clearInterruptions" class="text-xs text-gray-500 hover:text-red-600">Clear</button>
+                  </div>
+                  <div class="space-y-1 max-h-32 overflow-y-auto">
+                    ${interruptions.slice(-5).map(i => `
+                      <div class="text-xs bg-gray-50 p-2 rounded">
+                        <span class="text-gray-500">${i.time}</span>
+                        <div>${i.text}</div>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <h3 class="text-lg font-semibold mb-3">Engineer's Time Tips</h3>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div>• Batch similar tasks together</div>
+                <div>• Use the timer for focused work blocks</div>
+                <div>• Log interruptions to see patterns</div>
+                <div>• Celebrate completed tasks!</div>
+                <div>• When overwhelmed, pick just ONE task</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Re-initialize icons
+      lucide.createIcons();
+
+      // Event bindings
+      document.getElementById("addTaskBtn").onclick = () => {
+        addTask(document.getElementById("newTask").value);
+      };
+      document.getElementById("newTask").onkeypress = (e) => {
+        if (e.key === "Enter") addTask(e.target.value);
+      };
+      document.getElementById("focusModeBtn").onclick = toggleFocusMode;
+      document.getElementById("logInterruptionBtn").onclick = () => {
+        logInterruption(document.getElementById("newInterruption").value);
+      };
+      document.getElementById("newInterruption").onkeypress = (e) => {
+        if (e.key === "Enter") logInterruption(e.target.value);
+      };
+      if (document.getElementById("clearInterruptions")) {
+        document.getElementById("clearInterruptions").onclick = clearInterruptions;
+      }
+
+      document.querySelectorAll("[data-action='toggleTask']").forEach(btn => {
+        btn.onclick = () => toggleTask(Number(btn.dataset.id));
+      });
+      document.querySelectorAll("[data-action='deleteTask']").forEach(btn => {
+        btn.onclick = () => deleteTask(Number(btn.dataset.id));
+      });
+      document.querySelectorAll("[data-action='startTimer']").forEach(btn => {
+        btn.onclick = () => startTimer(Number(btn.dataset.id));
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

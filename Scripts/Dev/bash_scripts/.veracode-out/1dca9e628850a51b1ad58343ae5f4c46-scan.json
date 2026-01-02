@@ -1,0 +1,21 @@
+{
+  "analysis_occurrence_id" : "1dca9e628850a51b1ad58343ae5f4c46",
+  "analysis_id" : "8210ae94104eb4dea8e9d371c78de875",
+  "status" : {
+    "status_type" : "VERIFICATION_FAILED"
+  },
+  "percent_scanned" : 0,
+  "start_date" : "2024-02-15T21:30:30Z[UTC]",
+  "end_date" : "2024-02-22T21:30:30Z[UTC]",
+  "actual_start_date" : "2024-02-15T21:33:14Z[UTC]",
+  "actual_end_date" : "2024-02-15T21:35:01Z[UTC]",
+  "duration" : "1m47s",
+  "verification_only" : false,
+  "count_of_failed_verifications" : 1,
+  "all_scans_passed_verification" : false,
+  "created_on" : "2024-02-15T21:09:04Z[UTC]",
+  "last_modified_on" : "2024-02-15T21:36:10Z[UTC]",
+  "scan_type" : "WEB_SCAN",
+  "org" : "90764",
+  "capabilities" : [ "update_analysis", "delete_analysis", "stop_and_save_analysis_occurrence", "link_platform_result", "view_analysis_history" ]
+}

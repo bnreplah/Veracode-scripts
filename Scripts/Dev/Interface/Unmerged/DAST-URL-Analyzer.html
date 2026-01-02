@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Analyzer - Security & Performance Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #16213e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.1; }
+            50% { transform: translateX(-50%) scale(1.1); opacity: 0.2; }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .status-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .result-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .result-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .security-score {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .score-excellent { color: var(--success-color); }
+        .score-good { color: #22c55e; }
+        .score-fair { color: var(--warning-color); }
+        .score-poor { color: var(--danger-color); }
+
+        .demo-notice {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .demo-notice strong {
+            color: var(--primary-color);
+        }
+
+        .export-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .main-card {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 URL Analyzer</h1>
+            <p>Advanced Security & Performance Analysis Tool</p>
+        </div>
+
+        <div class="main-card">
+            <div class="demo-notice">
+                <strong>Demo Mode:</strong> This is a demonstration with sample data. Connect your backend API to see real analysis results.
+            </div>
+
+            <form id="analysisForm" class="form-section">
+                <div class="form-group">
+                    <label for="url">Target URL *</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="apiKey">API Key *</label>
+                        <input type="password" id="apiKey" name="apiKey" placeholder="Enter your API key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apiId">API ID *</label>
+                        <input type="text" id="apiId" name="apiId" placeholder="Enter your API ID" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="analyzeBtn">
+                    <span class="loading-spinner" id="loadingSpinner"></span>
+                    <span id="btnText">🚀 Analyze URL</span>
+                </button>
+            </form>
+
+            <div id="resultsSection" class="results-section">
+                <div class="results-header">
+                    <h2 class="results-title">Analysis Results</h2>
+                    <div id="statusBadge" class="status-badge status-success">Secure</div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>🛡️ Security Analysis</h3>
+                        <div class="security-score score-excellent" id="securityScore">95/100</div>
+                        <div class="result-item">
+                            <span class="result-label">HTTPS Status</span>
+                            <span class="result-value" id="httpsStatus">✅ Enabled</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">SSL Certificate</span>
+                            <span class="result-value" id="sslCert">✅ Valid</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Security Headers</span>
+                            <span class="result-value" id="securityHeaders">8/10 Present</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Vulnerability Scan</span>
+                            <span class="result-value" id="vulnerabilities">0 Critical Issues</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>⚡ Performance Metrics</h3>
+                        <div class="result-item">
+                            <span class="result-label">Load Time</span>
+                            <span class="result-value" id="loadTime">1.2s</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Page Size</span>
+                            <span class="result-value" id="pageSize">2.1 MB</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">HTTP Requests</span>
+                            <span class="result-value" id="httpRequests">24</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Performance Score</span>
+                            <span class="result-value" id="perfScore">87/100</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>🌐 Domain Information</h3>
+                        <div class="result-item">
+                            <span class="result-label">Domain Age</span>
+                            <span class="result-value" id="domainAge">5 years</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Registrar</span>
+                            <span class="result-value" id="registrar">GoDaddy</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Location</span>
+                            <span class="result-value" id="serverLocation">US, California</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">IP Address</span>
+                            <span class="result-value" id="ipAddress">192.168.1.1</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>📊 SEO & Content</h3>
+                        <div class="result-item">
+                            <span class="result-label">SEO Score</span>
+                            <span class="result-value" id="seoScore">92/100</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Meta Tags</span>
+                            <span class="result-value" id="metaTags">✅ Complete</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Mobile Friendly</span>
+                            <span class="result-value" id="mobileFriendly">✅ Yes</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Structured Data</span>
+                            <span class="result-value" id="structuredData">✅ Present</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-section">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">📤 Export Results</h3>
+                    <div class="export-buttons">
+                        <button type="button" class="btn-secondary" onclick="exportToJSON()">Export as JSON</button>
+                        <button type="button" class="btn-secondary" onclick="exportToCSV()">Export as CSV</button>
+                        <button type="button" class="btn-secondary" onclick="exportToPDF()">Generate PDF Report</button>
+                        <button type="button" class="btn-secondary" onclick="shareResults()">Share Results</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentAnalysisData = null;
+
+        // DOM Elements
+        const form = document.getElementById('analysisForm');
+        const resultsSection = document.getElementById('resultsSection');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const btnText = document.getElementById('btnText');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        // Form submission handler
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const url = formData.get('url');
+            const apiKey = formData.get('apiKey');
+            const apiId = formData.get('apiId');
+
+            await performAnalysis(url, apiKey, apiId);
+        });
+
+        // Main analysis function (stub for backend integration)
+        async function performAnalysis(url, apiKey, apiId) {
+            // Show loading state
+            showLoading(true);
+
+            try {
+                // Validate inputs
+                if (!isValidUrl(url)) {
+                    throw new Error('Please enter a valid URL');
+                }
+
+                if (!apiKey || !apiId) {
+                    throw new Error('API Key and API ID are required');
+                }
+
+                // TODO: Replace with actual backend calls
+                // This is where you'll integrate your backend functionality:
+                
+                // 1. Create HMAC authentication
+                const hmacAuth = await createHMACAuth(apiKey, apiId);
+                
+                // 2. Parse the URL
+                const parsedUrl = parseURL(url);
+                
+                // 3. Make API calls to your backend
+                const analysisResults = await callAnalysisAPI(parsedUrl, hmacAuth);
+                
+                // 4. Process and display results
+                displayResults(analysisResults);
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Stub functions for backend integration
+        async function createHMACAuth(apiKey, apiId) {
+            // TODO: Implement HMAC authentication logic
+            console.log('Creating HMAC auth for:', { apiKey: '***', apiId });
+            
+            // Simulate API delay
+            await delay(500);
+            
+            return {
+                signature: 'demo_hmac_signature',
+                timestamp: Date.now(),
+                apiId: apiId
+            };
+        }
+
+        function parseURL(url) {
+            // TODO: Implement URL parsing logic
+            console.log('Parsing URL:', url);
+            
+            const urlObj = new URL(url);
+            return {
+                protocol: urlObj.protocol,
+                hostname: urlObj.hostname,
+                pathname: urlObj.pathname,
+                searchParams: urlObj.searchParams.toString(),
+                port: urlObj.port || (urlObj.protocol === 'https:' ? '443' : '80')
+            };
+        }
+
+        async function callAnalysisAPI(parsedUrl, hmacAuth) {
+            // TODO: Replace with actual API calls to your backend
+            console.log('Making API calls with:', { parsedUrl, hmacAuth });
+            
+            // Simulate network delay
+            await delay(2000);
+            
+            // Return demo data - replace with actual API response
+            return generateDemoResults(parsedUrl);
+        }
+
+        // Demo data generation
+        function generateDemoResults(parsedUrl) {
+            const domain = parsedUrl.hostname;
+            const isHttps = parsedUrl.protocol === 'https:';
+            
+            return {
+                url: `${parsedUrl.protocol}//${parsedUrl.hostname}${parsedUrl.pathname}`,
+                timestamp: new Date().toISOString(),
+                security: {
+                    score: Math.floor(Math.random() * 20) + 80,
+                    https: isHttps,
+                    sslValid: isHttps,
+                    securityHeaders: Math.floor(Math.random() * 3) + 7,
+                    vulnerabilities: Math.floor(Math.random() * 3)
+                },
+                performance: {
+                    loadTime: (Math.random() * 2 + 0.5).toFixed(1),
+                    pageSize: (Math.random() * 3 + 1).toFixed(1),
+                    requests: Math.floor(Math.random() * 30) + 15,
+                    score: Math.floor(Math.random() * 20) + 75
+                },
+                domain: {
+                    age: Math.floor(Math.random() * 10) + 1,
+                    registrar: ['GoDaddy', 'Namecheap', 'CloudFlare'][Math.floor(Math.random() * 3)],
+                    location: ['US, California', 'EU, Germany', 'Asia, Singapore'][Math.floor(Math.random() * 3)],
+                    ip: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+                },
+                seo: {
+                    score: Math.floor(Math.random() * 15) + 85,
+                    metaTags: Math.random() > 0.3,
+                    mobileFriendly: Math.random() > 0.2,
+                    structuredData: Math.random() > 0.4
+                }
+            };
+        }
+
+        // Display results in the UI
+        function displayResults(data) {
+            currentAnalysisData = data;
+
+            // Update security section
+            document.getElementById('securityScore').textContent = `${data.security.score}/100`;
+            document.getElementById('securityScore').className = `security-score ${getScoreClass(data.security.score)}`;
+            document.getElementById('httpsStatus').textContent = data.security.https ? '✅ Enabled' : '❌ Disabled';
+            document.getElementById('sslCert').textContent = data.security.sslValid ? '✅ Valid' : '❌ Invalid';
+            document.getElementById('securityHeaders').textContent = `${data.security.securityHeaders}/10 Present`;
+            document.getElementById('vulnerabilities').textContent = `${data.security.vulnerabilities} Critical Issues`;
+
+            // Update performance section
+            document.getElementById('loadTime').textContent = `${data.performance.loadTime}s`;
+            document.getElementById('pageSize').textContent = `${data.performance.pageSize} MB`;
+            document.getElementById('httpRequests').textContent = data.performance.requests;
+            document.getElementById('perfScore').textContent = `${data.performance.score}/100`;
+
+            // Update domain section
+            document.getElementById('domainAge').textContent = `${data.domain.age} years`;
+            document.getElementById('registrar').textContent = data.domain.registrar;
+            document.getElementById('serverLocation').textContent = data.domain.location;
+            document.getElementById('ipAddress').textContent = data.domain.ip;
+
+            // Update SEO section
+            document.getElementById('seoScore').textContent = `${data.seo.score}/100`;
+            document.getElementById('metaTags').textContent = data.seo.metaTags ? '✅ Complete' : '❌ Missing';
+            document.getElementById('mobileFriendly').textContent = data.seo.mobileFriendly ? '✅ Yes' : '❌ No';
+            document.getElementById('structuredData').textContent = data.seo.structuredData ? '✅ Present' : '❌ Missing';
+
+            // Update status badge
+            const overallScore = Math.round((data.security.score + data.performance.score + data.seo.score) / 3);
+            const statusBadge = document.getElementById('statusBadge');
+            
+            if (overallScore >= 90) {
+                statusBadge.className = 'status-badge status-success';
+                statusBadge.textContent = 'Excellent';
+            } else if (overallScore >= 70) {
+                statusBadge.className = 'status-badge status-warning';
+                statusBadge.textContent = 'Good';
+            } else {
+                statusBadge.className = 'status-badge status-danger';
+                statusBadge.textContent = 'Needs Attention';
+            }
+
+            // Show results section
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Utility functions
+        function getScoreClass(score) {
+            if (score >= 90) return 'score-excellent';
+            if (score >= 80) return 'score-good';
+            if (score >= 70) return 'score-fair';
+            return 'score-poor';
+        }
+
+        function showLoading(show) {
+            if (show) {
+                loadingSpinner.style.display = 'inline-block';
+                btnText.textContent = 'Analyzing...';
+                analyzeBtn.disabled = true;
+            } else {
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = '🚀 Analyze URL';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            alert(`Error: ${message}`);
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Export functions (stubs for functionality)
+        function exportToJSON() {
+            if (!currentAnalysisData) {
+                alert('No analysis data to export');
+                return;
+            }
+
+            const dataStr = JSON.stringify(currentAnalysisData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `url-analysis-${Date.now()}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToCSV() {
+            if (!currentAnalysisData) {
+                alert('No analysis data to export');
+                return;
+            }
+
+            // Simple CSV generation
+            const csv = [
+                'Category,Metric,Value',
+                `Security,Score,${currentAnalysisData.security.score}`,
+                `Security,HTTPS,${currentAnalysisData.security.https}`,
+                `Security,SSL Valid,${currentAnalysisData.security.sslValid}`,
+                `Performance,Load Time,${currentAnalysisData.performance.loadTime}s`,
+                `Performance,Page Size,${currentAnalysisData.performance.pageSize}MB`,
+                `Performance,Score,${currentAnalysisData.performance.score}`,
+                `Domain,Age,${currentAnalysisData.domain.age} years`,
+                `Domain,Registrar,${currentAnalysisData.domain.registrar}`,
+                `SEO,Score,${currentAnalysisData.seo.score}`
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `url-analysis-${Date.now()}.csv`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToPDF() {
+            // TODO: Implement PDF generation
+            alert('PDF export functionality will be implemented with a PDF library like jsPDF');
+        }
+
+        function shareResults() {
+            if (!currentAnalysisData) {
+                alert('No analysis data to share');
+                return;
+            }
+
+            // Generate shareable summary
+            const summary = `URL Analysis Results for ${currentAnalysisData.url}\n` +
+                          `Security Score: ${currentAnalysisData.security.score}/100\n` +
+                          `Performance Score: ${currentAnalysisData.performance.score}/100\n` +
+                          `SEO Score: ${currentAnalysisData.seo.score}/100\n` +
+                          `Generated: ${new Date().toLocaleString()}`;
+
+            // Use Web Share API if available, otherwise copy to clipboard
+            if (navigator.share) {
+                navigator.share({
+                    title: 'URL Analysis Results',
+                    text: summary
+                });
+            } else {
+                navigator.clipboard.writeText(summary).then(() => {
+                    alert('Results copied to clipboard!');
+                });
+            }
+        }
+
+        // Browser Extension compatibility functions
+        // These functions help with converting to Chrome/Firefox extensions
+
+        function getBrowserAPI() {
+            // Chrome extension compatibility
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                return chrome;
+            }
+            // Firefox extension compatibility
+            if (typeof browser !== 'undefined') {
+                return browser;
+            }
+            return null;
+        }
+
+        function isExtensionContext() {
+            return getBrowserAPI() !== null;
+        }
+
+        // Storage functions for browser extension compatibility
+        function saveToStorage(key, data) {
+            if (isExtensionContext()) {
+                const api = getBrowserAPI();
+                api.storage.local.set({ [key]: data });
+            } else {
+                // Fallback to in-memory storage for web version
+                window.urlAnalyzerStorage = window.urlAnalyzerStorage || {};
+                window.urlAnalyzerStorage[key] = data;
+            }
+        }
+
+        function getFromStorage(key) {
+            return new Promise((resolve) => {
+                if (isExtensionContext()) {
+                    const api = getBrowserAPI();
+                    api.storage.local.get([key], (result) => {
+                        resolve(result[key] || null);
+                    });
+                } else {
+                    // Fallback to in-memory storage
+                    window.urlAnalyzerStorage = window.urlAnalyzerStorage || {};
+                    resolve(window.urlAnalyzerStorage[key] || null);
+                }
+            });
+        }
+
+        // Auto-fill current tab URL if running as extension
+        async function initializeExtensionFeatures() {
+            if (!isExtensionContext()) return;
+
+            const api = getBrowserAPI();
+            
+            try {
+                // Get current active tab
+                const tabs = await new Promise((resolve) => {
+                    api.tabs.query({ active: true, currentWindow: true }, resolve);
+                });
+
+                if (tabs[0] && tabs[0].url) {
+                    document.getElementById('url').value = tabs[0].url;
+                }
+
+                // Load saved credentials
+                const savedApiKey = await getFromStorage('apiKey');
+                const savedApiId = await getFromStorage('apiId');
+
+                if (savedApiKey) document.getElementById('apiKey').value = savedApiKey;
+                if (savedApiId) document.getElementById('apiId').value = savedApiId;
+
+                // Add save credentials checkbox for extensions
+                addCredentialsSaveOption();
+
+            } catch (error) {
+                console.log('Extension features not available:', error);
+            }
+        }
+
+        function addCredentialsSaveOption() {
+            // Add a checkbox to save credentials in extension context
+            const apiKeyGroup = document.querySelector('input[name="apiKey"]').closest('.form-group');
+            const saveCredsDiv = document.createElement('div');
+            saveCredsDiv.style.marginTop = '10px';
+            saveCredsDiv.innerHTML = `
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                    <input type="checkbox" id="saveCredentials" style="margin: 0;">
+                    Save credentials securely for future use
+                </label>
+            `;
+            apiKeyGroup.appendChild(saveCredsDiv);
+        }
+
+        // Save credentials when form is submitted (extension only)
+        function handleCredentialsSave() {
+            if (!isExtensionContext()) return;
+
+            const saveCheckbox = document.getElementById('saveCredentials');
+            if (saveCheckbox && saveCheckbox.checked) {
+                const apiKey = document.getElementById('apiKey').value;
+                const apiId = document.getElementById('apiId').value;
+
+                if (apiKey) saveToStorage('apiKey', apiKey);
+                if (apiId) saveToStorage('apiId', apiId);
+            }
+        }
+
+        // Content script integration for browser extensions
+        function injectIntoPage() {
+            // This function can be used to inject analysis results into web pages
+            // when running as a content script
+            if (isExtensionContext() && window.location.hostname !== 'localhost') {
+                const api = getBrowserAPI();
+                
+                // Send message to content script
+                api.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                    if (tabs[0]) {
+                        api.tabs.sendMessage(tabs[0].id, {
+                            action: 'displayResults',
+                            data: currentAnalysisData
+                        });
+                    }
+                });
+            }
+        }
+
+        // Enhanced form submission with credential saving
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const url = formData.get('url');
+            const apiKey = formData.get('apiKey');
+            const apiId = formData.get('apiId');
+
+            // Save credentials if in extension context
+            handleCredentialsSave();
+
+            await performAnalysis(url, apiKey, apiId);
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeExtensionFeatures();
+            
+            // Add some demo URLs for testing
+            if (!isExtensionContext()) {
+                addDemoUrls();
+            }
+        });
+
+        function addDemoUrls() {
+            const urlInput = document.getElementById('url');
+            const demoDiv = document.createElement('div');
+            demoDiv.style.marginTop = '10px';
+            demoDiv.innerHTML = `
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Quick Demo URLs:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" class="demo-url-btn" data-url="https://github.com">GitHub</button>
+                    <button type="button" class="demo-url-btn" data-url="https://stackoverflow.com">Stack Overflow</button>
+                    <button type="button" class="demo-url-btn" data-url="https://developer.mozilla.org">MDN</button>
+                </div>
+            `;
+
+            // Add styles for demo buttons
+            const style = document.createElement('style');
+            style.textContent = `
+                .demo-url-btn {
+                    padding: 6px 12px;
+                    background: transparent;
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    color: var(--text-secondary);
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                .demo-url-btn:hover {
+                    border-color: var(--primary-color);
+                    color: var(--primary-color);
+                }
+            `;
+            document.head.appendChild(style);
+
+            urlInput.parentNode.appendChild(demoDiv);
+
+            // Add click handlers for demo URLs
+            demoDiv.addEventListener('click', (e) => {
+                if (e.target.classList.contains('demo-url-btn')) {
+                    urlInput.value = e.target.dataset.url;
+                }
+            });
+        }
+
+        // Browser Extension Manifest Templates
+        // Include these as comments for easy reference when converting
+
+        /*
+        CHROME EXTENSION MANIFEST.JSON:
+        {
+            "manifest_version": 3,
+            "name": "URL Analyzer",
+            "version": "1.0.0",
+            "description": "Advanced Security & Performance Analysis Tool",
+            "permissions": [
+                "activeTab",
+                "storage",
+                "tabs"
+            ],
+            "action": {
+                "default_popup": "popup.html",
+                "default_title": "URL Analyzer"
+            },
+            "content_scripts": [
+                {
+                    "matches": ["<all_urls>"],
+                    "js": ["content.js"]
+                }
+            ],
+            "icons": {
+                "16": "icons/icon16.png",
+                "48": "icons/icon48.png",
+                "128": "icons/icon128.png"
+            }
+        }
+
+        FIREFOX EXTENSION MANIFEST.JSON:
+        {
+            "manifest_version": 2,
+            "name": "URL Analyzer",
+            "version": "1.0.0",
+            "description": "Advanced Security & Performance Analysis Tool",
+            "permissions": [
+                "activeTab",
+                "storage",
+                "tabs"
+            ],
+            "browser_action": {
+                "default_popup": "popup.html",
+                "default_title": "URL Analyzer"
+            },
+            "content_scripts": [
+                {
+                    "matches": ["<all_urls>"],
+                    "js": ["content.js"]
+                }
+            ],
+            "icons": {
+                "16": "icons/icon16.png",
+                "48": "icons/icon48.png",
+                "128": "icons/icon128.png"
+            }
+        }
+
+        CONTENT SCRIPT (content.js):
+        // Listen for messages from popup
+        if (typeof browser === 'undefined' && typeof chrome !== 'undefined') {
+            var browser = chrome;
+        }
+
+        browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (message.action === 'displayResults') {
+                // Create overlay to display results on current page
+                displayResultsOverlay(message.data);
+            }
+        });
+
+        function displayResultsOverlay(data) {
+            // Remove existing overlay
+            const existingOverlay = document.getElementById('url-analyzer-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+
+            // Create new overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'url-analyzer-overlay';
+            overlay.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    width: 320px;
+                    background: #1a1a2e;
+                    color: white;
+                    border-radius: 12px;
+                    padding: 20px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    z-index: 10000;
+                    font-family: 'Segoe UI', sans-serif;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: #667eea;">Analysis Results</h3>
+                        <button onclick="this.closest('#url-analyzer-overlay').remove()" style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            font-size: 20px;
+                            cursor: pointer;
+                        ">×</button>
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Security Score:</strong> ${data.security.score}/100
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Performance:</strong> ${data.performance.score}/100
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>SEO Score:</strong> ${data.seo.score}/100
+                        </div>
+                        <div style="margin-top: 15px; font-size: 12px; color: #94a3b8;">
+                            Analysis completed at ${new Date().toLocaleTimeString()}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        */
+
+        // Integration helpers for OneNote and other applications
+        function generateOneNoteXML(data) {
+            // Generate OneNote-compatible XML structure
+            return `<?xml version="1.0" encoding="utf-8"?>
+<one:Page xmlns:one="http://schemas.microsoft.com/office/onenote/2013/onenote">
+    <one:Title>
+        <one:OE>
+            <one:T><![CDATA[URL Analysis Report - ${data.url}]]></one:T>
+        </one:OE>
+    </one:Title>
+    <one:Outline>
+        <one:OEChildren>
+            <one:OE>
+                <one:T><![CDATA[Security Analysis]]></one:T>
+            </one:OE>
+            <one:OE>
+                <one:T><![CDATA[Score: ${data.security.score}/100]]></one:T>
+            </one:OE>
+            <one:OE>
+                <one:T><![CDATA[HTTPS: ${data.security.https ? 'Enabled' : 'Disabled'}]]></one:T>
+            </one:OE>
+            <one:OE>
+                <one:T><![CDATA[Performance Score: ${data.performance.score}/100]]></one:T>
+            </one:OE>
+            <one:OE>
+                <one:T><![CDATA[Load Time: ${data.performance.loadTime}s]]></one:T>
+            </one:OE>
+        </one:OEChildren>
+    </one:Outline>
+</one:Page>`;
+        }
+
+        function exportToOneNote() {
+            if (!currentAnalysisData) {
+                alert('No analysis data to export');
+                return;
+            }
+
+            const oneNoteXML = generateOneNoteXML(currentAnalysisData);
+            
+            // Create blob and download
+            const blob = new Blob([oneNoteXML], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `url-analysis-onenote-${Date.now()}.xml`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Add OneNote export button
+        function addOneNoteExport() {
+            const exportButtons = document.querySelector('.export-buttons');
+            const oneNoteBtn = document.createElement('button');
+            oneNoteBtn.type = 'button';
+            oneNoteBtn.className = 'btn-secondary';
+            oneNoteBtn.textContent = 'Export to OneNote';
+            oneNoteBtn.onclick = exportToOneNote;
+            exportButtons.appendChild(oneNoteBtn);
+        }
+
+        // Add OneNote export when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(addOneNoteExport, 100);
+        });
+
+        console.log('🚀 URL Analyzer loaded successfully!');
+        console.log('📝 Ready for backend integration - check stub functions for implementation points');
+    </script>
+</body>
+</html>

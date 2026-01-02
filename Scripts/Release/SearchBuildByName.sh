@@ -3,7 +3,7 @@
 # Version: v.0.0.1
 # Pass the app id that you want to search in, and the build name you want to find. If one is not provided then it will provide the details around the latest scan.
 # If the build name is not found and one is provided, will return with Build match not found and the exit code 1
-
+# Todo: add the ability to search through a sandbox
 #provide the location of the veracode java api location
 VeracodeJavaWrapper=../src/bin/VeracodeJavaAPI.jar
 

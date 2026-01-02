@@ -1,0 +1,237 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# This is an example of using VeraDemoDotNet test application with the Veracode Static Pipeline scanner.  A Veracode subscription is required.
+
+##  Main Branch
+##
+##
+##
+##
+##
+##
+
+# Default template for yaml azure pipeline
+# trigger
+# - main
+#
+# pool:
+#   vmimage: ubuntu-latest
+#
+# steps:
+# - script: echo Hello, World!
+#   displayName:'Run a one line script'
+#
+# - script: |
+#   echo Add other tasks to build, test, and deploy your project
+#   echo see https://aka.ms/yml for more details
+#   displayName: 'Run a multi line script'
+#
+
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+# - task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    platform: '$(buildPlatform)'
+    configuration: 'Debug'
+
+
+# - task: VSTest@2
+#   inputs:
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    patterns: '**/*.exe,**/*.dll,**/*.pdb' # ensures Veracode gets the PDB files for Static Analysis
+
+
+# # This task makes the pipeline build artifacts available in a known location for upload to Veracode
+# - task: PublishPipelineArtifact@1
+#   inputs:
+#     targetPath: '$(build.artifactstagingdirectory)'
+#     artifactName: Debug
+
+####################################################################################################
+## Veracode SCAN
+####################################################################################################
+####################################################
+# Upload and Scan
+# ####################################################
+# - task: Veracode@3
+#   displayName: Veracode SAST Upload and Scan Policy
+#   continueOnError: true
+#   inputs:
+#     ConnectionDetailsSelection: 'Service Connection'
+#     AnalysisService: 'APIServiceAccount'
+#     veracodeAppProfile: '$(system.teamProject)'
+#     version: '$(build.buildNumber)'
+#     filepath: '$(build.artifactstagingdirectory)'
+#     sandboxName: 'ADO'
+#     optargs: '-include Verademo-dotnet.dll,"JS files within Verademo-dotnet.zip"'
+#     failBuildIfUploadAndScanBuildStepFails: false
+#     importResults: false
+#     failBuildOnPolicyFail: false
+#     maximumWaitTime: '360'
+
+
+#################################################################
+# Pipeline Scanner
+# #################################################################
+- task: CmdLine@2
+  displayName: Veracode Static Pipeline Scanner
+  continueOnError: true
+  inputs:
+    script: |
+      curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      unzip -o pipeline-scan-LATEST.zip
+      java -jar pipeline-scan.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -f $(build.artifactstagingdirectory)\Verademo-dotnet.zip -id true -sd true
+
+########################################################
+# SCA Agent Based scan
+########################################################
+# - task: PowerShell@2
+#   displayName: Veracode SCA Scanner
+#   continueOnError: true
+#   inputs:
+#     targetType: 'inline' #Before it was looking for powershell script to execute, and the target type by default is filepath
+#     script: |
+#       Set-ExecutionPolicy AllSigned -Scope Process -Force
+#       iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1')) 
+#       srcclr scan --update-advisor --allow-dirty 
+#   env:
+#     SRCCLR_API_TOKEN: $(SRCCLRTOKEN)
+
+
+####################################################################
+# Veracode Flaw Importer
+####################################################################
+
+
+#     # to scan this way targetType need to be inline
+# #     # given error code 1: issues with authentication need to add srcclr token as enviornmental variable
+
+# - task: Veracode Flaw Importer@3
+#   inputs:
+#     ConnectionDetailsSelection: 'Service Connection'
+#     AnalysisService: 'APIServiceAccount'
+#     failBuildIfFlawImporterFails: true
+#     veracodeAppProfile: '$(system.teamProject)'
+#     sandboxName: 'ADO'
+#     scanType: 'Dynamic and Static Analysis'
+#     importType: 'All Flaws Violating Policy'
+#     workItemType: 'Task'
+#     area: '$(system.teamProject)'
+#     overwriteAreaPathInWorkItemsOnImport: true
+#     addCweAsATag: false
+#     foundInBuild: false
+#     addScanNameAsATag: false
+#     flawImportLimit: '1000'
+
+
+#################################################
+# Downloading and Running API Wrapper
+#################################################
+# https://docs.veracode.com/r/c_about_wrappers
+
+
+# - task: PowerShell@2
+#   displayName: Veracode API Wrapper
+#   continueOnError: true
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       Write-Output "Downloading the latest version of the Veracode Java API"
+#       $versionstring = curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | findstr /r "latest";
+#       $version = $versionstring.Trim() -replace '<latest>', '' -replace '</latest>', '';
+#       curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$version/vosp-api-wrappers-java-$version-dist.zip -o dist.zip
+#       Expand-Archive -Path dist.zip 
+#       ls dist/
+#       java -jar dist/VeracodeJavaAPI.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -action getapplist
+#       java -jar dist/VeracodeJavaAPI.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -action getbuildlist -appid $(APPID)
+#       java -jar dist/VeracodeJavaAPI.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -action getbuildinfo -appid $(APPID) -buildid $(DYNBUILDID)
+      
+
+
+# #########################################################################
+# # Output of configuration json
+# #########################################################################
+# # Documentation: 
+# #   https://docs.veracode.com/r/c_dynamic_intro
+# - task: PowerShell@2
+#   displayName: Veracode DAST Configuration JSON
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       $str = '{"name": "Verademo-DA004", "scans": [{ "scan_config_request": { "target_url": { "url": "http://verademo.bhalpern.vuln.sa.veracode.io/verademo" } } } ], "schedule": { "duration": { "length": 1, "unit": "DAY" }, "scheduled": true, "now": true } }  ' 
+#       Write-Output $str | Out-file -FilePath ./input.json
+#       ls
+
+# #########################################################################
+# # Downloading and installing HTTPIE for HMAC REST Requests
+# #########################################################################
+# # HTTPIE documentation: https://httpie.io/docs/cli/universal
+# # Veracode Documentation: https://docs.veracode.com/r/c_httpie_tool
+# # Docker image: https://hub.docker.com/r/veracode/api-signing
+# - task: PowerShell@2
+#   displayName: Veracode REST API Calls
+#   continueOnError: true
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       python --version
+#       python -m pip install --upgrade pip wheel
+#       python -m pip install httpie
+#       git clone https://github.com/veracode/veracode-python-hmac-example.git
+#       cd veracode-python-hmac-example
+#       pip install -r requirements.txt
+#       Write-Output "Creating new Dynamic configuration"
+#       cd ..
+#       Get-Content ./input.json | http --auth-type=veracode_hmac POST "https://api.veracode.com/was/configservice/v1/analyses"  
+#     # python example.py
+#   env:
+#     VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+#     VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+  
+# # - script: |
+# #     docker run -it --rm --env VERACODE_API_KEY_ID=$(VERACODE_API_ID) --env VERACODE_API_KEY_SECRET=$(VERACODE_API_KEY)    veracode/api-signing:cmd https://api.veracode.com/appsec/v1/applications business_unit==Product%20Security
+# # env:
+# #   VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+# #   VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+
+# # store artifacts for the pipeline scanner
+# # - task: PublishBuildArtifacts@1
+# #   displayName: Create Build Artifact for Veracode Static Pipeline Scanner Results
+# #   inputs:
+# #     PathtoPublish: 'results.json'
+# #     ArtifactName: 'Build'
+# #     publishLocation: 'Container'
+
+
+#     ## ##############################################################################################
+#     ## Put logic to push code to the pre-release branch ##
+#     ##
+#     ##
+#     ##  [ DEV/ Feature ] -> [ QA ] ------>  Pre-Release -> Release
+#     ##
+#     ## ##############################################################################################

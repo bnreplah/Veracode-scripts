@@ -1,0 +1,1231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at jdk.internal.util.SystemProps$Raw.platformProperties(java.base@19.0.2/Native Method)
+	at jdk.internal.util.SystemProps$Raw.<init>(java.base@19.0.2/SystemProps.java:248)
+	at jdk.internal.util.SystemProps.initProperties(java.base@19.0.2/SystemProps.java:54)
+	at java.lang.System.initPhase1(java.base@19.0.2/System.java:2146)
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-03-27T20:39:53-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-04-18T21:38:19-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-03-28T18:58:16-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-03-08T13:50:58-05:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-03-27T16:10:21-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-05-31T20:24:12-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-05-30T14:48:26-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="2143561" app_name="verademo9" policy_updated_date="2024-05-21T17:17:54-04:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-05-24T14:33:55-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-05-31T20:24:12-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-05-30T14:48:26-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="2143561" app_name="verademo9" policy_updated_date="2024-05-21T17:17:54-04:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-05-24T14:33:55-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-05-31T20:24:12-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-05-30T14:48:26-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="2143561" app_name="verademo9" policy_updated_date="2024-05-21T17:17:54-04:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-05-24T14:33:55-04:00"/>
+</applist>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<applist xmlns="https://analysiscenter.veracode.com/schema/2.0/applist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" account_id="90764" applist_version="1.2" xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/applist https://analysiscenter.veracode.com/resource/2.0/applist.xsd">
+  <app app_id="1503063" app_name="Apache" policy_updated_date="2024-02-01T07:35:50-05:00"/>
+  <app app_id="1846611" app_name="Apex" policy_updated_date="2023-12-25T04:08:03-05:00"/>
+  <app app_id="1503065" app_name="BlogEngine.NET"/>
+  <app app_id="1989265" app_name="Demo App"/>
+  <app app_id="1514210" app_name="Demo Quick Scan" policy_updated_date="2023-11-18T03:11:12-05:00"/>
+  <app app_id="1517025" app_name="DVWA" policy_updated_date="2023-11-18T02:21:08-05:00"/>
+  <app app_id="1985147" app_name="Example-Javasript" policy_updated_date="2024-02-23T17:26:35-05:00"/>
+  <app app_id="1993334" app_name="Govwa"/>
+  <app app_id="1719216" app_name="Gradle-demo"/>
+  <app app_id="1503068" app_name="Hadoop" policy_updated_date="2022-11-03T15:47:45-04:00"/>
+  <app app_id="1828395" app_name="iGoat-Swift" policy_updated_date="2023-09-01T08:44:17-04:00"/>
+  <app app_id="1654525" app_name="Lets_B_BadGuys"/>
+  <app app_id="1669650" app_name="Main service of the Microservice"/>
+  <app app_id="1669633" app_name="Microservice 001"/>
+  <app app_id="1669636" app_name="Microservice 002"/>
+  <app app_id="1669639" app_name="Microservice 003"/>
+  <app app_id="1669642" app_name="Microservice 004"/>
+  <app app_id="1669645" app_name="Microservice 005"/>
+  <app app_id="1517019" app_name="NodeGoat"/>
+  <app app_id="1527388" app_name="PetStore API" policy_updated_date="2023-03-16T19:56:55-04:00"/>
+  <app app_id="1724929" app_name="psql - test" policy_updated_date="2023-05-08T18:42:22-04:00"/>
+  <app app_id="1744134" app_name="Python API Framework"/>
+  <app app_id="1552447" app_name="Quirk" policy_updated_date="2024-05-31T20:24:12-04:00"/>
+  <app app_id="1556139" app_name="Reactvulna" policy_updated_date="2023-10-22T03:39:21-04:00"/>
+  <app app_id="1847628" app_name="Scala"/>
+  <app app_id="1889216" app_name="test"/>
+  <app app_id="2030978" app_name="Test32824"/>
+  <app app_id="1910527" app_name="testAppCreate1"/>
+  <app app_id="1910528" app_name="testAppCreate2"/>
+  <app app_id="1910529" app_name="testAppCreate3"/>
+  <app app_id="1709717" app_name="UaS vs Agent SCA Comparison"/>
+  <app app_id="1860285" app_name="veracode-mitigation-copier"/>
+  <app app_id="1819267" app_name="Verademo" policy_updated_date="2024-05-30T14:48:26-04:00"/>
+  <app app_id="1846927" app_name="Verademo-mitigated" policy_updated_date="2024-03-05T13:29:12-05:00"/>
+  <app app_id="1857018" app_name="Verademo-net" policy_updated_date="2024-02-24T04:23:18-05:00"/>
+  <app app_id="2031703" app_name="Verademo-no-static" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1910588" app_name="verademo2" policy_updated_date="2024-05-16T15:14:35-04:00"/>
+  <app app_id="1910601" app_name="verademo3" policy_updated_date="2024-04-11T21:26:07-04:00"/>
+  <app app_id="1910602" app_name="verademo4" policy_updated_date="2024-03-21T12:03:04-04:00"/>
+  <app app_id="1985104" app_name="verademo5" policy_updated_date="2024-05-30T14:48:25-04:00"/>
+  <app app_id="1993421" app_name="verademo6" policy_updated_date="2024-03-18T16:25:05-04:00"/>
+  <app app_id="1993424" app_name="verademo7" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="1993430" app_name="verademo8" policy_updated_date="2024-02-29T16:34:25-05:00"/>
+  <app app_id="2143561" app_name="verademo9" policy_updated_date="2024-05-21T17:17:54-04:00"/>
+  <app app_id="1503071" app_name="WebGoat" policy_updated_date="2024-05-24T14:33:55-04:00"/>
+</applist>
+

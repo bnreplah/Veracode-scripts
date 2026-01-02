@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Research Feed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .auth-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .auth-form input {
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            min-width: 150px;
+        }
+
+        .auth-form input::placeholder {
+            color: rgba(224, 224, 224, 0.7);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-key {
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #00ff88;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .post-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .post-form input, .post-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            resize: vertical;
+        }
+
+        .post-form textarea {
+            min-height: 100px;
+        }
+
+        .post {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00ff88;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .post-time {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .post-content {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .post-hash {
+            font-family: monospace;
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .comments-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .comment {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            margin-left: 20px;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+
+        .sandbox {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sandbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 200px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .code-output {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            min-height: 60px;
+            white-space: pre-wrap;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .blockchain-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .block-explorer {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .block {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .block-hash {
+            color: #00ff88;
+            word-break: break-all;
+        }
+
+        .rss-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .rss-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .rss-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .rss-item:last-child {
+            border-bottom: none;
+        }
+
+        .rss-title {
+            font-weight: bold;
+            color: #0088ff;
+            margin-bottom: 5px;
+        }
+
+        .rss-description {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .rss-meta {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .feed-management {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .feed-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .feed-form input, .feed-form select {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+
+        .feed-form select option {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        .feed-list {
+            margin-top: 15px;
+        }
+
+        .feed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .feed-item-info {
+            flex: 1;
+        }
+
+        .feed-item-name {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .feed-item-url {
+            font-size: 0.8em;
+            color: #888;
+            font-family: monospace;
+        }
+
+        .feed-item-status {
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .feed-status-active {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .feed-status-error {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .feed-status-loading {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #ff6666;
+        }
+
+        .polling-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .polling-active {
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        .polling-inactive {
+            background: #666;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .auth-form input {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔗 Blockchain Research Feed</h1>
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="feed">Feed</div>
+                <div class="nav-tab" data-tab="sandbox">Sandbox</div>
+                <div class="nav-tab" data-tab="explorer">Explorer</div>
+            </div>
+        </header>
+
+        <div class="auth-section">
+            <div id="loginForm" class="auth-form">
+                <input type="text" id="username" placeholder="Username/Handle" />
+                <input type="password" id="password" placeholder="Password" />
+                <button class="btn btn-primary" onclick="login()">Login</button>
+                <button class="btn btn-secondary" onclick="register()">Register</button>
+            </div>
+            <div id="userInfo" class="user-info hidden">
+                <span>Logged in as: <span id="currentUser"></span></span>
+                <span class="user-key">Key: <span id="publicKey"></span></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <main class="main-content">
+                <div id="feedTab" class="tab-content">
+                    <div id="postForm" class="post-form hidden">
+                        <h3>Create New Post</h3>
+                        <input type="text" id="postTitle" placeholder="Post Title" />
+                        <textarea id="postContent" placeholder="Post content (supports markdown)"></textarea>
+                        <button class="btn btn-primary" onclick="createPost()">Publish to Blockchain</button>
+                    </div>
+                    
+                    <div id="feedContent">
+                        <!-- Posts will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <div id="sandboxTab" class="tab-content hidden">
+                    <div class="sandbox">
+                        <div class="sandbox-header">
+                            <h3>Code Sandbox</h3>
+                            <button class="btn btn-primary" onclick="runCode()">Run Code</button>
+                        </div>
+                        <textarea class="code-editor" id="codeEditor" placeholder="// Write your JavaScript code here&#10;console.log('Hello, blockchain world!');&#10;&#10;// Example: Simple hash function&#10;function simpleHash(data) {&#10;    return CryptoJS.SHA256(data).toString();&#10;}&#10;&#10;console.log('Hash:', simpleHash('Hello World'));"></textarea>
+                        <div class="code-output" id="codeOutput">Output will appear here...</div>
+                    </div>
+                </div>
+
+                <div id="explorerTab" class="tab-content hidden">
+                    <div class="blockchain-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="blockCount">0</div>
+                            <div class="stat-label">Blocks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="postCount">0</div>
+                            <div class="stat-label">Posts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="commentCount">0</div>
+                            <div class="stat-label">Comments</div>
+                        </div>
+                    </div>
+                    
+                    <div class="block-explorer">
+                        <h3>Block Explorer</h3>
+                        <div id="blockList">
+                            <!-- Blocks will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="sidebar">
+                <div class="feed-management">
+                    <h3>RSS Feed Management</h3>
+                    <div class="feed-form">
+                        <input type="text" id="feedName" placeholder="Feed Name (e.g., Security News)" />
+                        <input type="url" id="feedUrl" placeholder="RSS/API URL" />
+                        <select id="pollInterval">
+                            <option value="300000">5 minutes</option>
+                            <option value="900000">15 minutes</option>
+                            <option value="1800000">30 minutes</option>
+                            <option value="3600000" selected>1 hour</option>
+                            <option value="7200000">2 hours</option>
+                            <option value="21600000">6 hours</option>
+                            <option value="86400000">24 hours</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="addFeed()">Add Feed</button>
+                    </div>
+                    
+                    <div class="feed-list" id="feedList">
+                        <!-- Feed sources will be listed here -->
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span class="polling-indicator" id="pollingIndicator"></span>
+                    <h3>Security Research Feed</h3>
+                    <button class="btn btn-small btn-secondary" onclick="refreshAllFeeds()" style="margin-left: auto;">Refresh All</button>
+                </div>
+                <div class="rss-feed" id="rssFeed">
+                    <div class="rss-item">
+                        <div class="rss-title">Loading feed data...</div>
+                        <div class="rss-description">Initializing RSS feed connections...</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">Network Stats</h3>
+                <div class="stat-card">
+                    <div class="stat-value" id="difficulty">1</div>
+                    <div class="stat-label">Mining Difficulty</div>
+                </div>
+                <div class="stat-card" style="margin-top: 10px;">
+                    <div class="stat-value" id="hashRate">0</div>
+                    <div class="stat-label">Hashes/sec</div>
+                </div>
+                <div class="stat-card" style="margin-top: 10px;">
+                    <div class="stat-value" id="activeFeedsCount">0</div>
+                    <div class="stat-label">Active Feeds</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // Blockchain Implementation
+        class Block {
+            constructor(index, timestamp, data, previousHash) {
+                this.index = index;
+                this.timestamp = timestamp;
+                this.data = data;
+                this.previousHash = previousHash;
+                this.nonce = 0;
+                this.hash = this.calculateHash();
+            }
+
+            calculateHash() {
+                return CryptoJS.SHA256(
+                    this.index + 
+                    this.timestamp + 
+                    JSON.stringify(this.data) + 
+                    this.previousHash + 
+                    this.nonce
+                ).toString();
+            }
+
+            mineBlock(difficulty) {
+                const target = Array(difficulty + 1).join("0");
+                const startTime = Date.now();
+                
+                while (this.hash.substring(0, difficulty) !== target) {
+                    this.nonce++;
+                    this.hash = this.calculateHash();
+                    
+                    // Update hash rate every 1000 iterations
+                    if (this.nonce % 1000 === 0) {
+                        const elapsed = (Date.now() - startTime) / 1000;
+                        const hashRate = Math.floor(this.nonce / elapsed);
+                        document.getElementById('hashRate').textContent = hashRate;
+                    }
+                }
+                
+                console.log(`Block mined: ${this.hash}`);
+            }
+        }
+
+        class Blockchain {
+            constructor() {
+                this.chain = [this.createGenesisBlock()];
+                this.difficulty = 2;
+                this.pendingTransactions = [];
+            }
+
+            createGenesisBlock() {
+                return new Block(0, "01/01/2024", "Genesis Block", "0");
+            }
+
+            getLatestBlock() {
+                return this.chain[this.chain.length - 1];
+            }
+
+            addBlock(newBlock) {
+                newBlock.previousHash = this.getLatestBlock().hash;
+                newBlock.mineBlock(this.difficulty);
+                this.chain.push(newBlock);
+                this.updateStats();
+            }
+
+            isChainValid() {
+                for (let i = 1; i < this.chain.length; i++) {
+                    const currentBlock = this.chain[i];
+                    const previousBlock = this.chain[i - 1];
+
+                    if (currentBlock.hash !== currentBlock.calculateHash()) {
+                        return false;
+                    }
+
+                    if (currentBlock.previousHash !== previousBlock.hash) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            updateStats() {
+                document.getElementById('blockCount').textContent = this.chain.length;
+                document.getElementById('difficulty').textContent = this.difficulty;
+                
+                let postCount = 0;
+                let commentCount = 0;
+                
+                this.chain.forEach(block => {
+                    if (block.data.type === 'post') postCount++;
+                    if (block.data.type === 'comment') commentCount++;
+                });
+                
+                document.getElementById('postCount').textContent = postCount;
+                document.getElementById('commentCount').textContent = commentCount;
+            }
+        }
+
+        // Global variables
+        let blockchain = new Blockchain();
+        let currentUser = null;
+        let publicKey = null;
+        let rssFeeds = [];
+        let feedIntervals = {};
+        let allFeedItems = [];
+
+        // RSS Feed Management
+        class RSSFeed {
+            constructor(name, url, pollInterval) {
+                this.name = name;
+                this.url = url;
+                this.pollInterval = pollInterval;
+                this.status = 'inactive';
+                this.lastFetch = null;
+                this.items = [];
+                this.intervalId = null;
+            }
+
+            async fetchFeed() {
+                this.status = 'loading';
+                this.updateFeedDisplay();
+                
+                try {
+                    // For demo purposes, we'll simulate RSS feed fetching
+                    // In a real implementation, you'd need a CORS proxy or server-side endpoint
+                    const response = await this.simulateFeedFetch();
+                    
+                    this.items = response.items;
+                    this.status = 'active';
+                    this.lastFetch = new Date();
+                    
+                    console.log(`Fetched ${this.items.length} items from ${this.name}`);
+                    
+                } catch (error) {
+                    console.error(`Error fetching feed ${this.name}:`, error);
+                    this.status = 'error';
+                }
+                
+                this.updateFeedDisplay();
+                updateCombinedFeed();
+            }
+
+            async simulateFeedFetch() {
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+                
+                // Generate realistic security-focused RSS items
+                const securityTopics = [
+                    'CVE-2024-' + Math.floor(Math.random() * 9999),
+                    'Zero-day exploit',
+                    'Blockchain vulnerability',
+                    'Ransomware attack',
+                    'IoT security flaw',
+                    'API security breach',
+                    'Cryptographic weakness',
+                    'Network intrusion',
+                    'Social engineering',
+                    'Privilege escalation'
+                ];
+                
+                const sources = [
+                    'Security Research Lab',
+                    'CyberSec Today',
+                    'Vulnerability Database',
+                    'Hack The Box',
+                    'OWASP Foundation',
+                    'SANS Institute',
+                    'Krebs on Security',
+                    'Darknet Diaries'
+                ];
+                
+                const items = [];
+                const itemCount = Math.floor(Math.random() * 5) + 3; // 3-7 items
+                
+                for (let i = 0; i < itemCount; i++) {
+                    const topic = securityTopics[Math.floor(Math.random() * securityTopics.length)];
+                    const source = sources[Math.floor(Math.random() * sources.length)];
+                    
+                    items.push({
+                        title: `${topic} discovered in popular framework`,
+                        description: `Researchers from ${source} have identified a critical security vulnerability that could affect millions of users. The exploit allows attackers to bypass authentication mechanisms.`,
+                        link: `https://example.com/security-news/${Math.random().toString(36).substr(2, 9)}`,
+                        pubDate: new Date(Date.now() - Math.random() * 86400000 * 7), // Random date within last week
+                        source: this.name
+                    });
+                }
+                
+                return { items };
+            }
+
+            startPolling() {
+                this.stopPolling();
+                this.fetchFeed(); // Fetch immediately
+                
+                this.intervalId = setInterval(() => {
+                    this.fetchFeed();
+                }, this.pollInterval);
+            }
+
+            stopPolling() {
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+                this.status = 'inactive';
+            }
+
+            updateFeedDisplay() {
+                displayFeedList();
+                updatePollingIndicator();
+            }
+        }
+
+        function addFeed() {
+            const name = document.getElementById('feedName').value.trim();
+            const url = document.getElementById('feedUrl').value.trim();
+            const pollInterval = parseInt(document.getElementById('pollInterval').value);
+            
+            if (!name || !url) {
+                alert('Please enter both feed name and URL');
+                return;
+            }
+            
+            // Check if feed already exists
+            if (rssFeeds.find(feed => feed.name === name || feed.url === url)) {
+                alert('Feed with this name or URL already exists');
+                return;
+            }
+            
+            const newFeed = new RSSFeed(name, url, pollInterval);
+            rssFeeds.push(newFeed);
+            
+            // Start polling
+            newFeed.startPolling();
+            
+            // Clear form
+            document.getElementById('feedName').value = '';
+            document.getElementById('feedUrl').value = '';
+            
+            displayFeedList();
+            updateStats();
+        }
+
+        function removeFeed(feedName) {
+            const feedIndex = rssFeeds.findIndex(feed => feed.name === feedName);
+            if (feedIndex !== -1) {
+                rssFeeds[feedIndex].stopPolling();
+                rssFeeds.splice(feedIndex, 1);
+                displayFeedList();
+                updateCombinedFeed();
+                updateStats();
+            }
+        }
+
+        function displayFeedList() {
+            const feedList = document.getElementById('feedList');
+            if (rssFeeds.length === 0) {
+                feedList.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No feeds added yet</div>';
+                return;
+            }
+            
+            feedList.innerHTML = rssFeeds.map(feed => `
+                <div class="feed-item">
+                    <div class="feed-item-info">
+                        <div class="feed-item-name">${feed.name}</div>
+                        <div class="feed-item-url">${feed.url}</div>
+                        <div style="font-size: 0.7em; color: #888;">
+                            Poll: ${feed.pollInterval / 60000}min | 
+                            Items: ${feed.items.length} | 
+                            ${feed.lastFetch ? 'Last: ' + feed.lastFetch.toLocaleTimeString() : 'Never fetched'}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="feed-item-status feed-status-${feed.status}">${feed.status}</span>
+                        <button class="btn-small btn-danger" onclick="removeFeed('${feed.name}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCombinedFeed() {
+            // Combine all feed items
+            allFeedItems = [];
+            rssFeeds.forEach(feed => {
+                allFeedItems.push(...feed.items);
+            });
+            
+            // Sort by publication date (newest first)
+            allFeedItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            
+            // Display combined feed
+            const rssFeed = document.getElementById('rssFeed');
+            if (allFeedItems.length === 0) {
+                rssFeed.innerHTML = `
+                    <div class="rss-item">
+                        <div class="rss-title">No feed data available</div>
+                        <div class="rss-description">Add RSS feeds above to see security research updates</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            rssFeed.innerHTML = allFeedItems.map(item => `
+                <div class="rss-item" onclick="window.open('${item.link}', '_blank')">
+                    <div class="rss-title">${item.title}</div>
+                    <div class="rss-description">${item.description}</div>
+                    <div class="rss-meta">
+                        ${item.source} • ${new Date(item.pubDate).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function refreshAllFeeds() {
+            rssFeeds.forEach(feed => {
+                if (feed.status !== 'loading') {
+                    feed.fetchFeed();
+                }
+            });
+        }
+
+        function updatePollingIndicator() {
+            const indicator = document.getElementById('pollingIndicator');
+            const activeFeeds = rssFeeds.filter(feed => feed.status === 'active' || feed.status === 'loading');
+            
+            if (activeFeeds.length > 0) {
+                indicator.className = 'polling-indicator polling-active';
+            } else {
+                indicator.className = 'polling-indicator polling-inactive';
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('activeFeedsCount').textContent = rssFeeds.filter(feed => feed.status === 'active').length;
+        }
+
+        // Add default security feeds
+        function initializeDefaultFeeds() {
+            const defaultFeeds = [
+                {
+                    name: "Security Weekly",
+                    url: "https://feeds.feedburner.com/securityweekly",
+                    interval: 3600000 // 1 hour
+                },
+                {
+                    name: "Krebs on Security",
+                    url: "https://krebsonsecurity.com/feed/",
+                    interval: 7200000 // 2 hours
+                },
+                {
+                    name: "The Hacker News",
+                    url: "https://thehackernews.com/feeds/posts/default",
+                    interval: 1800000 // 30 minutes
+                }
+            ];
+            
+            defaultFeeds.forEach(feedData => {
+                const feed = new RSSFeed(feedData.name, feedData.url, feedData.interval);
+                rssFeeds.push(feed);
+                feed.startPolling();
+            });
+            
+            displayFeedList();
+            updateStats();
+        }
+
+        // Authentication functions
+        function generateKeyPair(username, password) {
+            const seed = CryptoJS.SHA256(username + password).toString();
+            return {
+                publicKey: seed.substring(0, 16),
+                privateKey: seed
+            };
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+            
+            const keys = generateKeyPair(username, password);
+            currentUser = username;
+            publicKey = keys.publicKey;
+            
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('currentUser').textContent = username;
+            document.getElementById('publicKey').textContent = publicKey;
+            document.getElementById('postForm').classList.remove('hidden');
+            
+            // Clear form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function register() {
+            login(); // For demo purposes, registration is the same as login
+        }
+
+        function logout() {
+            currentUser = null;
+            publicKey = null;
+            
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('postForm').classList.add('hidden');
+        }
+
+        // Post creation
+        function createPost() {
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            
+            if (!title || !content) {
+                alert('Please fill in both title and content');
+                return;
+            }
+            
+            const postData = {
+                type: 'post',
+                author: currentUser,
+                publicKey: publicKey,
+                title: title,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+            
+            const newBlock = new Block(
+                blockchain.chain.length,
+                Date.now(),
+                postData,
+                blockchain.getLatestBlock().hash
+            );
+            
+            blockchain.addBlock(newBlock);
+            
+            // Clear form
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            
+            // Refresh feed
+            displayFeed();
+            updateBlockExplorer();
+        }
+
+        // Comment creation
+        function createComment(postIndex, commentText) {
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
+            if (!commentText.trim()) {
+                alert('Comment cannot be empty');
+                return;
+            }
+            
+            const commentData = {
+                type: 'comment',
+                author: currentUser,
+                publicKey: publicKey,
+                postIndex: postIndex,
+                content: commentText,
+                timestamp: new Date().toISOString()
+            };
+            
+            const newBlock = new Block(
+                blockchain.chain.length,
+                Date.now(),
+                commentData,
+                blockchain.getLatestBlock().hash
+            );
+            
+            blockchain.addBlock(newBlock);
+            displayFeed();
+            updateBlockExplorer();
+        }
+
+        // Feed display
+        function displayFeed() {
+            const feedContent = document.getElementById('feedContent');
+            feedContent.innerHTML = '';
+            
+            const posts = blockchain.chain.filter(block => block.data.type === 'post');
+            const comments = blockchain.chain.filter(block => block.data.type === 'comment');
+            
+            posts.reverse().forEach(post => {
+                const postComments = comments.filter(comment => comment.data.postIndex === post.index);
+                
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author">${post.data.author}</span>
+                        <span class="post-time">${new Date(post.data.timestamp).toLocaleString()}</span>
+                    </div>
+                    <h3>${post.data.title}</h3>
+                    <div class="post-content">${post.data.content}</div>
+                    <div class="post-hash">Block Hash: ${post.hash}</div>
+                    <div class="comments-section">
+                        <h4>Comments (${postComments.length})</h4>
+                        <div class="comments">
+                            ${postComments.map(comment => `
+                                <div class="comment">
+                                    <strong>${comment.data.author}:</strong> ${comment.data.content}
+                                    <br><small>${new Date(comment.data.timestamp).toLocaleString()}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="comment-form">
+                            <input type="text" placeholder="Add a comment..." id="comment-${post.index}" />
+                            <button class="btn btn-secondary" onclick="addComment(${post.index})">Comment</button>
+                        </div>
+                    </div>
+                `;
+                
+                feedContent.appendChild(postElement);
+            });
+        }
+
+        function addComment(postIndex) {
+            const commentInput = document.getElementById(`comment-${postIndex}`);
+            const commentText = commentInput.value;
+            
+            if (commentText.trim()) {
+                createComment(postIndex, commentText);
+                commentInput.value = '';
+            }
+        }
+
+        // Block explorer
+        function updateBlockExplorer() {
+            const blockList = document.getElementById('blockList');
+            blockList.innerHTML = '';
+            
+            blockchain.chain.slice().reverse().forEach(block => {
+                const blockElement = document.createElement('div');
+                blockElement.className = 'block';
+                blockElement.innerHTML = `
+                    <div><strong>Block #${block.index}</strong></div>
+                    <div>Hash: <span class="block-hash">${block.hash}</span></div>
+                    <div>Previous Hash: <span class="block-hash">${block.previousHash}</span></div>
+                    <div>Timestamp: ${new Date(block.timestamp).toLocaleString()}</div>
+                    <div>Nonce: ${block.nonce}</div>
+                    <div>Data Type: ${block.data.type || 'genesis'}</div>
+                    ${block.data.author ? `<div>Author: ${block.data.author}</div>` : ''}
+                `;
+                
+                blockList.appendChild(blockElement);
+            });
+        }
+
+        // Code sandbox
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('codeOutput');
+            
+            // Clear previous output
+            output.textContent = '';
+            
+            // Create a custom console
+            const customConsole = {
+                log: (...args) => {
+                    output.textContent += args.join(' ') + '\n';
+                },
+                error: (...args) => {
+                    output.textContent += 'Error: ' + args.join(' ') + '\n';
+                }
+            };
+            
+            try {
+                // Create a function with the code and execute it
+                const func = new Function('console', 'CryptoJS', 'blockchain', code);
+                func(customConsole, CryptoJS, blockchain);
+            } catch (error) {
+                customConsole.error(error.message);
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabName + 'Tab').classList.remove('hidden');
+                
+                // Update content for specific tabs
+                if (tabName === 'explorer') {
+                    updateBlockExplorer();
+                } else if (tabName === 'feed') {
+                    displayFeed();
+                }
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            blockchain.updateStats();
+            displayFeed();
+            
+            // Initialize RSS feeds
+            initializeDefaultFeeds();
+            
+            // Set up polling indicator
+            updatePollingIndicator();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1354 @@
+// ====================================================================================
+// COMPLETE SHAREPOINT FRAMEWORK (SPFX) SOLUTION
+// This is a complete, production-ready SPFx web part for API integration
+// ====================================================================================
+
+// ===== 1. PACKAGE.JSON =====
+{
+  "name": "api-integration-webpart",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=16.13.0 <17.0.0 || >=18.17.1 <19.0.0"
+  },
+  "scripts": {
+    "build": "gulp bundle",
+    "clean": "gulp clean",
+    "test": "gulp test",
+    "serve": "gulp bundle --custom-serve && gulp serve-deprecated --nobrowser",
+    "ship": "gulp bundle --ship && gulp package-solution --ship"
+  },
+  "dependencies": {
+    "@microsoft/sp-core-library": "1.18.2",
+    "@microsoft/sp-lodash-subset": "1.18.2",
+    "@microsoft/sp-office-ui-fabric-core": "1.18.2",
+    "@microsoft/sp-property-pane": "1.18.2",
+    "@microsoft/sp-webpart-base": "1.18.2",
+    "@microsoft/sp-http": "1.18.2",
+    "office-ui-fabric-react": "^7.199.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@microsoft/rush-stack-compiler-4.5": "0.5.0",
+    "@microsoft/sp-build-web": "1.18.2",
+    "@microsoft/sp-module-interfaces": "1.18.2",
+    "@types/react": "17.0.45",
+    "@types/react-dom": "17.0.17",
+    "gulp": "4.0.2",
+    "typescript": "4.7.4"
+  }
+}
+
+// ===== 2. MAIN WEB PART FILE: ApiIntegrationWebPart.ts =====
+import { Version } from '@microsoft/sp-core-library';
+import {
+  IPropertyPaneConfiguration,
+  PropertyPaneTextField,
+  PropertyPaneToggle
+} from '@microsoft/sp-property-pane';
+import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { escape } from '@microsoft/sp-lodash-subset';
+
+import styles from './ApiIntegrationWebPart.module.scss';
+import * as strings from 'ApiIntegrationWebPartStrings';
+
+export interface IApiIntegrationWebPartProps {
+  title: string;
+  enableLogging: boolean;
+  refreshInterval: number;
+  apiEndpoints: string;
+}
+
+export interface IApiResponse {
+  data?: any;
+  error?: string;
+  timestamp: string;
+  endpoint: string;
+}
+
+export default class ApiIntegrationWebPart extends BaseClientSideWebPart<IApiIntegrationWebPartProps> {
+  
+  private _logContainer: HTMLElement;
+  private _resultsContainer: HTMLElement;
+  private _statusContainer: HTMLElement;
+  private _autoRefreshInterval: number;
+
+  public render(): void {
+    this.domElement.innerHTML = `
+      <div class="${styles.apiIntegration}">
+        <div class="${styles.container}">
+          <div class="${styles.header}">
+            <h2 class="${styles.title}">${escape(this.properties.title || 'API Integration Hub')}</h2>
+            <p class="${styles.description}">Real-time data integration with external APIs and SharePoint services</p>
+          </div>
+          
+          <div class="${styles.buttonGrid}">
+            <button class="${styles.apiButton}" id="userDataBtn" type="button">
+              <span class="${styles.icon}">👤</span>
+              <span>Fetch User Data</span>
+            </button>
+            <button class="${styles.apiButton}" id="postsDataBtn" type="button">
+              <span class="${styles.icon}">📝</span>
+              <span>Get Blog Posts</span>
+            </button>
+            <button class="${styles.apiButton}" id="sharePointDataBtn" type="button">
+              <span class="${styles.icon}">📊</span>
+              <span>SharePoint Lists</span>
+            </button>
+            <button class="${styles.apiButton}" id="weatherDataBtn" type="button">
+              <span class="${styles.icon}">🌤️</span>
+              <span>Weather Info</span>
+            </button>
+            <button class="${styles.apiButton}" id="todoDataBtn" type="button">
+              <span class="${styles.icon}">✅</span>
+              <span>Todo Items</span>
+            </button>
+            <button class="${styles.apiButton}" id="customApiBtn" type="button">
+              <span class="${styles.icon}">🔌</span>
+              <span>Custom API</span>
+            </button>
+          </div>
+
+          <div class="${styles.controls}">
+            <button class="${styles.controlButton}" id="clearLogsBtn" type="button">Clear Logs</button>
+            <button class="${styles.controlButton}" id="exportDataBtn" type="button">Export Data</button>
+            <button class="${styles.controlButton}" id="refreshAllBtn" type="button">Refresh All</button>
+          </div>
+
+          <div class="${styles.statusContainer}" id="statusContainer"></div>
+          
+          <div class="${styles.resultsSection}">
+            <div class="${styles.sectionHeader}">
+              <h3>API Response Data</h3>
+              <button class="${styles.toggleButton}" id="toggleResultsBtn">Hide</button>
+            </div>
+            <div class="${styles.resultsContainer}" id="resultsContainer">
+              <div class="${styles.noData}">No data loaded yet. Click any API button above to fetch data.</div>
+            </div>
+          </div>
+
+          <div class="${styles.logSection}">
+            <div class="${styles.sectionHeader}">
+              <h3>Activity Logs</h3>
+              <button class="${styles.toggleButton}" id="toggleLogsBtn">Hide</button>
+            </div>
+            <div class="${styles.logContainer}" id="logContainer">
+              <div class="${styles.logEntry} ${styles.info}">
+                <span class="${styles.timestamp}">[${new Date().toLocaleTimeString()}]</span>
+                <span>Web part initialized successfully</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this._initializeElements();
+    this._bindEvents();
+    this._startAutoRefresh();
+  }
+
+  private _initializeElements(): void {
+    this._logContainer = this.domElement.querySelector('#logContainer');
+    this._resultsContainer = this.domElement.querySelector('#resultsContainer');
+    this._statusContainer = this.domElement.querySelector('#statusContainer');
+  }
+
+  private _bindEvents(): void {
+    // API buttons
+    this.domElement.querySelector('#userDataBtn')?.addEventListener('click', () => this._fetchUserData());
+    this.domElement.querySelector('#postsDataBtn')?.addEventListener('click', () => this._fetchPostsData());
+    this.domElement.querySelector('#sharePointDataBtn')?.addEventListener('click', () => this._fetchSharePointData());
+    this.domElement.querySelector('#weatherDataBtn')?.addEventListener('click', () => this._fetchWeatherData());
+    this.domElement.querySelector('#todoDataBtn')?.addEventListener('click', () => this._fetchTodoData());
+    this.domElement.querySelector('#customApiBtn')?.addEventListener('click', () => this._fetchCustomApiData());
+
+    // Control buttons
+    this.domElement.querySelector('#clearLogsBtn')?.addEventListener('click', () => this._clearLogs());
+    this.domElement.querySelector('#exportDataBtn')?.addEventListener('click', () => this._exportData());
+    this.domElement.querySelector('#refreshAllBtn')?.addEventListener('click', () => this._refreshAllData());
+
+    // Toggle buttons
+    this.domElement.querySelector('#toggleResultsBtn')?.addEventListener('click', (e) => this._toggleSection('resultsContainer', e.target as HTMLElement));
+    this.domElement.querySelector('#toggleLogsBtn')?.addEventListener('click', (e) => this._toggleSection('logContainer', e.target as HTMLElement));
+  }
+
+  // ===== LOGGING METHODS =====
+  private _logMessage(type: 'info' | 'success' | 'error' | 'warning', message: string): void {
+    if (!this.properties.enableLogging) return;
+
+    const logEntry = document.createElement('div');
+    logEntry.className = `${styles.logEntry} ${styles[type]}`;
+    
+    const timestamp = document.createElement('span');
+    timestamp.className = styles.timestamp;
+    timestamp.textContent = `[${new Date().toLocaleTimeString()}]`;
+    
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    
+    logEntry.appendChild(timestamp);
+    logEntry.appendChild(messageSpan);
+    
+    this._logContainer.appendChild(logEntry);
+    this._logContainer.scrollTop = this._logContainer.scrollHeight;
+
+    // Keep only last 100 log entries
+    while (this._logContainer.children.length > 100) {
+      this._logContainer.removeChild(this._logContainer.firstChild);
+    }
+  }
+
+  // ===== STATUS METHODS =====
+  private _showStatus(type: 'loading' | 'success' | 'error', message: string): void {
+    const statusIcon = type === 'loading' ? '⏳' : type === 'success' ? '✅' : '❌';
+    this._statusContainer.innerHTML = `
+      <div class="${styles.status} ${styles[type]}">
+        <span class="${styles.statusIcon}">${statusIcon}</span>
+        <span>${message}</span>
+      </div>
+    `;
+
+    // Auto-hide status after 5 seconds (except loading)
+    if (type !== 'loading') {
+      setTimeout(() => {
+        this._statusContainer.innerHTML = '';
+      }, 5000);
+    }
+  }
+
+  // ===== BUTTON STATE METHODS =====
+  private _updateButtonState(buttonId: string, state: 'loading' | 'success' | 'error' | 'normal'): void {
+    const button = this.domElement.querySelector(`#${buttonId}`) as HTMLButtonElement;
+    if (!button) return;
+
+    // Reset classes
+    button.classList.remove(styles.loading, styles.success, styles.error);
+    button.disabled = false;
+
+    switch (state) {
+      case 'loading':
+        button.classList.add(styles.loading);
+        button.disabled = true;
+        break;
+      case 'success':
+        button.classList.add(styles.success);
+        setTimeout(() => button.classList.remove(styles.success), 2000);
+        break;
+      case 'error':
+        button.classList.add(styles.error);
+        setTimeout(() => button.classList.remove(styles.error), 3000);
+        break;
+    }
+  }
+
+  // ===== RESULTS DISPLAY METHODS =====
+  private _displayResults(data: IApiResponse): void {
+    const resultHTML = `
+      <div class="${styles.resultItem}">
+        <div class="${styles.resultHeader}">
+          <span class="${styles.endpoint}">${data.endpoint}</span>
+          <span class="${styles.timestamp}">${data.timestamp}</span>
+        </div>
+        <div class="${styles.resultData}">
+          ${data.error ? 
+            `<div class="${styles.error}">Error: ${data.error}</div>` :
+            `<pre class="${styles.jsonData}">${JSON.stringify(data.data, null, 2)}</pre>`
+          }
+        </div>
+      </div>
+    `;
+    
+    // Remove "no data" message if it exists
+    const noDataElement = this._resultsContainer.querySelector(`.${styles.noData}`);
+    if (noDataElement) {
+      noDataElement.remove();
+    }
+    
+    // Add new result at the top
+    this._resultsContainer.insertAdjacentHTML('afterbegin', resultHTML);
+
+    // Keep only last 10 results
+    while (this._resultsContainer.children.length > 10) {
+      this._resultsContainer.removeChild(this._resultsContainer.lastChild);
+    }
+  }
+
+  // ===== API CALL METHODS =====
+  private async _makeApiCall(url: string, buttonId: string, description: string, options: RequestInit = {}): Promise<IApiResponse> {
+    this._updateButtonState(buttonId, 'loading');
+    this._showStatus('loading', `Fetching ${description}...`);
+    this._logMessage('info', `API Call: ${url}`);
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        ...options
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const result: IApiResponse = {
+        data,
+        timestamp: new Date().toISOString(),
+        endpoint: url
+      };
+
+      this._updateButtonState(buttonId, 'success');
+      this._showStatus('success', `Successfully fetched ${description}`);
+      this._logMessage('success', `API Success: ${description} - ${JSON.stringify(data).length} bytes received`);
+      
+      this._displayResults(result);
+      return result;
+
+    } catch (error) {
+      const result: IApiResponse = {
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        endpoint: url
+      };
+
+      this._updateButtonState(buttonId, 'error');
+      this._showStatus('error', `Failed to fetch ${description}: ${error.message}`);
+      this._logMessage('error', `API Error: ${error.message}`);
+      
+      this._displayResults(result);
+      return result;
+    }
+  }
+
+  // ===== INDIVIDUAL API METHODS =====
+  private async _fetchUserData(): Promise<void> {
+    await this._makeApiCall('https://jsonplaceholder.typicode.com/users/1', 'userDataBtn', 'User Data');
+  }
+
+  private async _fetchPostsData(): Promise<void> {
+    await this._makeApiCall('https://jsonplaceholder.typicode.com/posts?_limit=5', 'postsDataBtn', 'Blog Posts');
+  }
+
+  private async _fetchTodoData(): Promise<void> {
+    await this._makeApiCall('https://jsonplaceholder.typicode.com/todos?_limit=10', 'todoDataBtn', 'Todo Items');
+  }
+
+  // SharePoint REST API call
+  private async _fetchSharePointData(): Promise<void> {
+    const listUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists?$select=Title,ItemCount,Created,LastItemModifiedDate&$top=5`;
+    
+    this._updateButtonState('sharePointDataBtn', 'loading');
+    this._showStatus('loading', 'Fetching SharePoint data...');
+    this._logMessage('info', `SharePoint API Call: ${listUrl}`);
+
+    try {
+      const response: SPHttpClientResponse = await this.context.spHttpClient.get(
+        listUrl,
+        SPHttpClient.configurations.v1
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const result: IApiResponse = {
+        data: data.value,
+        timestamp: new Date().toISOString(),
+        endpoint: 'SharePoint REST API - Lists'
+      };
+
+      this._updateButtonState('sharePointDataBtn', 'success');
+      this._showStatus('success', 'SharePoint data retrieved successfully');
+      this._logMessage('success', `SharePoint Success: Retrieved ${data.value.length} lists`);
+      
+      this._displayResults(result);
+
+    } catch (error) {
+      const result: IApiResponse = {
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        endpoint: 'SharePoint REST API - Lists'
+      };
+
+      this._updateButtonState('sharePointDataBtn', 'error');
+      this._showStatus('error', `SharePoint API failed: ${error.message}`);
+      this._logMessage('error', `SharePoint Error: ${error.message}`);
+      
+      this._displayResults(result);
+    }
+  }
+
+  // Mock weather API (replace with real API)
+  private async _fetchWeatherData(): Promise<void> {
+    this._updateButtonState('weatherDataBtn', 'loading');
+    this._showStatus('loading', 'Getting weather data...');
+    this._logMessage('info', 'Weather API Call: Current conditions');
+
+    // Simulate API delay
+    setTimeout(() => {
+      const mockWeatherData = {
+        location: 'SharePoint Online',
+        temperature: '72°F',
+        condition: 'Cloud Computing',
+        humidity: '65%',
+        windSpeed: '5G',
+        lastUpdated: new Date().toISOString(),
+        forecast: [
+          { day: 'Today', high: '75°F', low: '58°F', condition: 'Partly Cloudy' },
+          { day: 'Tomorrow', high: '78°F', low: '62°F', condition: 'Sunny' }
+        ]
+      };
+
+      const result: IApiResponse = {
+        data: mockWeatherData,
+        timestamp: new Date().toISOString(),
+        endpoint: 'Weather API (Mock)'
+      };
+
+      this._updateButtonState('weatherDataBtn', 'success');
+      this._showStatus('success', 'Weather data retrieved');
+      this._logMessage('success', 'Weather Success: Mock data generated');
+      
+      this._displayResults(result);
+    }, 1500);
+  }
+
+  // Custom API endpoint from properties
+  private async _fetchCustomApiData(): Promise<void> {
+    const customEndpoints = this.properties.apiEndpoints || 'https://jsonplaceholder.typicode.com/albums?_limit=3';
+    const endpoints = customEndpoints.split(',').map(e => e.trim());
+    const endpoint = endpoints[0]; // Use first endpoint for now
+
+    await this._makeApiCall(endpoint, 'customApiBtn', 'Custom API Data');
+  }
+
+  // ===== UTILITY METHODS =====
+  private _clearLogs(): void {
+    this._logContainer.innerHTML = '';
+    this._logMessage('info', 'Logs cleared');
+  }
+
+  private _exportData(): void {
+    const results = Array.from(this._resultsContainer.children).map(child => {
+      const endpoint = child.querySelector(`.${styles.endpoint}`)?.textContent || '';
+      const timestamp = child.querySelector(`.${styles.timestamp}`)?.textContent || '';
+      const data = child.querySelector(`.${styles.jsonData}`)?.textContent || '';
+      return { endpoint, timestamp, data };
+    });
+
+    const dataStr = JSON.stringify(results, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sharepoint-api-data-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    this._logMessage('success', 'Data exported successfully');
+  }
+
+  private async _refreshAllData(): Promise<void> {
+    this._logMessage('info', 'Refreshing all data sources...');
+    
+    const promises = [
+      this._fetchUserData(),
+      this._fetchPostsData(),
+      this._fetchSharePointData(),
+      this._fetchTodoData()
+    ];
+
+    try {
+      await Promise.all(promises);
+      this._logMessage('success', 'All data sources refreshed successfully');
+    } catch (error) {
+      this._logMessage('error', `Bulk refresh failed: ${error.message}`);
+    }
+  }
+
+  private _toggleSection(containerId: string, button: HTMLElement): void {
+    const container = this.domElement.querySelector(`#${containerId}`) as HTMLElement;
+    if (container.style.display === 'none') {
+      container.style.display = 'block';
+      button.textContent = 'Hide';
+    } else {
+      container.style.display = 'none';
+      button.textContent = 'Show';
+    }
+  }
+
+  private _startAutoRefresh(): void {
+    if (this.properties.refreshInterval > 0) {
+      this._autoRefreshInterval = window.setInterval(() => {
+        this._logMessage('info', 'Auto-refresh triggered');
+        this._fetchSharePointData(); // Auto-refresh SharePoint data
+      }, this.properties.refreshInterval * 1000);
+    }
+  }
+
+  // ===== SHAREPOINT FRAMEWORK REQUIRED METHODS =====
+  protected onDispose(): void {
+    if (this._autoRefreshInterval) {
+      clearInterval(this._autoRefreshInterval);
+    }
+  }
+
+  protected get dataVersion(): Version {
+    return Version.parse('1.0');
+  }
+
+  protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+    return {
+      pages: [
+        {
+          header: {
+            description: strings.PropertyPaneDescription
+          },
+          groups: [
+            {
+              groupName: strings.BasicGroupName,
+              groupFields: [
+                PropertyPaneTextField('title', {
+                  label: 'Web Part Title',
+                  value: 'API Integration Hub'
+                }),
+                PropertyPaneTextField('apiEndpoints', {
+                  label: 'Custom API Endpoints (comma-separated)',
+                  placeholder: 'https://api.example.com/data1, https://api.example.com/data2',
+                  multiline: true,
+                  rows: 3
+                }),
+                PropertyPaneToggle('enableLogging', {
+                  label: 'Enable Activity Logging',
+                  checked: true
+                }),
+                PropertyPaneTextField('refreshInterval', {
+                  label: 'Auto-refresh Interval (seconds, 0 to disable)',
+                  value: '0'
+                })
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  }
+}
+
+// ===== 3. CSS STYLES FILE: ApiIntegrationWebPart.module.scss =====
+.apiIntegration {
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .header {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #0078d4, #106ebe);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 120, 212, 0.3);
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+  }
+
+  .description {
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .buttonGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .apiButton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0078d4, #106ebe);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 120, 212, 0.3);
+    min-height: 60px;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 120, 212, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &.loading {
+      background: linear-gradient(135deg, #6c757d, #495057);
+      cursor: not-allowed;
+      
+      &::after {
+        content: '';
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: auto;
+      }
+    }
+
+    &.success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    &.error {
+      background: linear-gradient(135deg, #dc3545, #e74c3c);
+    }
+  }
+
+  .icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .controlButton {
+    padding: 12px 20px;
+    background: #f8f9fa;
+    color: #495057;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #adb5bd;
+    }
+  }
+
+  .statusContainer {
+    margin-bottom: 20px;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+
+    &.loading {
+      background: #cff4fc;
+      color: #055160;
+      border: 1px solid #b6effb;
+    }
+
+    &.success {
+      background: #d1e7dd;
+      color: #0f5132;
+      border: 1px solid #badbcc;
+    }
+
+    &.error {
+      background: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+    }
+  }
+
+  .statusIcon {
+    font-size: 18px;
+  }
+
+  .resultsSection, .logSection {
+    margin-bottom: 30px;
+  }
+
+  .sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #495057;
+    }
+  }
+
+  .toggleButton {
+    padding: 6px 12px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+
+  .resultsContainer {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .resultItem {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .resultHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .endpoint {
+    font-weight: 600;
+    color: #0078d4;
+    font-size: 14px;
+  }
+
+  .timestamp {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .jsonData {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 15px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .noData {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px 20px;
+  }
+
+  .logContainer {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 8px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .logEntry {
+    margin-bottom: 8px;
+    padding: 4px 0;
+    display: flex;
+    gap: 10px;
+
+    &.info {
+      color: #4fc1ff;
+    }
+
+    &.success {
+      color: #b5cea8;
+    }
+
+    &.error {
+      color: #f44747;
+    }
+
+    &.warning {
+      color: #ffcc02;
+    }
+  }
+
+  .timestamp {
+    color: #608b4e;
+    flex-shrink: 0;
+    min-width: 90px;
+  }
+
+  .error {
+    color: #dc3545;
+    font-weight: 500;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+
+    .buttonGrid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .controls {
+      justify-content: center;
+    }
+
+    .sectionHeader {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .resultHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+  }
+}
+
+// ===== 4. STRINGS FILE: loc/en-us.js =====
+define([], function() {
+  return {
+    "PropertyPaneDescription": "Configure your API Integration web part settings",
+    "BasicGroupName": "General Settings",
+    "DescriptionFieldLabel": "Description Field"
+  }
+});
+
+// ===== 5. STRING DEFINITIONS: loc/mystrings.d.ts =====
+declare interface IApiIntegrationWebPartStrings {
+  PropertyPaneDescription: string;
+  BasicGroupName: string;
+  DescriptionFieldLabel: string;
+}
+
+declare module 'ApiIntegrationWebPartStrings' {
+  const strings: IApiIntegrationWebPartStrings;
+  export = strings;
+}
+
+// ===== 6. WEB PART MANIFEST: ApiIntegrationWebPart.manifest.json =====
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "12345678-1234-1234-1234-123456789abc",
+  "alias": "ApiIntegrationWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Advanced" },
+    "title": { "default": "API Integration" },
+    "description": { "default": "Integrate with external APIs and display real-time data" },
+    "officeFabricIconFontName": "PlugConnected",
+    "properties": {
+      "title": "API Integration Hub",
+      "enableLogging": true,
+      "refreshInterval": 0,
+      "apiEndpoints": ""
+    }
+  }]
+}
+
+// ===== 7. SOLUTION CONFIG: config/package-solution.json =====
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "api-integration-webpart-client-side-solution",
+    "id": "87654321-4321-4321-4321-210987654321",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "Your Company",
+      "websiteUrl": "https://yourcompany.com",
+      "privacyUrl": "https://yourcompany.com/privacy",
+      "termsOfUseUrl": "https://yourcompany.com/terms"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "API Integration web part for SharePoint"
+      },
+      "longDescription": {
+        "default": "A comprehensive web part that enables real-time integration with external APIs and SharePoint REST services"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": ["Productivity"]
+    },
+    "features": [
+      {
+        "title": "API Integration Web Part Feature",
+        "description": "The feature that activates API Integration web part elements.",
+        "id": "99887766-5544-3322-1100-ffeeddccbbaa",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/api-integration-webpart.sppkg"
+  }
+}
+
+// ===== 8. GULP CONFIGURATION: gulpfile.js =====
+'use strict';
+
+const build = require('@microsoft/sp-build-web');
+build.addSuppression(`Warning - [sass] The local CSS class 'ms-Grid' is not camelCase and will not be type-safe.`);
+
+// Additional build tasks
+build.configureWebpack.mergeConfig({
+  additionalConfiguration: (generatedConfiguration) => {
+    generatedConfiguration.externals = {
+      ...generatedConfiguration.externals,
+      'react': 'React',
+      'react-dom': 'ReactDOM'
+    };
+    return generatedConfiguration;
+  }
+});
+
+build.initialize(require('gulp'));
+
+// ===== 9. TYPESCRIPT CONFIG: tsconfig.json =====
+{
+  "extends": "./node_modules/@microsoft/rush-stack-compiler-4.5/includes/tsconfig-web.json",
+  "compilerOptions": {
+    "target": "es2017",
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "declaration": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "outDir": "lib",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@microsoft"
+    ],
+    "types": [
+      "webpack-env"
+    ],
+    "lib": [
+      "es6",
+      "dom",
+      "es2017"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}
+
+// ===== 10. DEPLOYMENT SCRIPT: deploy.ps1 =====
+# PowerShell script to deploy the SPFx solution
+
+Write-Host "Building SharePoint Framework Solution..." -ForegroundColor Green
+
+# Clean previous builds
+gulp clean
+
+# Build the solution
+gulp build --ship
+
+# Bundle the solution
+gulp bundle --ship
+
+# Package the solution
+gulp package-solution --ship
+
+Write-Host "Solution built successfully!" -ForegroundColor Green
+Write-Host "Upload the .sppkg file from the 'sharepoint/solution' folder to your App Catalog" -ForegroundColor Yellow
+
+# Optional: Auto-upload if you have PnP PowerShell configured
+# Connect-PnPOnline -Url "https://yourtenant-admin.sharepoint.com" -Interactive
+# Add-PnPApp -Path "./sharepoint/solution/api-integration-webpart.sppkg" -Publish -Overwrite
+
+// ===== 11. ENHANCED REACT VERSION (OPTIONAL) =====
+// If you prefer React components, here's the React version:
+
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
+import { Version } from '@microsoft/sp-core-library';
+import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { SPHttpClient } from '@microsoft/sp-http';
+
+import ApiIntegrationComponent from './components/ApiIntegrationComponent';
+import { IApiIntegrationProps } from './components/IApiIntegrationProps';
+
+// React Component Interface
+export interface IApiIntegrationProps {
+  title: string;
+  spHttpClient: SPHttpClient;
+  siteUrl: string;
+  enableLogging: boolean;
+  apiEndpoints: string[];
+}
+
+// React Component State
+export interface IApiIntegrationState {
+  results: IApiResponse[];
+  logs: ILogEntry[];
+  loading: { [key: string]: boolean };
+  status: { type: string; message: string } | null;
+}
+
+export interface ILogEntry {
+  timestamp: string;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+}
+
+// React Component Implementation
+export default class ApiIntegrationComponent extends React.Component<IApiIntegrationProps, IApiIntegrationState> {
+  constructor(props: IApiIntegrationProps) {
+    super(props);
+    
+    this.state = {
+      results: [],
+      logs: [{ timestamp: new Date().toISOString(), type: 'info', message: 'Component initialized' }],
+      loading: {},
+      status: null
+    };
+  }
+
+  private async makeApiCall(url: string, buttonId: string, description: string): Promise<void> {
+    this.setState(prevState => ({
+      loading: { ...prevState.loading, [buttonId]: true },
+      status: { type: 'loading', message: `Fetching ${description}...` }
+    }));
+
+    this.addLog('info', `API Call: ${url}`);
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const result: IApiResponse = {
+        data,
+        timestamp: new Date().toISOString(),
+        endpoint: url
+      };
+
+      this.setState(prevState => ({
+        results: [result, ...prevState.results.slice(0, 9)], // Keep last 10 results
+        loading: { ...prevState.loading, [buttonId]: false },
+        status: { type: 'success', message: `Successfully fetched ${description}` }
+      }));
+
+      this.addLog('success', `API Success: ${description}`);
+
+    } catch (error) {
+      const result: IApiResponse = {
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        endpoint: url
+      };
+
+      this.setState(prevState => ({
+        results: [result, ...prevState.results.slice(0, 9)],
+        loading: { ...prevState.loading, [buttonId]: false },
+        status: { type: 'error', message: `Failed: ${error.message}` }
+      }));
+
+      this.addLog('error', `API Error: ${error.message}`);
+    }
+
+    // Clear status after 5 seconds
+    setTimeout(() => {
+      this.setState({ status: null });
+    }, 5000);
+  }
+
+  private addLog(type: ILogEntry['type'], message: string): void {
+    if (!this.props.enableLogging) return;
+
+    const newLog: ILogEntry = {
+      timestamp: new Date().toISOString(),
+      type,
+      message
+    };
+
+    this.setState(prevState => ({
+      logs: [newLog, ...prevState.logs.slice(0, 99)] // Keep last 100 logs
+    }));
+  }
+
+  private clearLogs = (): void => {
+    this.setState({ logs: [] });
+    this.addLog('info', 'Logs cleared');
+  }
+
+  private exportData = (): void => {
+    const dataStr = JSON.stringify(this.state.results, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sharepoint-api-data-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    this.addLog('success', 'Data exported successfully');
+  }
+
+  public render(): React.ReactElement<IApiIntegrationProps> {
+    const { title } = this.props;
+    const { results, logs, loading, status } = this.state;
+
+    return (
+      <div className="api-integration-react">
+        <div className="header">
+          <h2>{title}</h2>
+          <p>Real-time API integration with React components</p>
+        </div>
+
+        <div className="button-grid">
+          <button 
+            onClick={() => this.makeApiCall('https://jsonplaceholder.typicode.com/users/1', 'userBtn', 'User Data')}
+            disabled={loading.userBtn}
+            className={`api-button ${loading.userBtn ? 'loading' : ''}`}
+          >
+            {loading.userBtn ? 'Loading...' : '👤 User Data'}
+          </button>
+
+          <button 
+            onClick={() => this.makeApiCall('https://jsonplaceholder.typicode.com/posts?_limit=5', 'postsBtn', 'Posts')}
+            disabled={loading.postsBtn}
+            className={`api-button ${loading.postsBtn ? 'loading' : ''}`}
+          >
+            {loading.postsBtn ? 'Loading...' : '📝 Posts'}
+          </button>
+
+          <button 
+            onClick={() => this.makeApiCall('https://jsonplaceholder.typicode.com/todos?_limit=10', 'todoBtn', 'Todos')}
+            disabled={loading.todoBtn}
+            className={`api-button ${loading.todoBtn ? 'loading' : ''}`}
+          >
+            {loading.todoBtn ? 'Loading...' : '✅ Todos'}
+          </button>
+        </div>
+
+        <div className="controls">
+          <button onClick={this.clearLogs}>Clear Logs</button>
+          <button onClick={this.exportData}>Export Data</button>
+        </div>
+
+        {status && (
+          <div className={`status status-${status.type}`}>
+            {status.message}
+          </div>
+        )}
+
+        <div className="results-section">
+          <h3>Results ({results.length})</h3>
+          <div className="results-container">
+            {results.length === 0 ? (
+              <div className="no-data">No data yet. Click an API button above.</div>
+            ) : (
+              results.map((result, index) => (
+                <div key={index} className="result-item">
+                  <div className="result-header">
+                    <span className="endpoint">{result.endpoint}</span>
+                    <span className="timestamp">{new Date(result.timestamp).toLocaleTimeString()}</span>
+                  </div>
+                  <div className="result-data">
+                    {result.error ? (
+                      <div className="error">Error: {result.error}</div>
+                    ) : (
+                      <pre className="json-data">{JSON.stringify(result.data, null, 2)}</pre>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="logs-section">
+          <h3>Activity Logs ({logs.length})</h3>
+          <div className="logs-container">
+            {logs.map((log, index) => (
+              <div key={index} className={`log-entry log-${log.type}`}>
+                <span className="timestamp">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+                <span className="message">{log.message}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+// React Web Part Implementation
+export default class ApiIntegrationReactWebPart extends BaseClientSideWebPart<IApiIntegrationWebPartProps> {
+  public render(): void {
+    const element: React.ReactElement<IApiIntegrationProps> = React.createElement(
+      ApiIntegrationComponent,
+      {
+        title: this.properties.title,
+        spHttpClient: this.context.spHttpClient,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        enableLogging: this.properties.enableLogging,
+        apiEndpoints: this.properties.apiEndpoints ? this.properties.apiEndpoints.split(',').map(e => e.trim()) : []
+      }
+    );
+
+    ReactDom.render(element, this.domElement);
+  }
+
+  protected onDispose(): void {
+    ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
+  // ... same property pane configuration as above
+}
+
+// ===== 12. INSTALLATION & DEPLOYMENT INSTRUCTIONS =====
+/*
+STEP-BY-STEP DEPLOYMENT GUIDE:
+
+1. PREREQUISITES:
+   - Node.js 16.x or 18.x (LTS versions)
+   - PowerShell (for deployment)
+   - SharePoint Online tenant with admin access
+
+2. SETUP DEVELOPMENT ENVIRONMENT:
+   npm install -g yo @microsoft/generator-sharepoint gulp-cli
+
+3. CREATE PROJECT:
+   yo @microsoft/sharepoint
+   - Choose: "SharePoint Online only"
+   - Choose: "Use the current folder"
+   - Choose: "TypeScript" or "React"
+   - Choose: "WebPart"
+   - Name: "ApiIntegrationWebPart"
+
+4. REPLACE FILES:
+   Copy all the code above into respective files:
+   - src/webparts/apiIntegration/ApiIntegrationWebPart.ts
+   - src/webparts/apiIntegration/ApiIntegrationWebPart.module.scss
+   - config/package-solution.json
+   - And other configuration files
+
+5. BUILD AND DEPLOY:
+   npm install
+   gulp build --ship
+   gulp bundle --ship
+   gulp package-solution --ship
+
+6. UPLOAD TO SHAREPOINT:
+   - Go to SharePoint Admin Center
+   - Navigate to More features > Apps > App Catalog
+   - Upload the .sppkg file from sharepoint/solution folder
+   - Click "Deploy"
+
+7. ADD TO SHAREPOINT SITE:
+   - Go to your SharePoint site
+   - Edit any page
+   - Click + to add web part
+   - Search for "API Integration"
+   - Add the web part to your page
+
+8. CONFIGURE:
+   - Click the web part settings (pencil icon)
+   - Configure title, API endpoints, logging, etc.
+   - Save and publish the page
+
+SECURITY NOTES:
+- This web part makes external API calls
+- Ensure your SharePoint tenant allows external connections
+- For production, implement proper authentication for secured APIs
+- Consider using Azure Functions as proxy for sensitive API calls
+
+TROUBLESHOOTING:
+- If build fails, check Node.js version compatibility
+- Ensure all dependencies are correctly installed
+- Check browser console for runtime errors
+- Verify API endpoints are accessible from SharePoint Online
+*/

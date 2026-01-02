@@ -116,6 +116,7 @@ function help {
 #    echo "Convert"
 #    echo "     Supported Formats: CycloneDx, SPDX, SWID, list, csv"
 #    echo "     Allows you to convert one SBOM format to another"
+#    echo ""
 #    echo "ReadSBOM"
 #    echo "     Additional Options: -cyclonedx , -spdx , -swd, -list , -csv , "
 #    echo "     "
@@ -123,15 +124,19 @@ function help {
 #    echo "ListSBOM"
 #    echo "     Additional Options: -vex"
 #    echo "     Lookup all the SBOM components in the vulnerability database, add the vex parameter to add the vex section to an SBOM"
+#    echo ""
 #    echo "ListUpgrade"
 #    echo "     Additional Options: -force"
 #    echo "     Lists out all of the libraries with an available update. Add force to include those that might be breaking changes."
 #    echo ""
 #    echo "ListOutdated"
+#    echo "     Lists out all outdated libraries or libraries that a newer version is available"
 #    echo ""
+#    echo "ListNewSafeVersions"
+#    echo "     Lists out all outdated libraries with a Safe Version of that library that is a newer version is available"
 #    echo ""
 
-
+# TODO: add  documentation for how to use Phylum added functions to be added
 
 }   
 
@@ -383,6 +388,9 @@ elif [ "$1" == "--search" ]; then
     
 fi
 
+
+# TODO: Add Phylum integration into the script as well
+# TODO: Add discovery capability into SCA
 
 # Vulnerable Component List
 # #!/bin/bash

@@ -1,0 +1,112 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/98defc7985669e643dd82bfa243c5938/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/7fb873e0fcaee882143421f1a6f9064b"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/cc8a997cebff6900ad9a4d9da674291f"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/cc8a997cebff6900ad9a4d9da674291f/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/7fb873e0fcaee882143421f1a6f9064b/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/7fb873e0fcaee882143421f1a6f9064b?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/7fb873e0fcaee882143421f1a6f9064b?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2022-09-21T20:00:47Z[UTC]",
+      "last_modified_on" : "2023-01-17T11:58:48Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "7fb873e0fcaee882143421f1a6f9064b",
+      "scheduled_end_date" : "2022-09-21T22:00:44Z[UTC]",
+      "start_date" : "2022-09-21T20:03:53Z[UTC]",
+      "end_date" : "2022-09-21T20:50:51Z[UTC]",
+      "expected_publish_date" : "2022-09-23T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 0,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 2,
+      "count_of_medium_sev_flaws" : 12,
+      "count_of_low_sev_flaws" : 1,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "KILLED_PARTIAL_RESULTS_AVAILABLE"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo-local.bhalpern.vuln.sa.veracode.io/verademo/logi_1663788814838",
+      "scan_id" : "cc8a997cebff6900ad9a4d9da674291f",
+      "target_url" : "http://verademo-local.bhalpern.vuln.sa.veracode.io/verademo/login",
+      "analysis_id" : "20d958df0df968028ed1fda3cf7e694e",
+      "analysis_name" : "Verademo-ISM",
+      "analysis_occurrence_id" : "98defc7985669e643dd82bfa243c5938",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "duration" : "46m57s",
+      "summary" : {
+        "start" : "2022-09-21T20:03:52.88Z",
+        "initial_start_time" : "2022-09-21T20:03:52.88Z",
+        "end" : "2022-09-21T20:50:50.532Z",
+        "total_duration" : 2817652,
+        "duration" : 2817652,
+        "completed" : true,
+        "exit_status" : "KILLED",
+        "bytes_sent" : 4099224,
+        "bytes_received" : 82749946,
+        "requests" : 7234,
+        "responses" : 9704,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 1,
+        "login_successes" : 159,
+        "login_failures" : 53,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : true
+      },
+      "verifications" : [ {
+        "success" : true,
+        "error_codes" : [ ],
+        "auth_id" : "eae8b8a5523290aebc38ded80e778f55",
+        "verification_type" : "AUTHENTICATION",
+        "auth_type" : "FORM"
+      }, {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      }, {
+        "success" : true,
+        "error_codes" : [ ],
+        "verification_type" : "CRAWL_CONFIGURATION"
+      } ],
+      "total_flaw_count" : 15,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : true,
+        "gateway_id" : "3b721074-603d-4c97-872d-c5aeb7987387",
+        "endpoint_id" : "d2dd50d5-5dcd-47fd-bf30-e0bd87f23789"
+      },
+      "scan_type" : "WEB_SCAN",
+      "scheduled_start_date" : "2022-09-21T20:00:47Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

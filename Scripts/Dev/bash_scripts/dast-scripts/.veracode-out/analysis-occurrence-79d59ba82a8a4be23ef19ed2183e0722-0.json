@@ -1,0 +1,207 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/79d59ba82a8a4be23ef19ed2183e0722/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/3a0aea16f666bfa607b6035b301fd8d0"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/847770082c2c496794e3cd16d0700ada"
+        },
+        "linked_platform_app_url" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#HomeAppProfile:90764:1517025::::::"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/847770082c2c496794e3cd16d0700ada/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/3a0aea16f666bfa607b6035b301fd8d0/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/3a0aea16f666bfa607b6035b301fd8d0?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/3a0aea16f666bfa607b6035b301fd8d0?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-11-16T21:42:24Z[UTC]",
+      "last_modified_on" : "2023-11-16T22:52:56Z[UTC]",
+      "capabilities" : [ "update_scan", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "3a0aea16f666bfa607b6035b301fd8d0",
+      "scheduled_end_date" : "2023-12-11T21:41:42Z[UTC]",
+      "start_date" : "2023-11-16T21:46:19Z[UTC]",
+      "end_date" : "2023-11-16T22:50:27Z[UTC]",
+      "expected_publish_date" : "2023-12-13T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 0,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 3,
+      "count_of_low_sev_flaws" : 2,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "FINISHED_RESULTS_AVAILABLE"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://dvwa.bhalpern.vuln.sa.veracode.io/dvw_1662655060959",
+      "scan_id" : "847770082c2c496794e3cd16d0700ada",
+      "target_url" : "http://dvwa.bhalpern.vuln.sa.veracode.io/dvwa",
+      "analysis_id" : "da3332182f80a4ede8b5fb010357fd79",
+      "analysis_name" : "DVWA-VERADEMO multi-login",
+      "analysis_occurrence_id" : "79d59ba82a8a4be23ef19ed2183e0722",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "linked_platform_app_id" : "1517025",
+      "linked_platform_app_uuid" : "b9fb596e-7320-45be-81e6-62f20621e98e",
+      "linked_platform_app_name" : "DVWA",
+      "result_import_status" : "COMPLETED",
+      "duration" : "1h4m8s",
+      "summary" : {
+        "start" : "2023-11-16T21:46:19.049Z",
+        "initial_start_time" : "2023-11-16T21:46:19.049Z",
+        "end" : "2023-11-16T22:50:27.245Z",
+        "total_duration" : 3848196,
+        "duration" : 3848196,
+        "completed" : true,
+        "exit_status" : "MIN_PRIORITY",
+        "bytes_sent" : 516382,
+        "bytes_received" : 110735481,
+        "requests" : 1013,
+        "responses" : 719,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 65,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : true
+      },
+      "verifications" : [ {
+        "success" : true,
+        "error_codes" : [ ],
+        "auth_id" : "c3f7488b2f598ada5dc6a04724631e91",
+        "verification_type" : "AUTHENTICATION",
+        "auth_type" : "FORM"
+      }, {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 5,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "MANUAL",
+      "scan_type" : "WEB_SCAN",
+      "enterprise_mode" : false,
+      "scheduled_start_date" : "2023-11-16T21:42:24Z[UTC]"
+    }, {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/d6978e10326610588d653ac049b9b029"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/eef1f0aa0908f5dc6a2e300ab83b4480"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/eef1f0aa0908f5dc6a2e300ab83b4480/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/d6978e10326610588d653ac049b9b029/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/d6978e10326610588d653ac049b9b029?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/d6978e10326610588d653ac049b9b029?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-11-16T21:42:24Z[UTC]",
+      "last_modified_on" : "2023-11-16T21:50:06Z[UTC]",
+      "capabilities" : [ "update_scan", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "d6978e10326610588d653ac049b9b029",
+      "scheduled_end_date" : "2023-12-11T21:41:42Z[UTC]",
+      "start_date" : "2023-11-16T21:46:17Z[UTC]",
+      "end_date" : "2023-11-16T21:48:58Z[UTC]",
+      "expected_publish_date" : "2023-12-13T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 2,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo.bhalpern.vuln.sa.veracode.io/veradem_1662655060957",
+      "scan_id" : "eef1f0aa0908f5dc6a2e300ab83b4480",
+      "target_url" : "http://verademo.bhalpern.vuln.sa.veracode.io/verademo",
+      "analysis_id" : "da3332182f80a4ede8b5fb010357fd79",
+      "analysis_name" : "DVWA-VERADEMO multi-login",
+      "analysis_occurrence_id" : "79d59ba82a8a4be23ef19ed2183e0722",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "duration" : "2m41s",
+      "summary" : {
+        "start" : "2023-11-16T21:46:17Z",
+        "initial_start_time" : "2023-11-16T21:46:17Z",
+        "end" : "2023-11-16T21:48:58.458Z",
+        "total_duration" : 161458,
+        "duration" : 161458,
+        "completed" : true,
+        "exit_status" : "FAILED_VERIFICATION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 3,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "LOGIN_SELENIUM_FAILURE" ],
+        "auth_id" : "ca625b697b4dcdbaaf4abb97abe1a4ff",
+        "verification_type" : "AUTHENTICATION",
+        "auth_type" : "FORM"
+      }, {
+        "success" : false,
+        "error_codes" : [ "UNRESOLVABLE_HOSTNAME" ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "AUTO",
+      "scan_type" : "WEB_SCAN",
+      "enterprise_mode" : false,
+      "scheduled_start_date" : "2023-11-16T21:42:24Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 2,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

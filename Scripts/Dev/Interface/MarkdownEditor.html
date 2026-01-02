@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Navigator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #569cd6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 8px 12px;
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #d4d4d4;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        .folder-btn {
+            padding: 8px 16px;
+            background: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .folder-btn:hover {
+            background: #1177bb;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .calendar-toggle {
+            padding: 6px 12px;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .calendar-toggle:hover {
+            background: #505050;
+        }
+
+        .calendar-toggle.active {
+            background: #0e639c;
+            border-color: #0e639c;
+            color: white;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #505050;
+        }
+
+        .filter-btn.active {
+            background: #0e639c;
+            border-color: #0e639c;
+            color: white;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #252526;
+            border-right: 1px solid #3c3c3c;
+            overflow: auto;
+        }
+
+        .file-list {
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 10px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #37373d;
+            border-left: 3px solid #007acc;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #d4d4d4;
+        }
+
+        .file-path {
+            font-size: 12px;
+            color: #858585;
+            margin-top: 2px;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #1e1e1e;
+        }
+
+        .content-preview {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .no-content {
+            text-align: center;
+            color: #858585;
+            padding: 50px;
+        }
+
+        .content-preview h1 {
+            color: #569cd6;
+            font-size: 32px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3c3c3c;
+            padding-bottom: 10px;
+        }
+
+        .content-preview h2 {
+            color: #4ec9b0;
+            font-size: 26px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .content-preview h3 {
+            color: #4fc1ff;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .content-preview p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .content-preview code {
+            background: #2d2d30;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #ce9178;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+
+        .content-preview pre {
+            background: #2d2d30;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 3px solid #007acc;
+        }
+
+        .content-preview pre code {
+            background: none;
+            padding: 0;
+            color: #d4d4d4;
+        }
+
+        .content-preview ul, .content-preview ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .content-preview li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .content-preview a {
+            color: #4fc1ff;
+            text-decoration: none;
+        }
+
+        .content-preview a:hover {
+            text-decoration: underline;
+        }
+
+        .content-preview blockquote {
+            border-left: 4px solid #007acc;
+            padding-left: 15px;
+            margin: 15px 0;
+            color: #9cdcfe;
+            font-style: italic;
+        }
+
+        .content-preview table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .content-preview th, .content-preview td {
+            border: 1px solid #3c3c3c;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .content-preview th {
+            background: #2d2d30;
+            color: #569cd6;
+        }
+
+        .stats {
+            font-size: 12px;
+            color: #858585;
+            margin-top: 5px;
+        }
+
+        .calendar-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calendar-view.active {
+            display: flex;
+        }
+
+        .calendar-modal {
+            background: #252526;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .calendar-modal-header {
+            padding: 20px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #569cd6;
+        }
+
+        .calendar-close {
+            background: #3c3c3c;
+            border: none;
+            color: #d4d4d4;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .calendar-close:hover {
+            background: #505050;
+        }
+
+        .calendar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .calendar-nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        .calendar-nav-btn {
+            background: #0e639c;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .calendar-nav-btn:hover {
+            background: #1177bb;
+        }
+
+        .calendar-month-year {
+            font-size: 24px;
+            font-weight: 600;
+            color: #569cd6;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 12px;
+            color: #858585;
+            padding: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #2d2d30;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            position: relative;
+            padding: 8px;
+            min-height: 70px;
+        }
+
+        .calendar-day:hover {
+            background: #3c3c3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-day-number {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .calendar-day.has-notes {
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5a3f 100%);
+            color: #4ec9b0;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-notes:hover {
+            background: linear-gradient(135deg, #245a3a 0%, #3a6f50 100%);
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #0e639c 0%, #1177bb 100%);
+            color: white;
+            box-shadow: 0 0 0 3px rgba(14, 99, 156, 0.3);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+            color: #555;
+            background: #1e1e1e;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #007acc;
+        }
+
+        .calendar-day.today .calendar-day-number {
+            color: #007acc;
+        }
+
+        .note-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .note-dot {
+            width: 6px;
+            height: 6px;
+            background: #4ec9b0;
+            border-radius: 50%;
+        }
+
+        .note-count-badge {
+            font-size: 11px;
+            color: #4ec9b0;
+            font-weight: 600;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e4e;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 Markdown Navigator</h1>
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search files...">
+            <button class="folder-btn" id="folderBtn">Open Folder</button>
+        </div>
+        <div class="filter-section">
+            <button class="calendar-toggle" id="calendarToggle">
+                <span>📅</span>
+                <span>Calendar</span>
+            </button>
+            <button class="filter-btn" data-filter="all">All Files</button>
+            <button class="filter-btn" data-filter="headers">📌 Headers</button>
+            <button class="filter-btn" data-filter="code">💻 Code Blocks</button>
+            <button class="filter-btn" data-filter="links">🔗 Links</button>
+            <button class="filter-btn" data-filter="lists">📋 Lists</button>
+            <button class="filter-btn" data-filter="tables">📊 Tables</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            
+            <div class="file-list" id="fileList">
+                <div class="no-content">Click "Open Folder" to load markdown files</div>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="content-preview" id="contentPreview">
+                <div class="no-content">
+                    <h2>Welcome to Markdown Navigator</h2>
+                    <p>Open a folder containing markdown files to get started</p>
+                </div>
+            </div>
+            <div class="calendar-container" id="calendarContainer" style="display: none;">
+                <div class="calendar-header">
+                    <button class="calendar-nav" id="prevMonth" style="display:inline-block">◀</button>
+                    <div class="calendar-month" id="calendarMonth" style="display:inline-block"></div>
+                    <button class="calendar-nav" id="nextMonth" style="display:inline-block">▶</button>
+                </div>
+                
+            </div>
+            <div class="calendar-grid" id="calendarGrid" style="border: dashed whitesmoke 1px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let allFiles = [];
+        let fileContents = new Map();
+        let currentFilter = 'all';
+        let currentFilePath = null;
+        let currentDate = new Date();
+        let selectedDate = null;
+        let dateFileMap = new Map();
+        let calendarVisible = false;
+
+        document.getElementById('folderBtn').addEventListener('click', async () => {
+            try {
+                const dirHandle = await window.showDirectoryPicker();
+                await loadFilesFromDirectory(dirHandle);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Error opening folder:', err);
+                }
+            }
+        });
+
+        document.getElementById('calendarToggle').addEventListener('click', () => {
+            calendarVisible = !calendarVisible;
+            const calendarContainer = document.getElementById('calendarContainer');
+            const toggleBtn = document.getElementById('calendarToggle');
+            
+            if (calendarVisible) {
+                calendarContainer.style.display = 'block';
+                toggleBtn.classList.add('active');
+            } else {
+                calendarContainer.style.display = 'none';
+                toggleBtn.classList.remove('active');
+                selectedDate = null;
+                renderCalendar();
+                renderFiles(allFiles);
+            }
+        });
+
+        async function loadFilesFromDirectory(dirHandle, basePath = '') {
+            allFiles = [];
+            fileContents.clear();
+            dateFileMap.clear();
+            
+            await processDirectory(dirHandle, basePath);
+            
+            buildDateFileMap();
+            renderFiles(allFiles);
+        }
+
+        function buildDateFileMap() {
+            allFiles.forEach(file => {
+                const dates = extractDatesFromFilename(file.name);
+                dates.forEach(dateStr => {
+                    if (!dateFileMap.has(dateStr)) {
+                        dateFileMap.set(dateStr, []);
+                    }
+                    dateFileMap.get(dateStr).push(file);
+                });
+            });
+        }
+
+        function extractDatesFromFilename(filename) {
+            const dates = [];
+            
+            // Remove file extension for cleaner parsing
+            const nameWithoutExt = filename.replace(/\.md$/i, '');
+            
+            // Split by common separators to get segments
+            const segments = nameWithoutExt.split(/[-_]/);
+            
+            // Look for date patterns in the segments
+            // Pattern 1: MM-DD-YY or MM-DD-YYYY (consecutive segments)
+            for (let i = 0; i < segments.length - 2; i++) {
+                const month = parseInt(segments[i]);
+                const day = parseInt(segments[i + 1]);
+                const yearStr = segments[i + 2];
+                let year = parseInt(yearStr);
+                
+                // Check if it's a valid date
+                if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
+                    // Convert 2-digit year to 4-digit
+                    if (year < 100) {
+                        year += year < 50 ? 2000 : 1900;
+                    }
+                    
+                    if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        if (!dates.includes(dateStr)) {
+                            dates.push(dateStr);
+                        }
+                    }
+                }
+            }
+            
+            // Pattern 2: YYYY-MM-DD or YYYYMMDD
+            const isoPattern = /(\d{4})[-_]?(\d{2})[-_]?(\d{2})/g;
+            let match;
+            
+            while ((match = isoPattern.exec(nameWithoutExt)) !== null) {
+                const year = parseInt(match[1]);
+                const month = parseInt(match[2]);
+                const day = parseInt(match[3]);
+                
+                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    if (!dates.includes(dateStr)) {
+                        dates.push(dateStr);
+                    }
+                }
+            }
+            
+            return dates;
+        }
+
+        function renderCalendar() {
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            
+            document.getElementById('calendarMonth').textContent = 
+                currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            // Day labels
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const label = document.createElement('div');
+                label.className = 'calendar-day-label';
+                label.textContent = day;
+                grid.appendChild(label);
+            });
+            
+            // Previous month days
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const day = prevMonthDays - i;
+                const cell = createDayCell(day, month - 1, year, true);
+                grid.appendChild(cell);
+            }
+            
+            // Current month days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = createDayCell(day, month, year, false);
+                
+                // Check if today
+                if (year === today.getFullYear() && 
+                    month === today.getMonth() && 
+                    day === today.getDate()) {
+                    cell.classList.add('today');
+                }
+                
+                grid.appendChild(cell);
+            }
+            
+            // Next month days
+            const remainingCells = 42 - grid.children.length + 7;
+            for (let day = 1; day < remainingCells - 6; day++) {
+                const cell = createDayCell(day, month + 1, year, true);
+                grid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(day, month, year, isOtherMonth) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day';
+            cell.textContent = day;
+            
+            if (isOtherMonth) {
+                cell.classList.add('other-month');
+            }
+            
+            // Normalize month for dates
+            let actualMonth = month;
+            let actualYear = year;
+            if (month < 0) {
+                actualMonth = 11;
+                actualYear--;
+            } else if (month > 11) {
+                actualMonth = 0;
+                actualYear++;
+            }
+            
+            const dateStr = `${actualYear}-${String(actualMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Check if this date has notes
+            if (dateFileMap.has(dateStr)) {
+                cell.classList.add('has-notes');
+                const count = dateFileMap.get(dateStr).length;
+                const badge = document.createElement('div');
+                badge.className = 'note-count';
+                badge.textContent = count;
+                cell.appendChild(badge);
+            }
+            
+            // Check if selected
+            if (selectedDate === dateStr) {
+                cell.classList.add('selected');
+            }
+            
+            cell.addEventListener('click', () => {
+                selectedDate = dateStr;
+                renderCalendar();
+                
+                if (dateFileMap.has(dateStr)) {
+                    const filesForDate = dateFileMap.get(dateStr);
+                    renderFiles(filesForDate);
+                } else {
+                    renderFiles([]);
+                }
+            });
+            
+            return cell;
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        async function processDirectory(dirHandle, basePath) {
+            for await (const entry of dirHandle.values()) {
+                const fullPath = basePath ? `${basePath}/${entry.name}` : entry.name;
+                
+                if (entry.kind === 'file' && entry.name.endsWith('.md')) {
+                    const file = await entry.getFile();
+                    const content = await file.text();
+                    
+                    allFiles.push({
+                        name: entry.name,
+                        path: fullPath,
+                        handle: entry
+                    });
+                    
+                    fileContents.set(fullPath, content);
+                } else if (entry.kind === 'directory') {
+                    await processDirectory(entry, fullPath);
+                }
+            }
+        }
+
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            selectedDate = null; // Clear date selection when searching
+            renderCalendar();
+            
+            const filtered = allFiles.filter(f => {
+                const content = fileContents.get(f.path) || '';
+                return f.name.toLowerCase().includes(query) || 
+                       f.path.toLowerCase().includes(query) ||
+                       content.toLowerCase().includes(query);
+            });
+            renderFiles(filtered);
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                currentFilter = e.target.dataset.filter;
+                selectedDate = null; // Clear date selection when filtering
+                renderCalendar();
+                
+                document.querySelectorAll('.filter-btn').forEach(b => 
+                    b.classList.remove('active')
+                );
+                e.target.classList.add('active');
+                
+                filterFiles();
+            });
+        });
+
+        function filterFiles() {
+            if (currentFilter === 'all') {
+                renderFiles(allFiles);
+                return;
+            }
+
+            const filtered = allFiles.filter(file => {
+                const content = fileContents.get(file.path) || '';
+                return checkFileFeature(content, currentFilter);
+            });
+            
+            renderFiles(filtered);
+        }
+
+        function checkFileFeature(content, feature) {
+            switch (feature) {
+                case 'headers':
+                    return /^#{1,6} .+$/m.test(content);
+                case 'code':
+                    return /```[\s\S]*?```/.test(content) || /`[^`\n]+`/.test(content);
+                case 'links':
+                    return /\[.+?\]\(.+?\)/.test(content);
+                case 'lists':
+                    return /^[\*\-\+] .+$/m.test(content) || /^\d+\. .+$/m.test(content);
+                case 'tables':
+                    return /\|.+\|/.test(content);
+                default:
+                    return true;
+            }
+        }
+
+        function renderFiles(files) {
+            const list = document.getElementById('fileList');
+            
+            if (files.length === 0) {
+                list.innerHTML = '<div class="no-content">No files found</div>';
+                return;
+            }
+
+            list.innerHTML = files.map(f => {
+                const content = fileContents.get(f.path) || '';
+                const stats = getFileStats(content);
+                
+                return `
+                    <div class="file-item ${currentFilePath === f.path ? 'active' : ''}" data-path="${f.path}">
+                        <div class="file-name">${f.name}</div>
+                        <div class="file-path">${f.path}</div>
+                        <div class="stats">${stats}</div>
+                    </div>
+                `;
+            }).join('');
+
+            list.querySelectorAll('.file-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const path = e.currentTarget.dataset.path;
+                    currentFilePath = path;
+                    
+                    document.querySelectorAll('.file-item').forEach(i => 
+                        i.classList.remove('active')
+                    );
+                    e.currentTarget.classList.add('active');
+                    
+                    displayContent(path);
+                });
+            });
+        }
+
+        function getFileStats(content) {
+            const lines = content.split('\n').length;
+            const words = content.split(/\s+/).length;
+            const headers = (content.match(/^#{1,6} .+$/gm) || []).length;
+            
+            return `${lines} lines • ${words} words • ${headers} headers`;
+        }
+
+        function displayContent(path) {
+            const content = fileContents.get(path) || '';
+            const preview = document.getElementById('contentPreview');
+            const html = convertMarkdownToHtml(content);
+            preview.innerHTML = html;
+        }
+
+        function convertMarkdownToHtml(md) {
+            let html = md;
+
+            // Code blocks
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+
+            // Headers
+            html = html.replace(/^###### (.+)$/gm, '<h6>$1</h6>');
+            html = html.replace(/^##### (.+)$/gm, '<h5>$1</h5>');
+            html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+            // Blockquotes
+            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+            // Bold and italic
+            html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/___(.+?)___/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+            // Images
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+
+            // Inline code
+            html = html.replace(/`([^`\n]+?)`/g, '<code>$1</code>');
+
+            // Unordered lists
+            html = html.replace(/^\* (.+)$/gm, '<ul><li>$1</li></ul>');
+            html = html.replace(/^- (.+)$/gm, '<ul><li>$1</li></ul>');
+            html = html.replace(/^\+ (.+)$/gm, '<ul><li>$1</li></ul>');
+            html = html.replace(/<\/ul>\n<ul>/g, '');
+
+            // Ordered lists
+            html = html.replace(/^\d+\. (.+)$/gm, '<ol><li>$1</li></ol>');
+            html = html.replace(/<\/ol>\n<ol>/g, '');
+
+            // Tables
+            html = html.replace(/\|(.+)\|/g, (match) => {
+                const cells = match.split('|').filter(cell => cell.trim());
+                const cellTags = cells.map(cell => `<td>${cell.trim()}</td>`).join('');
+                return `<tr>${cellTags}</tr>`;
+            });
+            html = html.replace(/(<tr>[\s\S]+?<\/tr>)/g, '<table>$1</table>');
+            html = html.replace(/<\/table>\n<table>/g, '');
+
+            // Horizontal rules
+            html = html.replace(/^---$/gm, '<hr>');
+            html = html.replace(/^\*\*\*$/gm, '<hr>');
+
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            html = `<p>${html}</p>`;
+
+            // Clean up empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+            html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<table>)/g, '$1');
+            html = html.replace(/(<\/table>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<pre>)/g, '$1');
+            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>)/g, '$1');
+            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ol>)/g, '$1');
+            html = html.replace(/(<\/ol>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<blockquote>)/g, '$1');
+            html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
+
+            return html;
+        }
+    </script>
+</body>
+</html>

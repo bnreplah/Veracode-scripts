@@ -1,0 +1,74 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?name=Verademo-2-20-24&page=0&size=20"
+    }
+  },
+  "_embedded" : {
+    "analyses" : [ {
+      "name" : "Verademo-2-20-24",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f1c5dcc7e16a22d2224df4835e23cc53"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f1c5dcc7e16a22d2224df4835e23cc53/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f1c5dcc7e16a22d2224df4835e23cc53/scans"
+        },
+        "analysis_result" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#ReviewResultsOneWASFlaws:90764:1980393:33106669:::33091888::677205:1"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=f1c5dcc7e16a22d2224df4835e23cc53"
+        },
+        "next_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/c77aa95b021bf0eed80d07b5ab28cee9"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/e02fe9beffd862bec094cb7d178e50e2"
+        }
+      },
+      "created_on" : "2024-02-20T18:37:25Z[UTC]",
+      "last_modified_on" : "2024-05-09T17:51:42Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "f1c5dcc7e16a22d2224df4835e23cc53",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2024-02-20T18:38:55Z",
+      "latest_occurrence_end_date_time" : "2024-02-22T18:38:55Z",
+      "next_occurrence_date_time" : "2024-05-09T23:00:00Z",
+      "latest_occurrence_id" : "e02fe9beffd862bec094cb7d178e50e2",
+      "next_occurrence_id" : "c77aa95b021bf0eed80d07b5ab28cee9",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "ACTIVE",
+        "start_date" : "2024-05-09T23:00:00Z[UTC]",
+        "duration" : {
+          "length" : 3,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2024-05-09T23:00:00Z[UTC]",
+        "effective_end_date" : "2024-05-12T23:00:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "FINISHED_RESULTS_AVAILABLE"
+      }
+    } ]
+  },
+  "capabilities" : [ "create_analysis", "select_visibility_type" ],
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 20,
+    "number" : 0
+  }
+}

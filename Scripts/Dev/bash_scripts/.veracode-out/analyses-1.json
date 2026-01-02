@@ -1,0 +1,518 @@
+{
+  "_links" : {
+    "previous" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?page=0&size=10"
+    },
+    "next" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?page=2&size=10"
+    },
+    "first" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?page=0&size=10"
+    },
+    "last" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?page=3&size=10"
+    },
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analyses?page=1&size=10"
+    }
+  },
+  "_embedded" : {
+    "analyses" : [ {
+      "name" : "veracode-api-test-012",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/c5c5f8db26668a83cbdee9a6560b6d63"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/c5c5f8db26668a83cbdee9a6560b6d63/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/c5c5f8db26668a83cbdee9a6560b6d63/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=c5c5f8db26668a83cbdee9a6560b6d63"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/d778d50d86ef6778f19991620d9e4775"
+        }
+      },
+      "created_on" : "2023-08-16T01:04:58Z[UTC]",
+      "last_modified_on" : "2023-08-16T23:59:04Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "c5c5f8db26668a83cbdee9a6560b6d63",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T23:59:00Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T23:59:00Z",
+      "latest_occurrence_id" : "d778d50d86ef6778f19991620d9e4775",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "end_date" : "2023-08-17T00:00:00Z[UTC]",
+        "effective_start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "effective_end_date" : "2023-08-17T23:59:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "test12345",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6c850691b35dde8cb187a363cd3c646f"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6c850691b35dde8cb187a363cd3c646f/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6c850691b35dde8cb187a363cd3c646f/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=6c850691b35dde8cb187a363cd3c646f"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/c4d00c902f5b26d14d83254115e3bdfe"
+        }
+      },
+      "created_on" : "2023-08-16T19:58:44Z[UTC]",
+      "last_modified_on" : "2023-08-16T23:59:04Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "6c850691b35dde8cb187a363cd3c646f",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T23:59:00Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T23:59:00Z",
+      "latest_occurrence_id" : "c4d00c902f5b26d14d83254115e3bdfe",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "end_date" : "2023-08-18T00:00:00Z[UTC]",
+        "effective_start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "effective_end_date" : "2023-08-17T23:59:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "veracode-api-test-011",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/8616c91e0d6891efff3ad3d044bb7f6d"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/8616c91e0d6891efff3ad3d044bb7f6d/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/8616c91e0d6891efff3ad3d044bb7f6d/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=8616c91e0d6891efff3ad3d044bb7f6d"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/23194afa8d9ba93c8006ddd953f0c0ed"
+        }
+      },
+      "created_on" : "2023-08-16T00:56:18Z[UTC]",
+      "last_modified_on" : "2023-08-16T23:59:04Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "8616c91e0d6891efff3ad3d044bb7f6d",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T23:59:00Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T23:59:00Z",
+      "latest_occurrence_id" : "23194afa8d9ba93c8006ddd953f0c0ed",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "end_date" : "2023-08-17T00:00:00Z[UTC]",
+        "effective_start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "effective_end_date" : "2023-08-17T23:59:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "test1234",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/e8d07573ec42bd97d90082ca53b06aeb"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/e8d07573ec42bd97d90082ca53b06aeb/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/e8d07573ec42bd97d90082ca53b06aeb/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=e8d07573ec42bd97d90082ca53b06aeb"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/301bf60c1d2d3f3b7bd55fdfe43a8b8c"
+        }
+      },
+      "created_on" : "2023-08-16T14:08:51Z[UTC]",
+      "last_modified_on" : "2023-08-16T23:59:04Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "e8d07573ec42bd97d90082ca53b06aeb",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T23:59:00Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T23:59:00Z",
+      "latest_occurrence_id" : "301bf60c1d2d3f3b7bd55fdfe43a8b8c",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "end_date" : "2023-08-18T00:00:00Z[UTC]",
+        "effective_start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "effective_end_date" : "2023-08-17T23:59:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "veracode-api-test-009",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/56a2a5ff081a2e2005b88a7ae841e648"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/56a2a5ff081a2e2005b88a7ae841e648/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/56a2a5ff081a2e2005b88a7ae841e648/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=56a2a5ff081a2e2005b88a7ae841e648"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/62a59f399c45b9a7b8537230b06e3d14"
+        }
+      },
+      "created_on" : "2023-08-16T00:45:16Z[UTC]",
+      "last_modified_on" : "2023-08-16T23:59:04Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "56a2a5ff081a2e2005b88a7ae841e648",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T23:59:00Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T23:59:00Z",
+      "latest_occurrence_id" : "62a59f399c45b9a7b8537230b06e3d14",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : false,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2023-08-16T23:59:00Z[UTC]",
+        "effective_end_date" : "2023-08-17T23:59:00Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "veracode-api-test-005",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/53032291468bf9add93a726fa6a47000"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/53032291468bf9add93a726fa6a47000/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/53032291468bf9add93a726fa6a47000/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=53032291468bf9add93a726fa6a47000"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/5ba4552ef47724197c1e136c43a3e680"
+        }
+      },
+      "created_on" : "2023-08-16T00:31:38Z[UTC]",
+      "last_modified_on" : "2023-08-16T00:31:41Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "53032291468bf9add93a726fa6a47000",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T00:31:38Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T00:31:38Z",
+      "latest_occurrence_id" : "5ba4552ef47724197c1e136c43a3e680",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : true,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T00:31:38Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2023-08-16T00:31:38Z[UTC]",
+        "effective_end_date" : "2023-08-17T00:31:38Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "veracode-via-api-test-008",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f3d99dbbc314d5a7f4fe3ea6d264eb64"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f3d99dbbc314d5a7f4fe3ea6d264eb64/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/f3d99dbbc314d5a7f4fe3ea6d264eb64/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=f3d99dbbc314d5a7f4fe3ea6d264eb64"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/3ff56e873af0b750133c63d8f32bcbe9"
+        }
+      },
+      "created_on" : "2023-08-16T00:03:42Z[UTC]",
+      "last_modified_on" : "2023-11-01T20:16:45Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "f3d99dbbc314d5a7f4fe3ea6d264eb64",
+      "org" : "90764",
+      "latest_verification_end_date_time" : "2023-11-01T20:20:30Z[UTC]",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T00:03:42Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T00:03:42Z",
+      "latest_occurrence_id" : "3ff56e873af0b750133c63d8f32bcbe9",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "PRESCAN_ONLY"
+      },
+      "throttled" : false,
+      "has_verification_failures" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "latest_verification_occurrence_id" : "1a03aee5571a35dc4706e777def01f91",
+      "latest_verification_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "veracode-via-api-test-007",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/4fabf26420b6968d14d9158b1cf16c0c"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/4fabf26420b6968d14d9158b1cf16c0c/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/4fabf26420b6968d14d9158b1cf16c0c/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=4fabf26420b6968d14d9158b1cf16c0c"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/9e5c377ae122e44cbbd2736f13a4c3f3"
+        }
+      },
+      "created_on" : "2023-08-16T00:02:53Z[UTC]",
+      "last_modified_on" : "2023-08-16T00:02:56Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "4fabf26420b6968d14d9158b1cf16c0c",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-16T00:02:53Z",
+      "latest_occurrence_end_date_time" : "2023-08-17T00:02:53Z",
+      "latest_occurrence_id" : "9e5c377ae122e44cbbd2736f13a4c3f3",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : true,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-16T00:02:53Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2023-08-16T00:02:53Z[UTC]",
+        "effective_end_date" : "2023-08-17T00:02:53Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "ver9-api-test-005",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6e489f7b97af9eb8486ebe5f9c95902c"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6e489f7b97af9eb8486ebe5f9c95902c/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/6e489f7b97af9eb8486ebe5f9c95902c/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=6e489f7b97af9eb8486ebe5f9c95902c"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/f7e4dc62a42eaa47cdea344f5cc094e4"
+        }
+      },
+      "created_on" : "2023-08-15T21:44:33Z[UTC]",
+      "last_modified_on" : "2023-08-15T21:44:36Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "6e489f7b97af9eb8486ebe5f9c95902c",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-15T21:44:33Z",
+      "latest_occurrence_end_date_time" : "2023-08-16T21:44:33Z",
+      "latest_occurrence_id" : "f7e4dc62a42eaa47cdea344f5cc094e4",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : true,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-15T21:44:33Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2023-08-15T21:44:33Z[UTC]",
+        "effective_end_date" : "2023-08-16T21:44:33Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      }
+    }, {
+      "name" : "verademo-api-test-005",
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/031083ed1247420b26bfbaf7cb932d5d"
+        },
+        "audits" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/031083ed1247420b26bfbaf7cb932d5d/audits"
+        },
+        "scans" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analyses/031083ed1247420b26bfbaf7cb932d5d/scans"
+        },
+        "analysis_occurrences" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences?analysis_id=031083ed1247420b26bfbaf7cb932d5d"
+        },
+        "latest_occurrence" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/4a165e54d8b92ff4fabeac335122189c"
+        }
+      },
+      "created_on" : "2023-08-15T21:23:49Z[UTC]",
+      "last_modified_on" : "2023-08-15T21:23:51Z[UTC]",
+      "capabilities" : [ "stop_and_save_analysis_occurrence", "stop_and_delete_analysis_occurrence", "link_platform_result", "update_analysis", "delete_analysis", "view_analysis_history" ],
+      "analysis_id" : "031083ed1247420b26bfbaf7cb932d5d",
+      "org" : "90764",
+      "number_of_scans" : 1,
+      "latest_occurrence_date_time" : "2023-08-15T21:23:49Z",
+      "latest_occurrence_end_date_time" : "2023-08-16T21:23:49Z",
+      "latest_occurrence_id" : "4a165e54d8b92ff4fabeac335122189c",
+      "actions" : [ ],
+      "schedule_frequency" : {
+        "frequency_type" : "ONCE"
+      },
+      "schedule_summary" : {
+        "now" : true,
+        "schedule_status" : "COMPLETED",
+        "start_date" : "2023-08-15T21:23:49Z[UTC]",
+        "duration" : {
+          "length" : 1,
+          "unit" : "DAY"
+        },
+        "effective_start_date" : "2023-08-15T21:23:49Z[UTC]",
+        "effective_end_date" : "2023-08-16T21:23:49Z[UTC]"
+      },
+      "throttled" : false,
+      "scan_type" : "WEB_SCAN",
+      "has_result_import_in_progress" : false,
+      "latest_occurrence_status" : {
+        "status_type" : "STOPPED"
+      }
+    } ]
+  },
+  "capabilities" : [ "create_analysis", "select_visibility_type" ],
+  "page" : {
+    "total_pages" : 4,
+    "total_elements" : 36,
+    "size" : 10,
+    "number" : 1
+  }
+}

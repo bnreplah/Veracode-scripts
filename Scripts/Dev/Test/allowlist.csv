@@ -1,0 +1,5 @@
+directory_restriction_type,http_and_https,url
+FOLDER_ONLY,TRUE,www.veracode.com,
+FILE,TRUE,www.veracode.com,
+NONE,TRUE,www.veracode.com,
+DIRECTORY_AND_SUBDIRECTORY,TRUE,www.veracode.com

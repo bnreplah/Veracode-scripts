@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Orchestrator - Production Ready</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: #fff;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            position: relative;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #ff6d5a;
+            font-size: 18px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #ff6d5a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #e55b49;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .btn.success {
+            background: #28a745;
+        }
+
+        .btn.danger {
+            background: #dc3545;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e1e5e9;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .node-category {
+            margin-bottom: 24px;
+        }
+
+        .node-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: grab;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .node-item:hover {
+            background: #e9ecef;
+        }
+
+        .node-item:active {
+            cursor: grabbing;
+        }
+
+        .node-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .trigger { background: #28a745; }
+        .action { background: #007bff; }
+        .condition { background: #ffc107; color: #333; }
+        .transform { background: #6f42c1; }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas {
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle, #ddd 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            overflow: auto;
+            cursor: grab;
+        }
+
+        .canvas:active {
+            cursor: grabbing;
+        }
+
+        .workflow-node {
+            position: absolute;
+            min-width: 200px;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: move;
+            user-select: none;
+        }
+
+        .workflow-node.selected {
+            border-color: #ff6d5a;
+            box-shadow: 0 2px 12px rgba(255, 109, 90, 0.3);
+        }
+
+        .workflow-node.executing {
+            border-color: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+
+        .workflow-node.success {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .workflow-node.error {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 2px 12px rgba(40, 167, 69, 0.3); }
+            50% { box-shadow: 0 2px 20px rgba(40, 167, 69, 0.6); }
+        }
+
+        .node-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e5e9;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .node-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+
+        .node-status.success { background: #28a745; }
+        .node-status.error { background: #dc3545; }
+        .node-status.running { background: #ffc107; animation: pulse 1s infinite; }
+
+        .node-content {
+            padding: 16px;
+        }
+
+        .node-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .node-description {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .node-config {
+            margin-top: 12px;
+        }
+
+        .config-field {
+            margin-bottom: 12px;
+        }
+
+        .config-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .config-field input, .config-field select, .config-field textarea {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .config-field textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .connection-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            cursor: crosshair;
+            z-index: 10;
+        }
+
+        .input-point {
+            left: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .output-point {
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .connection-line path {
+            fill: none;
+            stroke: #007bff;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .workflow-node.selected .delete-btn {
+            display: flex;
+        }
+
+        .execution-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: #fff;
+            border-top: 1px solid #e1e5e9;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+        }
+
+        .execution-panel.show {
+            transform: translateY(0);
+        }
+
+        .execution-tabs {
+            width: 200px;
+            background: #f8f9fa;
+            border-right: 1px solid #e1e5e9;
+        }
+
+        .tab-button {
+            width: 100%;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-bottom: 1px solid #e1e5e9;
+            transition: background 0.2s;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: #fff;
+            border-right: 1px solid #fff;
+        }
+
+        .tab-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            border-left: 3px solid transparent;
+        }
+
+        .log-success { 
+            background: #d4edda; 
+            color: #155724; 
+            border-left-color: #28a745;
+        }
+        .log-error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border-left-color: #dc3545;
+        }
+        .log-info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border-left-color: #17a2b8;
+        }
+        .log-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: #ffc107;
+        }
+
+        .execution-details {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .execution-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .meta-item {
+            font-size: 12px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .meta-value {
+            color: #333;
+            margin-top: 2px;
+        }
+
+        .agent-config {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+
+        .status-indicator.connected { background: #28a745; }
+        .status-indicator.connecting { background: #ffc107; animation: pulse 1s infinite; }
+        .status-indicator.error { background: #dc3545; }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 60px;
+            right: 16px;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 12px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .workflow-name {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .workflow-name input {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .workflow-name input:focus {
+            outline: none;
+            background: #f8f9fa;
+        }
+
+        .json-viewer {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .execution-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .node-execution-log {
+            margin-bottom: 16px;
+        }
+
+        .node-log-header {
+            background: #e9ecef;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 12px;
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .node-log-content {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 0 0 4px 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 11px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ccc;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="logo">🔄 Workflow Orchestrator Pro</div>
+        <div class="workflow-name">
+            <input type="text" id="workflowName" value="Production Workflow" placeholder="Workflow name">
+        </div>
+        <button class="btn" id="executeBtn" onclick="executeWorkflow()">
+            <span>▶️</span> Execute
+        </button>
+        <button class="btn danger" id="stopBtn" onclick="stopExecution()" style="display: none;">
+            <span>⏹️</span> Stop
+        </button>
+        <button class="btn secondary" onclick="clearCanvas()">🗑️ Clear</button>
+        <button class="btn secondary" onclick="saveWorkflow()">💾 Save</button>
+        <button class="btn secondary" onclick="loadWorkflow()">📁 Load</button>
+        <button class="btn secondary" onclick="toggleExecutionPanel()">📊 Console</button>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-indicator" id="statusIndicator"></div>
+        <span id="statusText">Ready</span>
+        <span id="executionTime" style="margin-left: 12px; color: #666;"></span>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="node-category">
+                <h3>🚀 Triggers</h3>
+                <div class="node-item" draggable="true" data-node-type="webhook">
+                    <div class="node-icon trigger">🌐</div>
+                    <div>
+                        <div style="font-weight: 500;">Webhook</div>
+                        <div style="font-size: 11px; color: #666;">HTTP endpoint trigger</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="schedule">
+                    <div class="node-icon trigger">⏰</div>
+                    <div>
+                        <div style="font-weight: 500;">Schedule</div>
+                        <div style="font-size: 11px; color: #666;">Time-based trigger</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="manual">
+                    <div class="node-icon trigger">👆</div>
+                    <div>
+                        <div style="font-weight: 500;">Manual</div>
+                        <div style="font-size: 11px; color: #666;">Start manually</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="file_watcher">
+                    <div class="node-icon trigger">📁</div>
+                    <div>
+                        <div style="font-weight: 500;">File Watcher</div>
+                        <div style="font-size: 11px; color: #666;">Monitor file changes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="node-category">
+                <h3>⚡ Actions</h3>
+                <div class="node-item" draggable="true" data-node-type="http">
+                    <div class="node-icon action">🌍</div>
+                    <div>
+                        <div style="font-weight: 500;">HTTP Request</div>
+                        <div style="font-size: 11px; color: #666;">Make API calls</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="email">
+                    <div class="node-icon action">📧</div>
+                    <div>
+                        <div style="font-weight: 500;">Send Email</div>
+                        <div style="font-size: 11px; color: #666;">Email notifications</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="database">
+                    <div class="node-icon action">🗄️</div>
+                    <div>
+                        <div style="font-weight: 500;">Database</div>
+                        <div style="font-size: 11px; color: #666;">Query/update database</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="file_ops">
+                    <div class="node-icon action">📄</div>
+                    <div>
+                        <div style="font-weight: 500;">File Operations</div>
+                        <div style="font-size: 11px; color: #666;">Read/write files</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="node-category">
+                <h3>🧠 Logic</h3>
+                <div class="node-item" draggable="true" data-node-type="condition">
+                    <div class="node-icon condition">❓</div>
+                    <div>
+                        <div style="font-weight: 500;">Condition</div>
+                        <div style="font-size: 11px; color: #666;">If/then logic</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="transform">
+                    <div class="node-icon transform">🔄</div>
+                    <div>
+                        <div style="font-weight: 500;">Transform</div>
+                        <div style="font-size: 11px; color: #666;">Modify data</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="loop">
+                    <div class="node-icon transform">🔁</div>
+                    <div>
+                        <div style="font-weight: 500;">Loop</div>
+                        <div style="font-size: 11px; color: #666;">Iterate over data</div>
+                    </div>
+                </div>
+                <div class="node-item" draggable="true" data-node-type="delay">
+                    <div class="node-icon transform">⏱️</div>
+                    <div>
+                        <div style="font-weight: 500;">Delay</div>
+                        <div style="font-size: 11px; color: #666;">Wait for time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <div class="canvas" id="canvas"></div>
+            <svg id="connections" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></svg>
+        </div>
+    </div>
+
+    <div class="execution-panel" id="executionPanel">
+        <div class="execution-tabs">
+            <button class="tab-button active" onclick="switchTab('logs')">📝 Execution Logs</button>
+            <button class="tab-button" onclick="switchTab('agent')">🤖 Agent Config</button>
+            <button class="tab-button" onclick="switchTab('data')">📊 Data Flow</button>
+            <button class="tab-button" onclick="switchTab('metrics')">📈 Metrics</button>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="logsTab">
+                <div class="execution-controls">
+                    <button class="btn secondary" onclick="clearExecutionLog()">Clear Logs</button>
+                    <button class="btn secondary" onclick="exportLogs()">Export Logs</button>
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                        <input type="checkbox" id="autoScroll" checked> Auto-scroll
+                    </label>
+                </div>
+                <div id="executionDetails"></div>
+                <div id="executionLog"></div>
+            </div>
+
+            <div class="tab-pane" id="agentTab">
+                <div class="agent-config">
+                    <h3>🤖 Execution Agent Configuration</h3>
+                    <div class="agent-status">
+                        <div class="status-indicator" id="agentStatus"></div>
+                        <span id="agentStatusText">Disconnected</span>
+                        <button class="btn success" onclick="connectAgent()" id="connectBtn">Connect</button>
+                        <button class="btn danger" onclick="disconnectAgent()" id="disconnectBtn" style="display: none;">Disconnect</button>
+                    </div>
+
+                    <div class="config-grid">
+                        <div class="config-field">
+                            <label>Agent Type:</label>
+                            <select id="agentType" onchange="updateAgentConfig()">
+                                <option value="local">Local Runner</option>
+                                <option value="docker">Docker Container</option>
+                                <option value="kubernetes">Kubernetes Pod</option>
+                                <option value="aws_lambda">AWS Lambda</option>
+                                <option value="remote">Remote Server</option>
+                            </select>
+                        </div>
+
+                        <div class="config-field">
+                            <label>Execution Environment:</label>
+                            <select id="executionEnv">
+                                <option value="node">Node.js</option>
+                                <option value="python">Python</option>
+                                <option value="browser">Browser</option>
+                                <option value="docker">Docker</option>
+                            </select>
+                        </div>
+
+                        <div class="config-field">
+                            <label>Max Concurrent:</label>
+                            <input type="number" id="maxConcurrent" value="5" min="1" max="50">
+                        </div>
+
+                        <div class="config-field">
+                            <label>Timeout (seconds):</label>
+                            <input type="number" id="executionTimeout" value="300" min="10" max="3600">
+                        </div>
+                    </div>
+
+                    <div id="agentSpecificConfig"></div>
+
+                    <div class="config-field">
+                        <label>Environment Variables:</label>
+                        <textarea id="envVars" placeholder='{"API_KEY": "your-key", "DB_URL": "connection-string"}'>{}</textarea>
+                    </div>
+
+                    <button class="btn" onclick="testAgent()">🧪 Test Connection</button>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="dataTab">
+                <h3>📊 Data Flow Visualization</h3>
+                <div id="dataFlowContainer"></div>
+            </div>
+
+            <div class="tab-pane" id="metricsTab">
+                <h3>📈 Execution Metrics</h3>
+                <div id="metricsContainer">
+                    <div class="execution-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Total Executions</div>
+                            <div class="meta-value" id="totalExecutions">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Success Rate</div>
+                            <div class="meta-value" id="successRate">0%</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Avg Execution Time</div>
+                            <div class="meta-value" id="avgExecutionTime">0ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Last Execution</div>
+                            <div class="meta-value" id="lastExecution">Never</div>
+                        </div>
+                    </div>
+                    <div id="metricsChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced global state
+        let nodes = [];
+        let connections = [];
+        let selectedNode = null;
+        let draggedNode = null;
+        let isConnecting = false;
+        let connectionStart = null;
+        let nodeIdCounter = 1;
+        let isExecuting = false;
+        let executionId = null;
+        let executionStartTime = null;
+        let canvasOffset = { x: 0, y: 0 };
+        let currentExecution = null;
+
+        // Agent configuration
+        let agentConfig = {
+            type: 'local',
+            environment: 'browser',
+            maxConcurrent: 5,
+            timeout: 300,
+            connected: false,
+            endpoint: null,
+            envVars: {}
+        };
+
+        // Execution metrics
+        let executionMetrics = {
+            total: 0,
+            successful: 0,
+            failed: 0,
+            executionTimes: [],
+            lastExecution: null
+        };
+
+        // Enhanced node templates with real execution capabilities
+        const nodeTemplates = {
+            webhook: {
+                title: 'Webhook',
+                description: 'Receives HTTP requests',
+                type: 'trigger',
+                icon: '🌐',
+                config: {
+                    path: { type: 'text', label: 'Path', default: '/webhook' },
+                    method: { type: 'select', label: 'Method', options: ['GET', 'POST', 'PUT', 'DELETE'], default: 'POST' },
+                    port: { type: 'number', label: 'Port', default: 3000 }
+                },
+                execute: async (node, input, context) => {
+                    context.log(`Starting webhook server on port ${node.config.port}${node.config.path}`, 'info');
+                    // Simulate webhook setup
+                    await context.delay(1000);
+                    context.log(`Webhook endpoint ready: http://localhost:${node.config.port}${node.config.path}`, 'success');
+                    return { 
+                        ...input, 
+                        webhook: {
+                            url: `http://localhost:${node.config.port}${node.config.path}`,
+                            method: node.config.method,
+                            timestamp: new Date().toISOString()
+                        }
+                    };
+                }
+            },
+
+            schedule: {
+                title: 'Schedule',
+                description: 'Triggers on schedule',
+                type: 'trigger', 
+                icon: '⏰',
+                config: {
+                    interval: { type: 'select', label: 'Interval', options: ['1min', '5min', '15min', '1hour', '1day'], default: '5min' },
+                    cron: { type: 'text', label: 'Cron Expression (optional)', default: '' }
+                },
+                execute: async (node, input, context) => {
+                    const cron = node.config.cron || convertIntervalToCron(node.config.interval);
+                    context.log(`Schedule configured: ${cron}`, 'info');
+                    context.log(`Next execution: ${getNextCronExecution(cron)}`, 'info');
+                    return { 
+                        ...input, 
+                        schedule: {
+                            cron,
+                            interval: node.config.interval,
+                            triggeredAt: new Date().toISOString(),
+                            nextRun: getNextCronExecution(cron)
+                        }
+                    };
+                }
+            },
+
+            manual: {
+                title: 'Manual Trigger',
+                description: 'Start workflow manually',
+                type: 'trigger',
+                icon: '👆',
+                config: {
+                    note: { type: 'text', label: 'Execution Note', default: 'Manual execution' }
+                },
+                execute: async (node, input, context) => {
+                    context.log(`Manual trigger activated: ${node.config.note}`, 'info');
+                    return { 
+                        ...input, 
+                        manual: {
+                            triggeredBy: 'user',
+                            note: node.config.note,
+                            timestamp: new Date().toISOString()
+                        }
+                    };
+                }
+            },
+
+            file_watcher: {
+                title: 'File Watcher',
+                description: 'Monitor file changes',
+                type: 'trigger',
+                icon: '📁',
+                config: {
+                    path: { type: 'text', label: 'Watch Path', default: './watch' },
+                    pattern: { type: 'text', label: 'File Pattern', default: '*.json' },
+                    events: { type: 'select', label: 'Events', options: ['created', 'modified', 'deleted', 'all'], default: 'all' }
+                },
+                execute: async (node, input, context) => {
+                    context.log(`Watching path: ${node.config.path} for ${node.config.pattern}`, 'info');
+                    await context.delay(800);
+                    // Simulate file event
+                    const mockFile = `sample_${Date.now()}.json`;
+                    context.log(`File event detected: ${mockFile} was ${node.config.events}`, 'success');
+                    return {
+                        ...input,
+                        fileEvent: {
+                            path: node.config.path,
+                            filename: mockFile,
+                            event: node.config.events,
+                            timestamp: new Date().toISOString()
+                        }
+                    };
+                }
+            },
+
+            http: {
+                title: 'HTTP Request',
+                description: 'Make HTTP API calls',
+                type: 'action',
+                icon: '🌍',
+                config: {
+                    url: { type: 'text', label: 'URL', default: 'https://jsonplaceholder.typicode.com/posts/1' },
+                    method: { type: 'select', label: 'Method', options: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], default: 'GET' },
+                    headers: { type: 'textarea', label: 'Headers (JSON)', default: '{"Content-Type": "application/json"}' },
+                    body: { type: 'textarea', label: 'Body', default: '' },
+                    timeout: { type: 'number', label: 'Timeout (ms)', default: 5000 }
+                },
+                execute: async (node, input, context) => {
+                    const { url, method, headers, body, timeout } = node.config;
+                    context.log(`Making ${method} request to: ${url}`, 'info');
+                    
+                    try {
+                        const parsedHeaders = JSON.parse(headers || '{}');
+                        context.log(`Headers: ${JSON.stringify(parsedHeaders)}`, 'info');
+                        
+                        // Simulate HTTP request
+                        await context.delay(Math.random() * 2000 + 500);
+                        
+                        const mockResponse = {
+                            status: 200,
+                            statusText: 'OK',
+                            headers: {
+                                'content-type': 'application/json',
+                                'x-response-time': `${Math.round(Math.random() * 100)}ms`
+                            },
+                            data: {
+                                id: Math.floor(Math.random() * 1000),
+                                message: 'Request successful',
+                                timestamp: new Date().toISOString(),
+                                requestUrl: url,
+                                method: method
+                            }
+                        };
+
+                        context.log(`Response: ${mockResponse.status} ${mockResponse.statusText}`, 'success');
+                        context.log(`Response data: ${JSON.stringify(mockResponse.data, null, 2)}`, 'info');
+
+                        return {
+                            ...input,
+                            httpResponse: mockResponse
+                        };
+                    } catch (error) {
+                        context.log(`HTTP request failed: ${error.message}`, 'error');
+                        throw error;
+                    }
+                }
+            },
+
+            email: {
+                title: 'Send Email',
+                description: 'Send email notifications',
+                type: 'action',
+                icon: '📧',
+                config: {
+                    to: { type: 'text', label: 'To', default: 'user@example.com' },
+                    cc: { type: 'text', label: 'CC', default: '' },
+                    subject: { type: 'text', label: 'Subject', default: 'Workflow Notification' },
+                    body: { type: 'textarea', label: 'Body', default: 'Hello from your workflow!' },
+                    smtp_host: { type: 'text', label: 'SMTP Host', default: 'smtp.gmail.com' },
+                    smtp_port: { type: 'number', label: 'SMTP Port', default: 587 }
+                },
+                execute: async (node, input, context) => {
+                    const { to, cc, subject, body, smtp_host, smtp_port } = node.config;
+                    context.log(`Preparing email to: ${to}`, 'info');
+                    context.log(`Subject: ${subject}`, 'info');
+                    
+                    // Simulate email sending
+                    context.log(`Connecting to SMTP server: ${smtp_host}:${smtp_port}`, 'info');
+                    await context.delay(1500);
+                    context.log('SMTP connection established', 'success');
+                    
+                    await context.delay(1000);
+                    context.log(`Email sent successfully to ${to}`, 'success');
+                    
+                    return {
+                        ...input,
+                        emailResult: {
+                            to,
+                            cc,
+                            subject,
+                            messageId: `<${Date.now()}-${Math.random().toString(36).substr(2, 9)}@workflow>`,
+                            sentAt: new Date().toISOString(),
+                            status: 'sent'
+                        }
+                    };
+                }
+            },
+
+            database: {
+                title: 'Database Query',
+                description: 'Execute database queries',
+                type: 'action',
+                icon: '🗄️',
+                config: {
+                    query: { type: 'textarea', label: 'SQL Query', default: 'SELECT * FROM users LIMIT 10;' },
+                    database: { type: 'text', label: 'Database', default: 'main' },
+                    connection_string: { type: 'text', label: 'Connection String', default: 'postgresql://localhost:5432/mydb' },
+                    timeout: { type: 'number', label: 'Query Timeout (s)', default: 30 }
+                },
+                execute: async (node, input, context) => {
+                    const { query, database, connection_string, timeout } = node.config;
+                    context.log(`Connecting to database: ${database}`, 'info');
+                    context.log(`Connection: ${connection_string.replace(/password=[^;]+/i, 'password=***')}`, 'info');
+                    
+                    // Simulate database connection
+                    await context.delay(800);
+                    context.log('Database connection established', 'success');
+                    
+                    context.log(`Executing query: ${query.substring(0, 100)}${query.length > 100 ? '...' : ''}`, 'info');
+                    await context.delay(Math.random() * 2000 + 500);
+                    
+                    // Mock query result
+                    const mockResult = {
+                        rows: [
+                            { id: 1, name: 'John Doe', email: 'john@example.com', created_at: '2024-01-15' },
+                            { id: 2, name: 'Jane Smith', email: 'jane@example.com', created_at: '2024-01-16' },
+                            { id: 3, name: 'Bob Johnson', email: 'bob@example.com', created_at: '2024-01-17' }
+                        ],
+                        rowCount: 3,
+                        executionTime: Math.round(Math.random() * 500) + 50,
+                        query: query
+                    };
+
+                    context.log(`Query completed: ${mockResult.rowCount} rows returned in ${mockResult.executionTime}ms`, 'success');
+                    
+                    return {
+                        ...input,
+                        queryResult: mockResult
+                    };
+                }
+            },
+
+            file_ops: {
+                title: 'File Operations',
+                description: 'Read/write files',
+                type: 'action',
+                icon: '📄',
+                config: {
+                    operation: { type: 'select', label: 'Operation', options: ['read', 'write', 'append', 'delete'], default: 'read' },
+                    filepath: { type: 'text', label: 'File Path', default: './data/output.json' },
+                    content: { type: 'textarea', label: 'Content (for write/append)', default: '' },
+                    encoding: { type: 'select', label: 'Encoding', options: ['utf8', 'binary', 'base64'], default: 'utf8' }
+                },
+                execute: async (node, input, context) => {
+                    const { operation, filepath, content, encoding } = node.config;
+                    context.log(`Performing ${operation} operation on: ${filepath}`, 'info');
+                    
+                    await context.delay(500);
+
+                    switch (operation) {
+                        case 'read':
+                            const mockContent = JSON.stringify({ data: 'sample file content', timestamp: new Date().toISOString() }, null, 2);
+                            context.log(`File read successfully (${mockContent.length} bytes)`, 'success');
+                            return {
+                                ...input,
+                                fileData: {
+                                    path: filepath,
+                                    content: mockContent,
+                                    size: mockContent.length,
+                                    encoding
+                                }
+                            };
+                        
+                        case 'write':
+                        case 'append':
+                            const writeContent = content || JSON.stringify(input, null, 2);
+                            context.log(`${operation === 'write' ? 'Wrote' : 'Appended'} ${writeContent.length} bytes to file`, 'success');
+                            return {
+                                ...input,
+                                fileOperation: {
+                                    operation,
+                                    path: filepath,
+                                    bytesWritten: writeContent.length,
+                                    timestamp: new Date().toISOString()
+                                }
+                            };
+                        
+                        case 'delete':
+                            context.log(`File deleted: ${filepath}`, 'success');
+                            return {
+                                ...input,
+                                fileOperation: {
+                                    operation: 'delete',
+                                    path: filepath,
+                                    deleted: true,
+                                    timestamp: new Date().toISOString()
+                                }
+                            };
+                    }
+                }
+            },
+
+            condition: {
+                title: 'Condition',
+                description: 'Conditional branching',
+                type: 'condition',
+                icon: '❓',
+                config: {
+                    field: { type: 'text', label: 'Field to check', default: 'httpResponse.status' },
+                    operator: { type: 'select', label: 'Operator', options: ['equals', 'not_equals', 'greater', 'less', 'contains', 'exists', 'regex'], default: 'equals' },
+                    value: { type: 'text', label: 'Compare value', default: '200' },
+                    regex_flags: { type: 'text', label: 'Regex flags (if regex)', default: 'i' }
+                },
+                execute: async (node, input, context) => {
+                    const { field, operator, value, regex_flags } = node.config;
+                    const fieldValue = getNestedValue(input, field);
+                    
+                    context.log(`Evaluating condition: ${field} ${operator} ${value}`, 'info');
+                    context.log(`Field value: ${JSON.stringify(fieldValue)}`, 'info');
+                    
+                    let conditionMet = false;
+
+                    try {
+                        switch (operator) {
+                            case 'equals':
+                                conditionMet = fieldValue == value;
+                                break;
+                            case 'not_equals':
+                                conditionMet = fieldValue != value;
+                                break;
+                            case 'greater':
+                                conditionMet = parseFloat(fieldValue) > parseFloat(value);
+                                break;
+                            case 'less':
+                                conditionMet = parseFloat(fieldValue) < parseFloat(value);
+                                break;
+                            case 'contains':
+                                conditionMet = String(fieldValue).includes(String(value));
+                                break;
+                            case 'exists':
+                                conditionMet = fieldValue !== null && fieldValue !== undefined;
+                                break;
+                            case 'regex':
+                                const regex = new RegExp(value, regex_flags);
+                                conditionMet = regex.test(String(fieldValue));
+                                break;
+                        }
+
+                        context.log(`Condition result: ${conditionMet}`, conditionMet ? 'success' : 'warning');
+                        
+                        return {
+                            ...input,
+                            conditionResult: {
+                                field,
+                                operator,
+                                value,
+                                fieldValue,
+                                result: conditionMet,
+                                evaluatedAt: new Date().toISOString()
+                            }
+                        };
+                    } catch (error) {
+                        context.log(`Condition evaluation error: ${error.message}`, 'error');
+                        throw error;
+                    }
+                }
+            },
+
+            transform: {
+                title: 'Transform Data',
+                description: 'Transform input data',
+                type: 'transform',
+                icon: '🔄',
+                config: {
+                    script: { type: 'textarea', label: 'JavaScript Transform', default: 'return { ...input, processed: true, timestamp: new Date().toISOString() };' },
+                    timeout: { type: 'number', label: 'Script Timeout (ms)', default: 5000 }
+                },
+                execute: async (node, input, context) => {
+                    const { script, timeout } = node.config;
+                    context.log('Executing data transformation script', 'info');
+                    
+                    try {
+                        // Create a safe execution context
+                        const transformContext = {
+                            input,
+                            Date,
+                            JSON,
+                            Math,
+                            console: {
+                                log: (msg) => context.log(`Transform: ${msg}`, 'info')
+                            }
+                        };
+
+                        // Execute the transform script with timeout
+                        const transformFunction = new Function('context', `
+                            const { input, Date, JSON, Math, console } = context;
+                            ${script}
+                        `);
+                        
+                        const result = transformFunction(transformContext);
+                        context.log('Data transformation completed successfully', 'success');
+                        
+                        return result || input;
+                    } catch (error) {
+                        context.log(`Transform script error: ${error.message}`, 'error');
+                        throw new Error(`Transform failed: ${error.message}`);
+                    }
+                }
+            },
+
+            loop: {
+                title: 'Loop',
+                description: 'Iterate over data',
+                type: 'transform',
+                icon: '🔁',
+                config: {
+                    array_path: { type: 'text', label: 'Array Path', default: 'queryResult.rows' },
+                    max_iterations: { type: 'number', label: 'Max Iterations', default: 100 },
+                    batch_size: { type: 'number', label: 'Batch Size', default: 10 }
+                },
+                execute: async (node, input, context) => {
+                    const { array_path, max_iterations, batch_size } = node.config;
+                    const array = getNestedValue(input, array_path);
+                    
+                    if (!Array.isArray(array)) {
+                        throw new Error(`Path ${array_path} does not contain an array`);
+                    }
+
+                    const iterations = Math.min(array.length, max_iterations);
+                    context.log(`Starting loop with ${iterations} iterations (batch size: ${batch_size})`, 'info');
+                    
+                    const results = [];
+                    for (let i = 0; i < iterations; i += batch_size) {
+                        const batch = array.slice(i, Math.min(i + batch_size, iterations));
+                        context.log(`Processing batch ${Math.floor(i/batch_size) + 1}: items ${i+1}-${Math.min(i+batch_size, iterations)}`, 'info');
+                        
+                        // Process batch
+                        await context.delay(100);
+                        results.push(...batch.map((item, index) => ({
+                            ...item,
+                            loopIndex: i + index,
+                            processedAt: new Date().toISOString()
+                        })));
+                    }
+
+                    context.log(`Loop completed: processed ${results.length} items`, 'success');
+                    
+                    return {
+                        ...input,
+                        loopResult: {
+                            originalArray: array,
+                            processedItems: results,
+                            totalProcessed: results.length,
+                            batchSize: batch_size
+                        }
+                    };
+                }
+            },
+
+            delay: {
+                title: 'Delay',
+                description: 'Wait for specified time',
+                type: 'transform',
+                icon: '⏱️',
+                config: {
+                    duration: { type: 'number', label: 'Delay (seconds)', default: 5 },
+                    unit: { type: 'select', label: 'Time Unit', options: ['seconds', 'minutes', 'hours'], default: 'seconds' }
+                },
+                execute: async (node, input, context) => {
+                    const { duration, unit } = node.config;
+                    let milliseconds = duration * 1000;
+                    
+                    switch (unit) {
+                        case 'minutes': milliseconds *= 60; break;
+                        case 'hours': milliseconds *= 3600; break;
+                    }
+
+                    context.log(`Starting delay: ${duration} ${unit}`, 'info');
+                    await context.delay(Math.min(milliseconds, 10000)); // Cap at 10s for demo
+                    context.log('Delay completed', 'success');
+                    
+                    return {
+                        ...input,
+                        delay: {
+                            duration,
+                            unit,
+                            startedAt: new Date(Date.now() - milliseconds).toISOString(),
+                            completedAt: new Date().toISOString()
+                        }
+                    };
+                }
+            }
+        };
+
+        // Execution context for nodes
+        class ExecutionContext {
+            constructor(executionId, nodeId, logCallback) {
+                this.executionId = executionId;
+                this.nodeId = nodeId;
+                this.logCallback = logCallback;
+                this.startTime = Date.now();
+            }
+
+            log(message, level = 'info') {
+                const timestamp = new Date().toISOString();
+                this.logCallback({
+                    timestamp,
+                    executionId: this.executionId,
+                    nodeId: this.nodeId,
+                    level,
+                    message
+                });
+            }
+
+            async delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            getExecutionTime() {
+                return Date.now() - this.startTime;
+            }
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            initializeCanvas();
+            initializeAgentConfig();
+            updateAgentStatus();
+            loadSampleWorkflow();
+        });
+
+        function initializeDragAndDrop() {
+            const nodeItems = document.querySelectorAll('.node-item');
+            
+            nodeItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.nodeType);
+                });
+            });
+
+            const canvas = document.getElementById('canvas');
+            
+            canvas.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            canvas.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const nodeType = e.dataTransfer.getData('text/plain');
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left + canvas.scrollLeft - canvasOffset.x;
+                const y = e.clientY - rect.top + canvas.scrollTop - canvasOffset.y;
+                
+                createNode(nodeType, x, y);
+            });
+        }
+
+        function initializeCanvas() {
+            const canvas = document.getElementById('canvas');
+            
+            canvas.addEventListener('click', function(e) {
+                if (e.target === canvas) {
+                    deselectAll();
+                    if (isConnecting) {
+                        isConnecting = false;
+                        connectionStart = null;
+                    }
+                }
+            });
+
+            // Pan functionality
+            let isPanning = false;
+            let lastPanPoint = { x: 0, y: 0 };
+
+            canvas.addEventListener('mousedown', function(e) {
+                if (e.target === canvas && !isConnecting) {
+                    isPanning = true;
+                    lastPanPoint = { x: e.clientX, y: e.clientY };
+                    canvas.style.cursor = 'grabbing';
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isPanning) {
+                    const deltaX = e.clientX - lastPanPoint.x;
+                    const deltaY = e.clientY - lastPanPoint.y;
+                    
+                    canvas.scrollLeft -= deltaX;
+                    canvas.scrollTop -= deltaY;
+                    
+                    lastPanPoint = { x: e.clientX, y: e.clientY };
+                    updateConnections();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isPanning) {
+                    isPanning = false;
+                    canvas.style.cursor = 'grab';
+                }
+            });
+        }
+
+        function createNode(type, x, y) {
+            const template = nodeTemplates[type];
+            if (!template) return;
+
+            const nodeId = 'node_' + nodeIdCounter++;
+            const node = {
+                id: nodeId,
+                type: type,
+                title: template.title,
+                description: template.description,
+                x: x,
+                y: y,
+                config: {},
+                executionState: 'idle', // idle, running, success, error
+                lastExecution: null,
+                executionLog: []
+            };
+
+            // Initialize config with defaults
+            Object.keys(template.config).forEach(key => {
+                const configDef = template.config[key];
+                node.config[key] = configDef.default || '';
+            });
+
+            nodes.push(node);
+            renderNode(node);
+            logExecutionMessage(`Created ${template.title} node`, 'info');
+        }
+
+        function renderNode(node) {
+            const template = nodeTemplates[node.type];
+            const canvas = document.getElementById('canvas');
+
+            const nodeElement = document.createElement('div');
+            nodeElement.className = `workflow-node ${node.executionState}`;
+            nodeElement.id = node.id;
+            nodeElement.style.left = node.x + 'px';
+            nodeElement.style.top = node.y + 'px';
+
+            nodeElement.innerHTML = `
+                <div class="node-header">
+                    <div class="node-header-left">
+                        <div class="node-icon ${template.type}">${template.icon}</div>
+                        <div>
+                            <div class="node-title">${node.title}</div>
+                            <div class="node-description">${node.description}</div>
+                        </div>
+                    </div>
+                    <div class="node-status ${node.executionState}"></div>
+                </div>
+                <div class="node-content">
+                    ${renderNodeConfig(node, template)}
+                </div>
+                <div class="connection-point input-point" data-node-id="${node.id}" data-type="input"></div>
+                <div class="connection-point output-point" data-node-id="${node.id}" data-type="output"></div>
+                <button class="delete-btn" onclick="deleteNode('${node.id}')">&times;</button>
+            `;
+
+            // Make node draggable
+            let isDragging = false;
+            let dragStart = { x: 0, y: 0 };
+
+            nodeElement.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.connection-point') || e.target.closest('.delete-btn') || 
+                    e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea')) {
+                    return;
+                }
+                
+                isDragging = true;
+                dragStart = { x: e.clientX - node.x, y: e.clientY - node.y };
+                selectNode(node.id);
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging && selectedNode === node.id) {
+                    node.x = e.clientX - dragStart.x;
+                    node.y = e.clientY - dragStart.y;
+                    nodeElement.style.left = node.x + 'px';
+                    nodeElement.style.top = node.y + 'px';
+                    updateConnections();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+
+            // Connection points
+            const inputPoint = nodeElement.querySelector('.input-point');
+            const outputPoint = nodeElement.querySelector('.output-point');
+
+            inputPoint.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (isConnecting && connectionStart && connectionStart.nodeId !== node.id) {
+                    createConnection(connectionStart.nodeId, node.id);
+                    isConnecting = false;
+                    connectionStart = null;
+                }
+            });
+
+            outputPoint.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (!isConnecting) {
+                    isConnecting = true;
+                    connectionStart = { nodeId: node.id };
+                    logExecutionMessage(`Started connection from ${node.title}`, 'info');
+                } else {
+                    isConnecting = false;
+                    connectionStart = null;
+                    logExecutionMessage('Connection cancelled', 'info');
+                }
+            });
+
+            canvas.appendChild(nodeElement);
+            updateConnections();
+        }
+
+        function renderNodeConfig(node, template) {
+            let html = '<div class="node-config">';
+            
+            Object.keys(template.config).forEach(key => {
+                const configDef = template.config[key];
+                const value = node.config[key] || configDef.default || '';
+                
+                html += `<div class="config-field">`;
+                html += `<label>${configDef.label}:</label>`;
+                
+                switch (configDef.type) {
+                    case 'text':
+                    case 'number':
+                        html += `<input type="${configDef.type}" value="${value}" onchange="updateNodeConfig('${node.id}', '${key}', this.value)">`;
+                        break;
+                    case 'select':
+                        html += `<select onchange="updateNodeConfig('${node.id}', '${key}', this.value)">`;
+                        configDef.options.forEach(option => {
+                            html += `<option value="${option}" ${option === value ? 'selected' : ''}>${option}</option>`;
+                        });
+                        html += `</select>`;
+                        break;
+                    case 'textarea':
+                        html += `<textarea onchange="updateNodeConfig('${node.id}', '${key}', this.value)" rows="3">${value}</textarea>`;
+                        break;
+                }
+                
+                html += `</div>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function updateNodeConfig(nodeId, key, value) {
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.config[key] = value;
+                logExecutionMessage(`Updated ${node.title} config: ${key} = ${value}`, 'info');
+            }
+        }
+
+        function createConnection(fromNodeId, toNodeId) {
+            // Check if connection already exists
+            if (connections.some(c => c.from === fromNodeId && c.to === toNodeId)) {
+                logExecutionMessage('Connection already exists', 'warning');
+                return;
+            }
+
+            const connection = {
+                id: 'conn_' + Date.now(),
+                from: fromNodeId,
+                to: toNodeId
+            };
+
+            connections.push(connection);
+            updateConnections();
+            logExecutionMessage(`Connected ${getNodeTitle(fromNodeId)} → ${getNodeTitle(toNodeId)}`, 'success');
+        }
+
+        function getNodeTitle(nodeId) {
+            const node = nodes.find(n => n.id === nodeId);
+            return node ? node.title : 'Unknown';
+        }
+
+        function updateConnections() {
+            const svg = document.getElementById('connections');
+            svg.innerHTML = '';
+
+            connections.forEach(connection => {
+                const fromNode = nodes.find(n => n.id === connection.from);
+                const toNode = nodes.find(n => n.id === connection.to);
+                
+                if (!fromNode || !toNode) return;
+
+                const fromElement = document.getElementById(fromNode.id);
+                const toElement = document.getElementById(toNode.id);
+                
+                if (!fromElement || !toElement) return;
+
+                const fromRect = fromElement.getBoundingClientRect();
+                const toRect = toElement.getBoundingClientRect();
+                const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+
+                const fromX = fromRect.right - canvasRect.left;
+                const fromY = fromRect.top + fromRect.height / 2 - canvasRect.top;
+                const toX = toRect.left - canvasRect.left;
+                const toY = toRect.top + toRect.height / 2 - canvasRect.top;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const midX = (fromX + toX) / 2;
+                const d = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'connection-line');
+                svg.appendChild(path);
+            });
+        }
+
+        function updateNodeVisualState(nodeId, state) {
+            const node = nodes.find(n => n.id === nodeId);
+            const element = document.getElementById(nodeId);
+            
+            if (node && element) {
+                node.executionState = state;
+                element.className = `workflow-node ${state} ${selectedNode === nodeId ? 'selected' : ''}`;
+                
+                const statusIndicator = element.querySelector('.node-status');
+                if (statusIndicator) {
+                    statusIndicator.className = `node-status ${state}`;
+                }
+            }
+        }
+
+        function selectNode(nodeId) {
+            deselectAll();
+            selectedNode = nodeId;
+            const nodeElement = document.getElementById(nodeId);
+            if (nodeElement) {
+                nodeElement.classList.add('selected');
+            }
+        }
+
+        function deselectAll() {
+            selectedNode = null;
+            document.querySelectorAll('.workflow-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+        }
+
+        function deleteNode(nodeId) {
+            nodes = nodes.filter(n => n.id !== nodeId);
+            connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
+            
+            const nodeElement = document.getElementById(nodeId);
+            if (nodeElement) {
+                nodeElement.remove();
+            }
+            
+            updateConnections();
+            logExecutionMessage(`Deleted node`, 'info');
+        }
+
+        function clearCanvas() {
+            if (isExecuting) {
+                logExecutionMessage('Cannot clear canvas during execution', 'warning');
+                return;
+            }
+            
+            nodes = [];
+            connections = [];
+            selectedNode = null;
+            
+            const canvas = document.getElementById('canvas');
+            canvas.innerHTML = '';
+            
+            const svg = document.getElementById('connections');
+            svg.innerHTML = '';
+            
+            logExecutionMessage('Canvas cleared', 'info');
+        }
+
+        // Enhanced execution engine
+        async function executeWorkflow() {
+            if (isExecuting) {
+                logExecutionMessage('Workflow is already executing', 'warning');
+                return;
+            }
+
+            if (nodes.length === 0) {
+                logExecutionMessage('No nodes to execute', 'error');
+                return;
+            }
+
+            if (!agentConfig.connected) {
+                logExecutionMessage('Agent not connected - running in simulation mode', 'warning');
+            }
+
+            isExecuting = true;
+            executionId = 'exec_' + Date.now();
+            executionStartTime = Date.now();
+            currentExecution = {
+                id: executionId,
+                startTime: executionStartTime,
+                status: 'running',
+                nodes: {},
+                dataFlow: {}
+            };
+
+            updateExecutionControls();
+            setStatus('Executing workflow...', 'running');
+            logExecutionMessage(`Starting workflow execution [${executionId}]`, 'info');
+
+            try {
+                // Reset all node states
+                nodes.forEach(node => {
+                    updateNodeVisualState(node.id, 'idle');
+                    node.executionLog = [];
+                });
+
+                // Find trigger nodes
+                const triggerNodes = findTriggerNodes();
+                
+                if (triggerNodes.length === 0) {
+                    throw new Error('No trigger nodes found - workflow must start with a trigger');
+                }
+
+                logExecutionMessage(`Found ${triggerNodes.length} trigger node(s)`, 'info');
+
+                // Execute from each trigger concurrently
+                const triggerPromises = triggerNodes.map(async (triggerNode, index) => {
+                    const initialData = { 
+                        executionId,
+                        triggerId: index,
+                        timestamp: new Date().toISOString(),
+                        workflowName: document.getElementById('workflowName').value
+                    };
+                    return executeNodeChain(triggerNode, initialData);
+                });
+
+                await Promise.all(triggerPromises);
+
+                const executionTime = Date.now() - executionStartTime;
+                currentExecution.status = 'completed';
+                currentExecution.endTime = Date.now();
+                currentExecution.duration = executionTime;
+
+                // Update metrics
+                executionMetrics.total++;
+                executionMetrics.successful++;
+                executionMetrics.executionTimes.push(executionTime);
+                executionMetrics.lastExecution = new Date().toISOString();
+                
+                updateMetricsDisplay();
+
+                setStatus(`Execution completed (${executionTime}ms)`, 'idle');
+                logExecutionMessage(`Workflow execution completed successfully in ${executionTime}ms`, 'success');
+
+            } catch (error) {
+                const executionTime = Date.now() - executionStartTime;
+                currentExecution.status = 'failed';
+                currentExecution.endTime = Date.now();
+                currentExecution.duration = executionTime;
+                currentExecution.error = error.message;
+
+                // Update metrics
+                executionMetrics.total++;
+                executionMetrics.failed++;
+                executionMetrics.executionTimes.push(executionTime);
+                executionMetrics.lastExecution = new Date().toISOString();
+
+                updateMetricsDisplay();
+
+                setStatus(`Execution failed (${executionTime}ms)`, 'error');
+                logExecutionMessage(`Workflow execution failed: ${error.message}`, 'error');
+            } finally {
+                isExecuting = false;
+                executionId = null;
+                executionStartTime = null;
+                updateExecutionControls();
+                
+                // Clear node execution states after delay
+                setTimeout(() => {
+                    nodes.forEach(node => {
+                        if (node.executionState === 'running') {
+                            updateNodeVisualState(node.id, 'idle');
+                        }
+                    });
+                }, 2000);
+            }
+        }
+
+        async function executeNodeChain(startNode, inputData) {
+            const visited = new Set();
+            const nodeQueue = [{ node: startNode, data: inputData }];
+
+            while (nodeQueue.length > 0) {
+                const { node, data } = nodeQueue.shift();
+
+                // Prevent infinite loops
+                if (visited.has(node.id)) {
+                    logExecutionMessage(`Skipping already visited node: ${node.title}`, 'warning');
+                    continue;
+                }
+                visited.add(node.id);
+
+                try {
+                    // Execute the node
+                    const result = await executeNode(node, data);
+                    currentExecution.nodes[node.id] = {
+                        status: 'completed',
+                        startTime: Date.now(),
+                        endTime: Date.now(),
+                        input: data,
+                        output: result
+                    };
+                    currentExecution.dataFlow[node.id] = result;
+
+                    // Find and queue connected nodes
+                    const connectedNodes = getConnectedNodes(node.id);
+                    connectedNodes.forEach(connectedNode => {
+                        nodeQueue.push({ node: connectedNode, data: result });
+                    });
+
+                } catch (error) {
+                    currentExecution.nodes[node.id] = {
+                        status: 'failed',
+                        startTime: Date.now(),
+                        endTime: Date.now(),
+                        input: data,
+                        error: error.message
+                    };
+                    throw error;
+                }
+            }
+        }
+
+        async function executeNode(node, inputData) {
+            const template = nodeTemplates[node.type];
+            if (!template.execute) {
+                throw new Error(`Node type ${node.type} has no execution handler`);
+            }
+
+            logExecutionMessage(`Executing: ${node.title} [${node.id}]`, 'info');
+            updateNodeVisualState(node.id, 'running');
+
+            const context = new ExecutionContext(executionId, node.id, (logEntry) => {
+                node.executionLog.push(logEntry);
+                logExecutionMessage(`[${node.title}] ${logEntry.message}`, logEntry.level);
+                updateDataFlowDisplay();
+            });
+
+            try {
+                const result = await template.execute(node, inputData, context);
+                
+                updateNodeVisualState(node.id, 'success');
+                logExecutionMessage(`Completed: ${node.title} (${context.getExecutionTime()}ms)`, 'success');
+                
+                return result;
+
+            } catch (error) {
+                updateNodeVisualState(node.id, 'error');
+                logExecutionMessage(`Failed: ${node.title} - ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        function findTriggerNodes() {
+            return nodes.filter(node => {
+                return !connections.some(conn => conn.to === node.id);
+            });
+        }
+
+        function getConnectedNodes(nodeId) {
+            return connections
+                .filter(conn => conn.from === nodeId)
+                .map(conn => nodes.find(n => n.id === conn.to))
+                .filter(n => n);
+        }
+
+        function stopExecution() {
+            if (!isExecuting) return;
+
+            isExecuting = false;
+            const executionTime = Date.now() - executionStartTime;
+            
+            logExecutionMessage(`Execution stopped by user after ${executionTime}ms`, 'warning');
+            setStatus('Execution stopped', 'idle');
+            
+            // Reset node states
+            nodes.forEach(node => {
+                if (node.executionState === 'running') {
+                    updateNodeVisualState(node.id, 'idle');
+                }
+            });
+
+            updateExecutionControls();
+        }
+
+        function updateExecutionControls() {
+            const executeBtn = document.getElementById('executeBtn');
+            const stopBtn = document.getElementById('stopBtn');
+
+            if (isExecuting) {
+                executeBtn.style.display = 'none';
+                stopBtn.style.display = 'flex';
+            } else {
+                executeBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
+            }
+        }
+
+        function setStatus(message, type = 'idle') {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const executionTime = document.getElementById('executionTime');
+
+            statusText.textContent = message;
+            statusIndicator.className = `status-indicator ${type === 'running' ? 'connecting' : type === 'error' ? 'error' : 'connected'}`;
+
+            if (isExecuting && executionStartTime) {
+                const updateTime = () => {
+                    const elapsed = Date.now() - executionStartTime;
+                    executionTime.textContent = `${elapsed}ms`;
+                    if (isExecuting) {
+                        requestAnimationFrame(updateTime);
+                    }
+                };
+                updateTime();
+            } else {
+                executionTime.textContent = '';
+            }
+        }
+
+        // Logging system
+        function logExecutionMessage(message, level = 'info') {
+            const logContainer = document.getElementById('executionLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${level}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            
+            logContainer.appendChild(entry);
+
+            // Auto-scroll if enabled
+            if (document.getElementById('autoScroll').checked) {
+                entry.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+
+            // Limit log entries to prevent memory issues
+            if (logContainer.children.length > 1000) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function clearExecutionLog() {
+            document.getElementById('executionLog').innerHTML = '';
+        }
+
+        function exportLogs() {
+            const logEntries = Array.from(document.querySelectorAll('.log-entry'))
+                .map(entry => entry.textContent);
+            
+            const logContent = logEntries.join('\n');
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workflow_logs_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            logExecutionMessage('Logs exported successfully', 'success');
+        }
+
+        // Agent management
+        function initializeAgentConfig() {
+            updateAgentSpecificConfig();
+        }
+
+        function updateAgentConfig() {
+            const agentType = document.getElementById('agentType').value;
+            agentConfig.type = agentType;
+            agentConfig.environment = document.getElementById('executionEnv').value;
+            agentConfig.maxConcurrent = parseInt(document.getElementById('maxConcurrent').value);
+            agentConfig.timeout = parseInt(document.getElementById('executionTimeout').value);
+            
+            updateAgentSpecificConfig();
+            logExecutionMessage(`Agent configuration updated: ${agentType}`, 'info');
+        }
+
+        function updateAgentSpecificConfig() {
+            const agentType = document.getElementById('agentType').value;
+            const container = document.getElementById('agentSpecificConfig');
+            
+            let specificConfig = '';
+            
+            switch (agentType) {
+                case 'docker':
+                    specificConfig = `
+                        <h4>Docker Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-field">
+                                <label>Docker Image:</label>
+                                <input type="text" id="dockerImage" value="node:18-alpine" placeholder="node:18-alpine">
+                            </div>
+                            <div class="config-field">
+                                <label>Container Network:</label>
+                                <input type="text" id="dockerNetwork" value="bridge" placeholder="bridge">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'kubernetes':
+                    specificConfig = `
+                        <h4>Kubernetes Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-field">
+                                <label>Namespace:</label>
+                                <input type="text" id="k8sNamespace" value="default" placeholder="default">
+                            </div>
+                            <div class="config-field">
+                                <label>Pod Template:</label>
+                                <input type="text" id="k8sPodTemplate" value="workflow-runner" placeholder="workflow-runner">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'aws_lambda':
+                    specificConfig = `
+                        <h4>AWS Lambda Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-field">
+                                <label>Function Name:</label>
+                                <input type="text" id="lambdaFunction" value="workflow-executor" placeholder="workflow-executor">
+                            </div>
+                            <div class="config-field">
+                                <label>AWS Region:</label>
+                                <input type="text" id="awsRegion" value="us-east-1" placeholder="us-east-1">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'remote':
+                    specificConfig = `
+                        <h4>Remote Server Configuration</h4>
+                        <div class="config-grid">
+                            <div class="config-field">
+                                <label>Server URL:</label>
+                                <input type="text" id="remoteUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
+                            </div>
+                            <div class="config-field">
+                                <label>API Key:</label>
+                                <input type="password" id="remoteApiKey" placeholder="your-api-key">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                default:
+                    specificConfig = `
+                        <h4>Local Runner Configuration</h4>
+                        <div class="config-field">
+                            <label>Working Directory:</label>
+                            <input type="text" id="workingDir" value="./workspace" placeholder="./workspace">
+                        </div>
+                    `;
+            }
+            
+            container.innerHTML = specificConfig;
+        }
+
+        async function connectAgent() {
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('agentStatus');
+            const statusText = document.getElementById('agentStatusText');
+
+            connectBtn.disabled = true;
+            statusIndicator.className = 'status-indicator connecting';
+            statusText.textContent = 'Connecting...';
+
+            try {
+                // Simulate connection process
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Update environment variables
+                try {
+                    agentConfig.envVars = JSON.parse(document.getElementById('envVars').value || '{}');
+                } catch (error) {
+                    logExecutionMessage('Invalid environment variables JSON, using empty object', 'warning');
+                    agentConfig.envVars = {};
+                }
+
+                agentConfig.connected = true;
+                statusIndicator.className = 'status-indicator connected';
+                statusText.textContent = `Connected (${agentConfig.type})`;
+                connectBtn.style.display = 'none';
+                disconnectBtn.style.display = 'inline-flex';
+
+                logExecutionMessage(`Agent connected successfully: ${agentConfig.type}`, 'success');
+                updateAgentStatus();
+
+            } catch (error) {
+                connectBtn.disabled = false;
+                statusIndicator.className = 'status-indicator error';
+                statusText.textContent = 'Connection failed';
+                logExecutionMessage(`Agent connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        function disconnectAgent() {
+            agentConfig.connected = false;
+            
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('agentStatus');
+            const statusText = document.getElementById('agentStatusText');
+
+            statusIndicator.className = 'status-indicator';
+            statusText.textContent = 'Disconnected';
+            connectBtn.style.display = 'inline-flex';
+            connectBtn.disabled = false;
+            disconnectBtn.style.display = 'none';
+
+            logExecutionMessage('Agent disconnected', 'info');
+            updateAgentStatus();
+        }
+
+        function updateAgentStatus() {
+            // Update any UI elements that depend on agent status
+        }
+
+        async function testAgent() {
+            if (!agentConfig.connected) {
+                logExecutionMessage('Agent not connected', 'warning');
+                return;
+            }
+
+            logExecutionMessage('Testing agent connection...', 'info');
+            
+            try {
+                // Simulate agent test
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                logExecutionMessage('Agent test successful', 'success');
+            } catch (error) {
+                logExecutionMessage(`Agent test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Tab management
+        function switchTab(tabName) {
+            // Remove active class from all tabs and panes
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+            // Add active class to selected tab and pane
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Update content if needed
+            if (tabName === 'data') {
+                updateDataFlowDisplay();
+            } else if (tabName === 'metrics') {
+                updateMetricsDisplay();
+            }
+        }
+
+        function updateDataFlowDisplay() {
+            const container = document.getElementById('dataFlowContainer');
+            
+            if (!currentExecution || !Object.keys(currentExecution.nodes).length) {
+                container.innerHTML = '<p>No execution data available. Run a workflow to see data flow.</p>';
+                return;
+            }
+
+            let html = '<div class="execution-details">';
+            html += '<h4>📊 Current Execution Data Flow</h4>';
+            html += `<p><strong>Execution ID:</strong> ${currentExecution.id}</p>`;
+            html += `<p><strong>Status:</strong> ${currentExecution.status}</p>`;
+            html += '</div>';
+
+            Object.keys(currentExecution.nodes).forEach(nodeId => {
+                const nodeData = currentExecution.nodes[nodeId];
+                const node = nodes.find(n => n.id === nodeId);
+                
+                html += `<div class="node-execution-log">`;
+                html += `<div class="node-log-header">${node ? node.title : nodeId}</div>`;
+                html += `<div class="node-log-content">`;
+                html += `<strong>Status:</strong> ${nodeData.status}<br>`;
+                
+                if (nodeData.input) {
+                    html += `<strong>Input:</strong><br><div class="json-viewer">${JSON.stringify(nodeData.input, null, 2)}</div>`;
+                }
+                
+                if (nodeData.output) {
+                    html += `<strong>Output:</strong><br><div class="json-viewer">${JSON.stringify(nodeData.output, null, 2)}</div>`;
+                }
+                
+                if (nodeData.error) {
+                    html += `<strong>Error:</strong> ${nodeData.error}`;
+                }
+                
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateMetricsDisplay() {
+            document.getElementById('totalExecutions').textContent = executionMetrics.total;
+            
+            const successRate = executionMetrics.total > 0 
+                ? Math.round((executionMetrics.successful / executionMetrics.total) * 100)
+                : 0;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+
+            const avgTime = executionMetrics.executionTimes.length > 0
+                ? Math.round(executionMetrics.executionTimes.reduce((a, b) => a + b, 0) / executionMetrics.executionTimes.length)
+                : 0;
+            document.getElementById('avgExecutionTime').textContent = `${avgTime}ms`;
+
+            document.getElementById('lastExecution').textContent = executionMetrics.lastExecution
+                ? new Date(executionMetrics.lastExecution).toLocaleString()
+                : 'Never';
+        }
+
+        function toggleExecutionPanel() {
+            const panel = document.getElementById('executionPanel');
+            panel.classList.toggle('show');
+        }
+
+        // Utility functions
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((current, key) => {
+                return current && current[key] !== undefined ? current[key] : null;
+            }, obj);
+        }
+
+        function convertIntervalToCron(interval) {
+            switch (interval) {
+                case '1min': return '* * * * *';
+                case '5min': return '*/5 * * * *';
+                case '15min': return '*/15 * * * *';
+                case '1hour': return '0 * * * *';
+                case '1day': return '0 0 * * *';
+                default: return '*/5 * * * *';
+            }
+        }
+
+        function getNextCronExecution(cron) {
+            // Simple approximation - in real implementation use a cron library
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + 5);
+            return now.toISOString();
+        }
+
+        // Workflow persistence
+        function saveWorkflow() {
+            const workflow = {
+                name: document.getElementById('workflowName').value,
+                nodes: nodes.map(node => ({
+                    id: node.id,
+                    type: node.type,
+                    title: node.title,
+                    description: node.description,
+                    x: node.x,
+                    y: node.y,
+                    config: node.config
+                })),
+                connections: connections,
+                agentConfig: agentConfig,
+                version: '2.0',
+                createdAt: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(workflow, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${workflow.name.replace(/[^a-zA-Z0-9]/g, '_')}_workflow.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            logExecutionMessage('Workflow saved successfully', 'success');
+        }
+
+        function loadWorkflow() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const workflow = JSON.parse(e.target.result);
+                        
+                        // Clear current workflow
+                        clearCanvas();
+                        
+                        // Load workflow data
+                        document.getElementById('workflowName').value = workflow.name || 'Loaded Workflow';
+                        nodes = workflow.nodes.map(nodeData => ({
+                            ...nodeData,
+                            executionState: 'idle',
+                            lastExecution: null,
+                            executionLog: []
+                        })) || [];
+                        connections = workflow.connections || [];
+                        
+                        // Load agent config if available
+                        if (workflow.agentConfig) {
+                            Object.assign(agentConfig, workflow.agentConfig);
+                            // Update UI elements
+                            document.getElementById('agentType').value = agentConfig.type;
+                            document.getElementById('executionEnv').value = agentConfig.environment;
+                            document.getElementById('maxConcurrent').value = agentConfig.maxConcurrent;
+                            document.getElementById('executionTimeout').value = agentConfig.timeout;
+                            updateAgentSpecificConfig();
+                        }
+                        
+                        // Render nodes
+                        nodes.forEach(node => renderNode(node));
+                        updateConnections();
+                        
+                        logExecutionMessage(`Loaded workflow: ${workflow.name}`, 'success');
+                    } catch (error) {
+                        logExecutionMessage(`Failed to load workflow: ${error.message}`, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function loadSampleWorkflow() {
+            setTimeout(() => {
+                // Create sample nodes
+                createNode('manual', 100, 100);
+                createNode('http', 400, 100);
+                createNode('condition', 700, 100);
+                createNode('email', 1000, 50);
+                createNode('database', 1000, 150);
+                createNode('transform', 1300, 100);
+
+                // Create sample connections after nodes are rendered
+                setTimeout(() => {
+                    if (nodes.length >= 6) {
+                        createConnection(nodes[0].id, nodes[1].id); // manual -> http
+                        createConnection(nodes[1].id, nodes[2].id); // http -> condition
+                        createConnection(nodes[2].id, nodes[3].id); // condition -> email
+                        createConnection(nodes[2].id, nodes[4].id); // condition -> database
+                        createConnection(nodes[4].id, nodes[5].id); // database -> transform
+
+                        logExecutionMessage('Sample workflow loaded - ready for execution!', 'success');
+                    }
+                }, 100);
+            }, 500);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Delete' && selectedNode) {
+                deleteNode(selectedNode);
+            } else if (e.key === 'Escape') {
+                isConnecting = false;
+                connectionStart = null;
+                deselectAll();
+            } else if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveWorkflow();
+            } else if (e.ctrlKey && e.key === 'o') {
+                e.preventDefault();
+                loadWorkflow();
+            } else if (e.key === 'F5') {
+                e.preventDefault();
+                executeWorkflow();
+            }
+        });
+    </script>
+</body>
+</html>

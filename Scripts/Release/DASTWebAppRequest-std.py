@@ -18,15 +18,18 @@
 #
 #
 #
-#import veracode_api_py
-#from veracode_api_py import apihelper
+import veracode_api_py
+from veracode_api_py import apihelper
 import json
 import csv
 import datetime
 import sys
 import re
-#vApiHelper = apihelper.APIHelper()
-#veracodeAPI = veracode_api_py.VeracodeAPI()
+vApiHelper = apihelper.APIHelper()
+veracodeAPI = veracode_api_py.VeracodeAPI()
+
+
+
 
 argAnalysisName = ""
 argBaseUrl = ""

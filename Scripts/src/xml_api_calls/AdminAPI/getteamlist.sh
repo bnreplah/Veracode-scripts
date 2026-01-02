@@ -21,7 +21,6 @@ json_input=$( http --auth-type=veracode_hmac "https://api.veracode.com/api/authn
 # echo "$xml_header" | tee teamlist.do.xml
 # echo "$xml_output" | tee teamlist.do.xml
 
-
 # Define XML header
 xml_header='<?xml version="1.0" encoding="UTF-8"?>'
 

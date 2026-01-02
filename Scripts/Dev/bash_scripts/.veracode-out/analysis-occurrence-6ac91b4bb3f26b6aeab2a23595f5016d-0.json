@@ -1,0 +1,106 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/6ac91b4bb3f26b6aeab2a23595f5016d/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9b2e364e03a03ab8c3ecdb6a3447832c"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/25536b155e9b84515d4d780f80dbf618"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/25536b155e9b84515d4d780f80dbf618/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9b2e364e03a03ab8c3ecdb6a3447832c/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9b2e364e03a03ab8c3ecdb6a3447832c?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9b2e364e03a03ab8c3ecdb6a3447832c?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-05-15T21:04:39Z[UTC]",
+      "last_modified_on" : "2023-05-15T21:11:30Z[UTC]",
+      "capabilities" : [ "update_scan", "link_platform_app", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "9b2e364e03a03ab8c3ecdb6a3447832c",
+      "scheduled_end_date" : "2023-05-18T21:04:35Z[UTC]",
+      "start_date" : "2023-05-15T21:07:53Z[UTC]",
+      "end_date" : "2023-05-15T21:10:01Z[UTC]",
+      "expected_publish_date" : "2023-05-20T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 1,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo.bhalpern.vuln.sa.veracode.io/veradem_1664217988106",
+      "scan_id" : "25536b155e9b84515d4d780f80dbf618",
+      "target_url" : "http://verademo.bhalpern.vuln.sa.veracode.io/verademo",
+      "analysis_id" : "29561e4e024518b73fdbbbcf87aeec13",
+      "analysis_name" : "Verademo-DA01",
+      "analysis_occurrence_id" : "6ac91b4bb3f26b6aeab2a23595f5016d",
+      "analysis_occurrence_status" : "VERIFICATION_FAILED",
+      "duration" : "2m8s",
+      "summary" : {
+        "start" : "2023-05-15T21:07:52.659Z",
+        "initial_start_time" : "2023-05-15T21:07:52.659Z",
+        "end" : "2023-05-15T21:10:00.767Z",
+        "total_duration" : 128108,
+        "duration" : 128108,
+        "completed" : true,
+        "exit_status" : "FAILED_VERIFICATION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 2,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "LOGIN_UNIVERSAL_LOGIN_FAILURE" ],
+        "auth_id" : "c98eb49ea74337bce610f309bc0b84de",
+        "verification_type" : "AUTHENTICATION",
+        "auth_type" : "AUTO"
+      }, {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "scan_type" : "WEB_SCAN",
+      "scheduled_start_date" : "2023-05-15T21:04:39Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

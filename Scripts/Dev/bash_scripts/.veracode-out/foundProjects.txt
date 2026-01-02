@@ -1,0 +1,105 @@
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 75338d49-33e9-4c87-bea5-e3090a9f71f9
+Project GUID: 75338d49-33e9-4c87-bea5-e3090a9f71f9
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 0fc9df19-6ed7-449f-816e-2d5e86080ae0
+Project GUID: 0fc9df19-6ed7-449f-816e-2d5e86080ae0
+----
+Project Name: bhalpern0558-Demo/Gen-IR%20pipeline/_git/Signal-iOS <> 7ec1cd31-b684-40b3-a20e-c2911a7807a9
+Project GUID: 7ec1cd31-b684-40b3-a20e-c2911a7807a9
+----
+Project Name: bnreplah/scala-hello-world.g8 <> f812393e-835b-44fd-a453-75d23379582c
+Project GUID: f812393e-835b-44fd-a453-75d23379582c
+----
+Project Name: bnreplah/verademo/app <> bd0b0d11-b195-47a9-9bdc-3f0d81ecce2a
+Project GUID: bd0b0d11-b195-47a9-9bdc-3f0d81ecce2a
+----
+Project Name: bnreplah/verademo <> 246a09e6-ff6f-49c4-ab87-626d9eea64ee
+Project GUID: 246a09e6-ff6f-49c4-ab87-626d9eea64ee
+----
+Project Name: bnreplah/Verademo-dotnet <> 3d51a4d7-e5de-4ac8-9e1d-8f33bee785b5
+Project GUID: 3d51a4d7-e5de-4ac8-9e1d-8f33bee785b5
+----
+Project Name: test-rename <> ae5db278-ce1f-4050-9e5b-6c5aedaa0734
+Project GUID: ae5db278-ce1f-4050-9e5b-6c5aedaa0734
+----
+Project Name: NodeGoatTest <> c58cc6fe-81cc-4d92-be49-3baf0b3da6f1
+Project GUID: c58cc6fe-81cc-4d92-be49-3baf0b3da6f1
+----
+Project Name: OWASP/WebGoat.NET <> c327054c-1a63-40b2-b113-1d2c2ae97987
+Project GUID: c327054c-1a63-40b2-b113-1d2c2ae97987
+----
+Project Name: pnpm/sample-project <> d8f0a19c-b8e9-4485-ab8d-2f723b3cfdf7
+Project GUID: d8f0a19c-b8e9-4485-ab8d-2f723b3cfdf7
+----
+Project Name: signalapp/Signal-iOS <> 3c5973fc-c9ab-4233-849c-48b6782c16b6
+Project GUID: 3c5973fc-c9ab-4233-849c-48b6782c16b6
+----
+Project Name: srcclr/example-java-maven <> e273e7b8-bfc0-48e4-bf36-b0e947758fd6
+Project GUID: e273e7b8-bfc0-48e4-bf36-b0e947758fd6
+----
+Project Name: srcclr/example-javascript <> 21ef2926-3509-469b-8ea2-146b4d2decc3
+Project GUID: 21ef2926-3509-469b-8ea2-146b4d2decc3
+----
+Project Name: srcclr/example-ruby <> cbe65b4d-9f80-4f1f-8daf-fb05377d9de0
+Project GUID: cbe65b4d-9f80-4f1f-8daf-fb05377d9de0
+----
+Project Name: srcclr/test-java-maven <> 0cad554e-e71f-4635-bc0c-76c5107ecd49
+Project GUID: 0cad554e-e71f-4635-bc0c-76c5107ecd49
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> a9c18afc-4fb5-4bf3-b832-2c36884f26d5
+Project GUID: a9c18afc-4fb5-4bf3-b832-2c36884f26d5
+----
+Project Name: bhalpern0558-Demo/Gen-IR%20pipeline/_git/Signal-iOS <> 7f2c3d88-338b-4e3b-91ed-11f36659fd5a
+Project GUID: 7f2c3d88-338b-4e3b-91ed-11f36659fd5a
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 6f90550c-47ec-46ec-b0eb-d27b6bb39d9c
+Project GUID: 6f90550c-47ec-46ec-b0eb-d27b6bb39d9c
+----
+Project Name: bhalpern0558-Demo/Gen-IR%20pipeline/_git/Signal-iOS <> c770445e-2b60-419c-9b1f-e40987870466
+Project GUID: c770445e-2b60-419c-9b1f-e40987870466
+----
+Project Name: bnreplah/scala-hello-world.g8 <> 2aa7c501-9068-4265-a35b-db4be4115510
+Project GUID: 2aa7c501-9068-4265-a35b-db4be4115510
+----
+Project Name: bnreplah/verademo/app <> d9c1a205-e6ca-4f9c-bc07-7a158d6bf55d
+Project GUID: d9c1a205-e6ca-4f9c-bc07-7a158d6bf55d
+----
+Project Name: bnreplah/verademo <> 1aa69107-d0f4-41d5-819e-a205a6a6030b
+Project GUID: 1aa69107-d0f4-41d5-819e-a205a6a6030b
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 0523e669-0e5a-4612-abc8-381963f743b0
+Project GUID: 0523e669-0e5a-4612-abc8-381963f743b0
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> ea6f6132-1bc7-49dc-956b-f22649f54346
+Project GUID: ea6f6132-1bc7-49dc-956b-f22649f54346
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 1566d0cc-5e45-4da8-8c0f-073f1cda4754
+Project GUID: 1566d0cc-5e45-4da8-8c0f-073f1cda4754
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> d6b8e840-fba9-44ba-9f98-eece53b250d0
+Project GUID: d6b8e840-fba9-44ba-9f98-eece53b250d0
+----
+Project Name: bhalpern0558-Demo/Gen-IR%20pipeline/_git/Signal-iOS <> 3b290951-3a4b-4ddb-9093-beef2130ec37
+Project GUID: 3b290951-3a4b-4ddb-9093-beef2130ec37
+----
+Project Name: bnreplah/scala-hello-world.g8 <> 1940dca5-5852-4c3f-8fdf-f390a8207275
+Project GUID: 1940dca5-5852-4c3f-8fdf-f390a8207275
+----
+Project Name: bhalpern0558-Demo/Verademo-net/_git/Verademo-net <> 887981e0-0897-4ac4-87cc-7712af4bbcb6
+Project GUID: 887981e0-0897-4ac4-87cc-7712af4bbcb6
+----
+Project Name: bhalpern0558-Demo/Gen-IR%20pipeline/_git/Signal-iOS <> ce05accc-5d67-4f6b-9f3d-daaa4a53a963
+Project GUID: ce05accc-5d67-4f6b-9f3d-daaa4a53a963
+----
+Project Name: bnreplah/scala-hello-world.g8 <> 67e0b0f2-51f6-4747-8648-7dff7200b71b
+Project GUID: 67e0b0f2-51f6-4747-8648-7dff7200b71b
+----
+Project Name: bnreplah/verademo/app <> fe2d1894-8eb6-4ecf-ad07-5eca6a4ddccf
+Project GUID: fe2d1894-8eb6-4ecf-ad07-5eca6a4ddccf
+----
+Project Name: bnreplah/verademo <> bad9e1c0-dbde-423b-995c-20ac7aecedd5
+Project GUID: bad9e1c0-dbde-423b-995c-20ac7aecedd5
+----
+Project Name: bnreplah/Verademo-dotnet <> 5f2c1a07-ced1-4b84-8f9a-27a9ac0296e7
+Project GUID: 5f2c1a07-ced1-4b84-8f9a-27a9ac0296e7

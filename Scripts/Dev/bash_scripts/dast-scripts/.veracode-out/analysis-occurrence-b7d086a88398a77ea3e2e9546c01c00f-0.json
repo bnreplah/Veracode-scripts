@@ -1,0 +1,106 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/b7d086a88398a77ea3e2e9546c01c00f/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/b0b7c927b0aa282a3a12a1c89957d4d4"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/25154205629e39a55c51bca0a671d6f7"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/25154205629e39a55c51bca0a671d6f7/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/b0b7c927b0aa282a3a12a1c89957d4d4/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/b0b7c927b0aa282a3a12a1c89957d4d4?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/b0b7c927b0aa282a3a12a1c89957d4d4?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2025-01-13T16:34:20Z[UTC]",
+      "last_modified_on" : "2025-01-13T16:52:58Z[UTC]",
+      "capabilities" : [ ],
+      "org" : "90764",
+      "scan_occurrence_id" : "b0b7c927b0aa282a3a12a1c89957d4d4",
+      "scheduled_end_date" : "2025-01-16T16:34:17Z[UTC]",
+      "start_date" : "2025-01-13T16:38:12Z[UTC]",
+      "end_date" : "2025-01-13T16:42:30Z[UTC]",
+      "expected_publish_date" : "2025-01-18T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 2,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "https://verademo.bhalpern.vuln.sa.veracode.io/veradem_1736785510712",
+      "scan_id" : "25154205629e39a55c51bca0a671d6f7",
+      "target_url" : "https://verademo.bhalpern.vuln.sa.veracode.io/verademo",
+      "analysis_id" : "abed73900aa6fa2b097995e74ecd5d1d",
+      "analysis_name" : "verademo-enterprise-test",
+      "analysis_occurrence_id" : "b7d086a88398a77ea3e2e9546c01c00f",
+      "analysis_occurrence_status" : "VERIFICATION_FAILED",
+      "duration" : "4m17s",
+      "summary" : {
+        "start" : "2025-01-13T16:38:12.476Z",
+        "initial_start_time" : "2025-01-13T16:38:12.476Z",
+        "end" : "2025-01-13T16:42:30.038Z",
+        "total_duration" : 257562,
+        "duration" : 257562,
+        "completed" : true,
+        "exit_status" : "FAILED_VERIFICATION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 3,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "LOGIN_SELENIUM_FAILURE" ],
+        "verification_type" : "AUTHENTICATION"
+      }, {
+        "success" : false,
+        "error_codes" : [ "UNRESOLVABLE_HOSTNAME" ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "AUTO",
+      "scan_type" : "WEB_SCAN",
+      "enterprise_mode" : true,
+      "scheduled_start_date" : "2025-01-13T16:34:20Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

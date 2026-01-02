@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: veracode-upload-and-scan
+spec:
+  steps:
+    - name: upload-scan
+      image: veracode/api-wrapper-java
+      env:
+        - name: VERACODE_API_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: veracode-credentials
+              key: VERACODE_API_KEY_ID
+        - name: VERACODE_API_KEY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: veracode-credentials
+              key: VERACODE_API_KEY_SECRET
+      script: |
+             git clone https://github.com/bnreplah/verademo
+             cd verademo
+             cd app
+             mvn clean package
+             ls -la
+             cd ../..
+             java -jar  /opt/veracode/api-wrapper.jar -action getapplist
+             java -jar /opt/veracode/api-wrapper.jar -action uploadandscan -file verademo/app/target/verademo.war -appname "Verademo" -createprofile false -version "001

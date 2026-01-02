@@ -2,11 +2,7 @@ response=$(http --auth-type=veracode_hmac DELETE "https://api.veracode.com/api/a
 team_id=$1
 # Check if the HTTP status code is 200
 
-
 # Note this is not meant as a replacement of the values from the Admin API but a way to get the Admin API format data from the Rest API
-
-
-
 
 if [[ $response == *"HTTP/1.1 200 OK"* ]]; then
     # Modify the XML with a "success" result

@@ -1,0 +1,167 @@
+#!/bin/bash
+# check the latest version of the veracode wrapper and the SCA agent currently installed
+# if the veracode sca command is pased switch to leveraging the sca agent
+# if any other parameter is used, switch to passing the parameter to veracode cli
+
+shopt -s expand_aliases
+source ~/.bashrc
+
+PM="docker"
+SPM="apt"
+VERSION="0.0.11-13-25"
+
+#set -euo pipefail
+alias 'veracode-api'='docker run -it --rm -v $PWD:/home/luser -v ~/.veracode/credentials:/home/luser/.veracode/credentials veracode/api-wrapper-java:cmd'
+alias 'veracode-shc'='docker run -t -v "$HOME/.veracode:/.veracode" antfie/scan_health'
+alias 'veracode-http'='docker run -it --rm -v $PWD:/home/luser -v ~/.veracode/credentials:/home/luser/.veracode/credentials veracode/api-signing:cmd'
+
+# Ensure at least one argument is provided
+help(){
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <command> [args...]"
+    echo "$0 sca    - to use the SCA agent"
+    echo "$0 cli    - to use the veracode cli"
+    echo "$0 api    - to use the veracode api wrapper"
+    echo "$0 shc    - to use the veracode scan health check"
+    echo "$0 update - update the tool version"
+    exit 1
+fi
+}
+
+# #checks and understands the enviornment
+# check_install(){
+#         echo "STUB"
+# }
+
+#Runs the Update of the Veracode CLI
+update-veracode-cli(){
+        
+    if [[ "$PM" == "brew" ]]; then
+            brew install veracode/tap/veracode-cli
+    elif [[ "$PM" == "docker" ]]; then
+            echo "Docker is the selected Package Manager, will be updated with each invocation"
+    else
+            curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+    fi
+}
+
+
+#Runs the update of the SRCCLR Agent
+installsrcclr(){
+    echo "Running SRCCLR Install"
+    if [[ "$SPM" == "curl" ]]; then
+            curl -sSL https://sca-downloads.veracode.com/install | sh
+    elif [[ "$SPM" == "apt" ]]; then
+            curl -sSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xdf7dd7a50b746dd4' | sudo gpg --dearmor -o /usr/share/keyrings/veracode-sca-archive.gpg
+            echo 'deb [signed-by=/usr/share/keyrings/veracode-sca-archive.gpg] https://sca-downloads.veracode.com/ubuntu stable/' | sudo tee /etc/apt/sources.list.d/veracode-sca.list
+            sudo apt-get update
+            sudo apt-get install srcclr
+    elif [[ "$SPM" == "yum"  ]]; then
+            sudo echo '[SourceClear] name=SourceClear baseurl=https://sca-downloads.veracode.com/redhat/x86_64/ enabled=1 gpgcheck=1 gpgkey=https://sca-downloads.veracode.com/redhat/SRCCLR-GPG-KEY' > /etc/yum.repos.d/SRCCLR.repo
+            sudo yum update
+            sudo yum install srcclr
+    elif [[ "$SPM" == "apk" ]]; then
+            sudo sh -c 'echo https://sca-downloads.veracode.com/alpine/main >> /etc/apk/repositories'
+            sudo wget -P /etc/apk/keys https://sca-downloads.veracode.com/alpine/public-keys/production@srcclr.com-5e266d90.rsa.pub
+            sudo apk add srcclr
+    elif [[ "$SPM" == "brew" ]]; then
+            brew tap veracode/srcclr
+            brew install srcclr
+    fi
+}
+
+update-srcclr(){
+        echo "Running SRCCLR Update"
+        if [[ "$SPM" == "curl" ]]; then
+                echo "Running update via curl"
+                curl -sSL https://sca-downloads.veracode.com/install | sh
+        elif [[ "$SPM" == "apt" ]]; then
+                echo "Running update via apt-get"
+                #curl -sSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xdf7dd7a50b746dd4' | sudo gpg --dearmor -o /usr/share/keyrings/veracode-sca-arc>
+                #echo 'deb [signed-by=/usr/share/keyrings/veracode-sca-archive.gpg] https://sca-downloads.veracode.com/ubuntu stable/' | sudo tee /etc/apt/sources>
+                sudo apt-get update
+                sudo apt-get upgrade -y
+        elif [[ "$SPM" == "yum"  ]]; then
+                echo "Running update via yum"
+                #sudo echo " [SourceClear] name=SourceClear baseurl=https://sca-downloads.veracode.com/redhat/x86_64/ enabled=1 gpgcheck=1 gpgkey=https://sca-downloads.veracode.com/redhat/SRCCLR-GPG-KEY" >> /etc/yum.repos.d/SRCCLR.repo
+                sudo yum update
+                sudo yum upgrade srcclr -y
+        elif [[ "$SPM" == "apk" ]]; then
+                echo "Running update via apk"
+                #sudo sh -c 'echo https://sca-downloads.veracode.com/alpine/main >> /etc/apk/repositories'
+                #sudo wget -P /etc/apk/keys https://sca-downloads.veracode.com/alpine/public-keys/production@srcclr.com-5e266d90.rsa.pub
+                sudo apk update
+                sudo apk upgrade -y
+        elif [[ "$SPM" == "brew" ]]; then
+                echo "Running update via brew"
+                brew tap veracode/srcclr
+                brew update
+                brew upgrade srcclr -y
+        fi
+}
+
+
+#Runs the update of the API if not using docker alias
+update-api(){
+        echo "The script is currently hardcoded to use the docker alias"
+}
+
+#Runs the update on the healthcheck if not running docker alias
+update-shc(){
+        echo "The script is currently hardcoded to use the docker alias"
+}
+
+#Runs the update on the script, grabs the latest version, makes sure all the system values are up to date, updates aliases
+update-self(){
+        echo "The script is currently hardcoded to use the docker alias"
+        sudo apt update
+        sudo apt upgrade -y
+}
+
+
+
+cmd="$1"
+shift # remove the first argument, leaving the rest as "$@" doesn't need to be shift 1?
+
+case "$cmd" in
+    cli)
+        echo "Running veracode $@  command..."
+        # Example: Run a single predefined command
+        veracode cli "$@"
+        ;;
+    sca)
+        echo "Running srcclr $@ command..."
+        srcclr "$@"
+        ;;
+    api)
+        echo "Running veracode-wrapper $@ command"
+        veracode-api "$@"
+        ;;
+    shc)
+        echo "Running veracode Scan Health Check $@ command"
+        veracode-shc "$@"
+        ;;
+    update)
+        echo "Running updates"
+        update-veracode-cli
+        update-srcclr
+        update-api
+        update-shc
+        update-self
+        ;;
+    help)
+        help
+        ;;
+    version)
+        echo "Script Version:" $VERSION
+        echo "Veracode SCA Agent:" $( srcclr --version )
+        echo "Veracode CLI:" $( veracode version )
+        echo "Veracode API Wrapper:" $( veracode-api -wrapperversion )
+        echo "Veracode Scan Health:" $( veracode-shc version | head -n 6 )
+        ;;
+    *)
+        echo "Unknown command: $cmd"
+        help
+        exit 1
+        ;;
+esac

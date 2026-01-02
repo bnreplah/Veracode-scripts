@@ -1,0 +1,109 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/a110309f292d4e0cacc21ccf7c659ada/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/a765a54edd982c701452f358ba39bbe8"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/a3fb9bf8a05f3100084a9299c0de3e16"
+        },
+        "linked_platform_app_url" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#HomeAppProfile:90764:1503071::::::"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/a3fb9bf8a05f3100084a9299c0de3e16/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/a765a54edd982c701452f358ba39bbe8/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/a765a54edd982c701452f358ba39bbe8?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/a765a54edd982c701452f358ba39bbe8?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2022-09-25T21:27:42Z[UTC]",
+      "last_modified_on" : "2023-05-08T20:52:26Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "a765a54edd982c701452f358ba39bbe8",
+      "scheduled_end_date" : "2022-09-26T03:26:48Z[UTC]",
+      "start_date" : "2022-09-25T21:30:48Z[UTC]",
+      "end_date" : "2022-09-26T03:27:58Z[UTC]",
+      "expected_publish_date" : "2022-09-27T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 0,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 4,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "TIME_EXPIRED_PARTIAL_RESULTS_AVAILABLE"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://webgoatnet.bhalpern.vuln.sa.veracode.io_1664140833026",
+      "scan_id" : "a3fb9bf8a05f3100084a9299c0de3e16",
+      "target_url" : "http://webgoatnet.bhalpern.vuln.sa.veracode.io/",
+      "analysis_id" : "d129d38fe4c93c7bb082eab2e573db4e",
+      "analysis_name" : "WebGoat-DA-00",
+      "analysis_occurrence_id" : "a110309f292d4e0cacc21ccf7c659ada",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "linked_platform_app_id" : "1503071",
+      "linked_platform_app_uuid" : "4c41e2dc-eb0e-48c3-977f-12f566935be8",
+      "linked_platform_app_name" : "WebGoat",
+      "result_import_status" : "COMPLETED",
+      "duration" : "5h57m10s",
+      "summary" : {
+        "start" : "2022-09-25T21:30:47.685Z",
+        "initial_start_time" : "2022-09-25T21:30:47.685Z",
+        "end" : "2022-09-26T03:27:57.899Z",
+        "total_duration" : 21430214,
+        "duration" : 21430214,
+        "completed" : true,
+        "exit_status" : "TIME",
+        "bytes_sent" : 7613399,
+        "bytes_received" : 131962035,
+        "requests" : 7863,
+        "responses" : 30474,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : true
+      },
+      "verifications" : [ {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 4,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "MANUAL",
+      "scan_type" : "WEB_SCAN",
+      "enterprise_mode" : false,
+      "scheduled_start_date" : "2022-09-25T21:27:42Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/124e15238969105c8fefc9b078fe96b0/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/29e754f7ceb8956d9cde6e5abccfd351"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/6ef6847ef4d32ecd98401868cd8b6bca"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/6ef6847ef4d32ecd98401868cd8b6bca/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/29e754f7ceb8956d9cde6e5abccfd351/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/29e754f7ceb8956d9cde6e5abccfd351?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/29e754f7ceb8956d9cde6e5abccfd351?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-06-28T01:16:25Z[UTC]",
+      "last_modified_on" : "2023-09-29T03:51:23Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "29e754f7ceb8956d9cde6e5abccfd351",
+      "scheduled_end_date" : "2023-06-29T01:16:24Z[UTC]",
+      "start_date" : "2023-06-28T01:17:22Z[UTC]",
+      "end_date" : "2023-06-28T01:19:26Z[UTC]",
+      "expected_publish_date" : "2023-06-30T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 1,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo.bhalpern.vuln.sa.veracode.io_1687914983957",
+      "scan_id" : "6ef6847ef4d32ecd98401868cd8b6bca",
+      "target_url" : "http://verademo.bhalpern.vuln.sa.veracode.io/",
+      "analysis_id" : "348f6e7b1a708082f66fe3cce9ed7a41",
+      "analysis_name" : "analysis-test-name2023-06-27",
+      "analysis_occurrence_id" : "124e15238969105c8fefc9b078fe96b0",
+      "analysis_occurrence_status" : "VERIFICATION_FAILED",
+      "duration" : "2m4s",
+      "summary" : {
+        "start" : "2023-06-28T01:17:22.01Z",
+        "initial_start_time" : "2023-06-28T01:17:22.01Z",
+        "end" : "2023-06-28T01:19:26.202Z",
+        "total_duration" : 124192,
+        "duration" : 124192,
+        "completed" : true,
+        "exit_status" : "FAILED_VERIFICATION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "NO_RESOURCES_FOUND" ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "scan_type" : "WEB_SCAN",
+      "scheduled_start_date" : "2023-06-28T01:16:25Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

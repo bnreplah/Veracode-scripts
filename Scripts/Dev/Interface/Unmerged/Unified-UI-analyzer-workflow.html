@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Unified Workflow + Dependency Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        /* Basic reset & layout */
+        *{box-sizing:border-box}
+        body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; margin:0; height:100vh; display:flex; flex-direction:column; background:linear-gradient(135deg,#eef2ff 0,#f5f7fb 100%)}
+        .toolbar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #e6eef7}
+        .logo{font-weight:700;color:#ff6d5a}
+        .btn{padding:8px 12px;border-radius:8px;border:none;background:#1976d2;color:#fff;cursor:pointer}
+        .btn.secondary{background:#6c757d}
+        .btn.danger{background:#dc3545}
+        .container{display:flex;flex:1;overflow:hidden}
+        .sidebar{width:300px;background:#fff;border-right:1px solid #e6eef7;padding:16px;overflow:auto}
+        .main{flex:1;display:flex;flex-direction:column;min-width:0}
+        .tabs{display:flex;gap:8px;padding:12px;background:transparent}
+        .tab{padding:8px 12px;border-radius:8px;cursor:pointer}
+        .tab.active{background:#fff;border:1px solid #e6eef7;box-shadow:0 4px 14px rgba(29,78,216,0.06)}
+
+        /* Workflow canvas */
+        .canvas-area{flex:1;display:flex;overflow:hidden}
+        .canvas{flex:1;position:relative;background:repeating-radial-gradient(circle at 0 0,#f0f4ff 0,#fff0 6px);overflow:auto}
+        .node-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:8px;background:#f7f9fb;cursor:grab}
+        .node-item:active{cursor:grabbing}
+        .workflow-node{position:absolute;min-width:200px;background:#fff;border:1px solid #e6eef7;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);user-select:none}
+        .node-header{padding:10px;border-bottom:1px solid #f1f5f9;background:#fbfdff;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center}
+        .node-content{padding:10px}
+        .connection-point{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #1976d2}
+        .input-point{left:-8px;top:50%;transform:translateY(-50%)}
+        .output-point{right:-8px;top:50%;transform:translateY(-50%)}
+        svg#connections{position:absolute;inset:0;pointer-events:none}
+
+        /* Dependency visualizer */
+        #graph-container{width:100%;height:100%;min-height:480px;background:linear-gradient(180deg,#fcfeff 0,#f4f7fb 100%);border-radius:10px;padding:12px}
+
+        /* Info panel */
+        .info-panel{position:fixed;right:16px;top:80px;width:360px;max-height:70vh;overflow:auto;background:#fff;border:1px solid #e6eef7;border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(2,6,23,0.08);display:none;z-index:1200}
+        .info-panel h3{margin-top:0}
+        .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+        .legend-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#fbfbfb;border:1px solid #eef2ff}
+        .legend-circle{width:14px;height:14px;border-radius:50%}
+        .critical{background:#e74c3c}.high{background:#f39c12}.medium{background:#f1c40f}.low{background:#2ecc71}.clean{background:#95a5a6}
+
+        /* execution panel bottom */
+        .execution-panel{position:fixed;left:16px;right:16px;bottom:16px;height:260px;background:#fff;border-radius:12px;border:1px solid #e6eef7;display:flex;overflow:hidden;transform:translateY(120%);transition:transform .25s}
+        .execution-panel.show{transform:translateY(0)}
+        .execution-tabs{width:200px;background:#fbfdff;border-right:1px solid #eef2ff;padding:8px}
+        .tab-button{display:block;width:100%;text-align:left;padding:10px;border:none;background:transparent;cursor:pointer}
+        .tab-button.active{background:#fff}
+        .tab-content{flex:1;padding:12px;overflow:auto}
+        .log-entry{padding:8px;margin-bottom:8px;border-radius:6px;background:#f4f7fb;font-family:monospace;font-size:13px}
+
+        /* responsive */
+        @media (max-width:900px){.sidebar{display:none}.info-panel{width:90vw;right:5vw}}
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="logo">🔄 Unified Platform</div>
+        <div style="flex:1"></div>
+        <label class="btn secondary" for="file-upload">📦 Upload SBOM</label>
+        <input id="file-upload" type="file" accept=".json,.xml,.yml,.yaml,.txt" style="display:none" onchange="handleFileUpload(event)">
+        <button class="btn" onclick="saveProject()">💾 Save</button>
+        <button class="btn" onclick="loadProject()">📂 Load</button>
+        <button class="btn" onclick="toggleExecutionPanel()">📊 Console</button>
+        <button class="btn danger" onclick="resetAll()">🔄 Reset</button>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+                <div class="tab active" id="tab-workflow" onclick="switchTab('workflow')">🧩 Workflow</div>
+                <div class="tab" id="tab-deps" onclick="switchTab('dependencies')">🔍 Dependencies</div>
+            </div>
+
+            <div id="sidebar-workflow">
+                <h4 style="margin-bottom:8px">Nodes</h4>
+                <div class="node-item" draggable="true" data-node-type="webhook">🌐 Webhook</div>
+                <div class="node-item" draggable="true" data-node-type="http">🌍 HTTP Request</div>
+                <div class="node-item" draggable="true" data-node-type="database">🗄️ Database</div>
+                <div class="node-item" draggable="true" data-node-type="email">📧 Send Email</div>
+                <div class="node-item" draggable="true" data-node-type="condition">❓ Condition</div>
+                <div class="node-item" draggable="true" data-node-type="transform">🔄 Transform</div>
+                <div style="margin-top:12px"><button class="btn" onclick="centerGraph()">📍 Center Dependency Graph</button></div>
+                <div style="margin-top:8px"><button class="btn secondary" onclick="loadSampleSBOM()">📄 Load Sample SBOM</button></div>
+            </div>
+
+            <div id="sidebar-deps" style="display:none">
+                <h4 style="margin-bottom:8px">Dependency Controls</h4>
+                <div style="margin-bottom:8px"><button class="btn" onclick="showAttackPaths()">🎯 Highlight Attack Paths</button></div>
+                <div style="margin-bottom:8px"><button class="btn secondary" onclick="resetDepsView()">🔄 Reset View</button></div>
+                <h5 style="margin-top:12px">Legend</h5>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-circle critical"></div><div>Critical</div></div>
+                    <div class="legend-item"><div class="legend-circle high"></div><div>High</div></div>
+                    <div class="legend-item"><div class="legend-circle medium"></div><div>Medium</div></div>
+                    <div class="legend-item"><div class="legend-circle low"></div><div>Low</div></div>
+                    <div class="legend-item"><div class="legend-circle clean"></div><div>No CVEs</div></div>
+                </div>
+            </div>
+
+            <hr style="margin:12px 0;border:none;border-top:1px solid #eef2ff" />
+            <div>
+                <h5>Project</h5>
+                <div style="font-size:13px;color:#555;margin-top:6px">Name</div>
+                <input id="projectName" value="My Unified Project" style="width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #eef2ff">
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="tabs" id="tabs"></div>
+            <div class="canvas-area" id="canvas-area">
+                <div class="canvas" id="canvas"></div>
+                <svg id="connections"></svg>
+                <div id="graph-wrapper" style="display:none;padding:12px"><div id="graph-container"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel" id="info-panel"><button style="position:absolute;right:10px;top:10px" onclick="closeInfoPanel()">✕</button><div id="info-content"></div></div>
+
+    <div class="execution-panel" id="executionPanel">
+        <div class="execution-tabs">
+            <button class="tab-button active" onclick="switchExecTab('logs')">📝 Logs</button>
+            <button class="tab-button" onclick="switchExecTab('agent')">🤖 Agent</button>
+            <button class="tab-button" onclick="switchExecTab('metrics')">📈 Metrics</button>
+        </div>
+        <div class="tab-content" id="execContent">
+            <div id="logsTab"><div style="margin-bottom:8px"><button class="btn secondary" onclick="clearExecutionLog()">Clear Logs</button></div><div id="executionLog"></div></div>
+            <div id="agentTab" style="display:none">
+                <div style="margin-bottom:8px">Agent Type: <select id="agentType"><option value="local">Local</option><option value="docker">Docker</option></select></div>
+                <div><button class="btn" onclick="testAgent()">🧪 Test Agent</button></div>
+            </div>
+            <div id="metricsTab" style="display:none"> <div id="metricsContent">No metrics yet</div></div>
+        </div>
+    </div>
+
+    <script>
+    // ------------------------ Shared state ------------------------
+    let workflowNodes = [];
+    let workflowConnections = [];
+    let nodeCounter = 1;
+    let canvas = document.getElementById('canvas');
+    let svgConnections = d3.select('#connections');
+    let isConnecting = false; let connectFrom = null;
+
+    // ------------------------ Tabs ------------------------
+    function switchTab(tab){
+        document.getElementById('sidebar-workflow').style.display = tab==='workflow' ? 'block':'none';
+        document.getElementById('sidebar-deps').style.display = tab==='dependencies' ? 'block':'none';
+        document.getElementById('graph-wrapper').style.display = tab==='dependencies' ? 'block':'none';
+        document.getElementById('canvas').style.display = tab==='workflow' ? 'block':'none';
+        document.getElementById('tab-workflow').classList.toggle('active', tab==='workflow');
+        document.getElementById('tab-deps').classList.toggle('active', tab==='dependencies');
+        if(tab==='dependencies') initDependencyGraph();
+        renderConnections();
+    }
+    switchTab('workflow');
+
+    // ------------------------ Drag from sidebar to canvas ------------------------
+    document.querySelectorAll('.node-item').forEach(item=>{
+        item.addEventListener('dragstart', e=>{
+            e.dataTransfer.setData('text/plain', item.dataset.nodeType);
+        });
+    });
+
+    canvas.addEventListener('dragover', e=> e.preventDefault());
+    canvas.addEventListener('drop', e=>{
+        e.preventDefault();
+        const type = e.dataTransfer.getData('text/plain');
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left + canvas.scrollLeft;
+        const y = e.clientY - rect.top + canvas.scrollTop;
+        createWorkflowNode(type, x, y);
+    });
+
+    function createWorkflowNode(type,x=80,y=80,opts={}){
+        const id = `node-${nodeCounter++}`;
+        const template = nodeTemplates[type]||{title:type,description:'',type:'action',config:{}};
+        const node = {id, type, title:template.title, description:template.description, x,y, w:240, h:120, config: structuredClone(template.config||{}), status:'idle'};
+        workflowNodes.push(node);
+        renderNode(node);
+        return node;
+    }
+
+    function renderNode(node){
+        // create DOM
+        const el = document.createElement('div');
+        el.className='workflow-node'; el.id=node.id; el.style.left = node.x+'px'; el.style.top = node.y+'px'; el.style.width = node.w+'px'; el.style.zIndex=10;
+        el.innerHTML = `<div class="node-header"><div><strong>${node.title}</strong></div><div><button onclick="removeNode('${node.id}')" style="border:none;background:transparent;cursor:pointer">✕</button></div></div><div class="node-content"><div style="font-size:13px;color:#666">${node.description || ''}</div><div style="margin-top:8px"><button class='btn' onclick="openNodeConfig('${node.id}')">⚙️ Configure</button> <button class='btn secondary' onclick="startConnect('${node.id}')">🔗 Connect</button></div></div>`;
+        canvas.appendChild(el);
+
+        // connection points
+        const input = document.createElement('div'); input.className='connection-point input-point'; el.appendChild(input);
+        const output = document.createElement('div'); output.className='connection-point output-point'; el.appendChild(output);
+
+        // dragging
+        let offset = {x:0,y:0}, dragging=false;
+        el.addEventListener('mousedown', e=>{
+            if(e.target.tagName==='BUTTON') return; dragging=true; offset.x = e.offsetX; offset.y=e.offsetY; el.classList.add('dragging');
+            document.body.style.userSelect='none';
+        });
+        window.addEventListener('mousemove', e=>{ if(!dragging) return; const rect=canvas.getBoundingClientRect(); node.x = e.clientX - rect.left - offset.x + canvas.scrollLeft; node.y = e.clientY - rect.top - offset.y + canvas.scrollTop; el.style.left = node.x+'px'; el.style.top = node.y+'px'; renderConnections(); });
+        window.addEventListener('mouseup', e=>{ if(dragging){ dragging=false; el.classList.remove('dragging'); document.body.style.userSelect='auto'; } });
+
+        // clicking output to connect
+        output.addEventListener('click', e=>{ e.stopPropagation(); startConnect(node.id); });
+        input.addEventListener('click', e=>{ e.stopPropagation(); if(isConnecting && connectFrom && connectFrom!==node.id){ createConnection(connectFrom,node.id); stopConnect(); } });
+
+        // double click to open
+        el.addEventListener('dblclick', ()=> openNodeConfig(node.id));
+    }
+
+    function removeNode(id){ workflowNodes = workflowNodes.filter(n=>n.id!==id); workflowConnections = workflowConnections.filter(c=>c.from!==id && c.to!==id); const el=document.getElementById(id); if(el) el.remove(); renderConnections(); }
+
+    function startConnect(nodeId){ isConnecting=true; connectFrom=nodeId; document.body.style.cursor='crosshair'; }
+    function stopConnect(){ isConnecting=false; connectFrom=null; document.body.style.cursor='auto'; }
+    function createConnection(from,to){ workflowConnections.push({from,to}); renderConnections(); }
+
+    function renderConnections(){
+        // render SVG bezier lines
+        const lines = svgConnections.selectAll('path').data(workflowConnections, d=>d.from+'-'+d.to);
+        lines.enter().append('path').attr('class','connection-line').attr('fill','none').attr('stroke','#1976d2').attr('stroke-width',2)
+            .merge(lines).attr('d', d=>{
+                const a = document.getElementById(d.from); const b = document.getElementById(d.to);
+                if(!a||!b) return null;
+                const ax = a.offsetLeft + a.offsetWidth - 8 + canvas.scrollLeft; const ay = a.offsetTop + a.offsetHeight/2 + canvas.scrollTop;
+                const bx = b.offsetLeft + 8 + canvas.scrollLeft; const by = b.offsetTop + b.offsetHeight/2 + canvas.scrollTop;
+                const mx = (ax+bx)/2; return `M ${ax} ${ay} C ${mx} ${ay} ${mx} ${by} ${bx} ${by}`;
+            });
+        lines.exit().remove();
+    }
+
+    function openNodeConfig(id){ const node = workflowNodes.find(n=>n.id===id); if(!node) return; const html = `<h3>${node.title}</h3><div style="margin-top:8px">Type: ${node.type}</div><div style="margin-top:8px"><pre style='font-family:monospace'>${JSON.stringify(node.config,null,2)}</pre></div><div style='margin-top:8px'><button class='btn' onclick="closeInfoPanel()">Close</button></div>`; showInfoPanel(html); }
+
+    function showInfoPanel(html){ document.getElementById('info-content').innerHTML = html; document.getElementById('info-panel').style.display='block'; }
+    function closeInfoPanel(){ document.getElementById('info-panel').style.display='none'; }
+
+    // ------------------------ Node templates & execution simulation ------------------------
+    const nodeTemplates = {
+        webhook:{title:'Webhook',description:'Receives HTTP requests',config:{path:'/hook'}},
+        http:{title:'HTTP Request',description:'Make an HTTP call',config:{url:'https://httpbin.org/get'}},
+        database:{title:'Database',description:'Query DB',config:{query:'SELECT 1;'}},
+        email:{title:'Send Email',description:'Email',config:{to:'user@example.com'}},
+        condition:{title:'Condition',description:'Branch logic',config:{field:'httpResponse.status'}},
+        transform:{title:'Transform',description:'Transform data',config:{script:'return input;'}}
+    };
+
+    async function executeWorkflow(){
+        logExec('Starting workflow execution','info');
+        for(const node of workflowNodes){
+            highlightNode(node.id,'running');
+            await delay(400 + Math.random()*800);
+            highlightNode(node.id,'success');
+            logExec(`[${node.title}] executed successfully`,`success`);
+        }
+        logExec('Workflow execution complete','info');
+    }
+
+    function highlightNode(id,state){ const el=document.getElementById(id); if(!el) return; el.classList.remove('executing','success','error'); if(state==='running') el.classList.add('executing'); if(state==='success') el.classList.add('success'); if(state==='error') el.classList.add('error'); }
+
+    function logExec(msg,level='info'){ const container=document.getElementById('executionLog'); const el=document.createElement('div'); el.className='log-entry'; el.textContent = `${new Date().toISOString()} - ${msg}`; container.prepend(el); }
+    function clearExecutionLog(){ document.getElementById('executionLog').innerHTML=''; }
+
+    function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+    // ------------------------ Execution panel controls ------------------------
+    function toggleExecutionPanel(){ document.getElementById('executionPanel').classList.toggle('show'); }
+    function switchExecTab(name){ document.getElementById('logsTab').style.display = name==='logs' ? 'block':'none'; document.getElementById('agentTab').style.display = name==='agent' ? 'block':'none'; document.getElementById('metricsTab').style.display = name==='metrics' ? 'block':'none'; }
+    function testAgent(){ logExec('Testing agent...','info'); setTimeout(()=> logExec('Agent connection (mock) successful','success'),800); }
+
+    // ------------------------ Save / Load project ------------------------
+    function saveProject(){ const data = {projectName:document.getElementById('projectName').value, nodes:workflowNodes, connections:workflowConnections, dependencies:depData}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(data.projectName||'project')+'.json'; a.click(); URL.revokeObjectURL(url); }
+    async function loadProject(){ const input=document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange=async e=>{ const file=e.target.files[0]; const text=await file.text(); const parsed=JSON.parse(text); document.getElementById('projectName').value=parsed.projectName||''; // clear existing
+        resetAll(false);
+        // restore nodes
+        parsed.nodes?.forEach(n=>{ workflowNodes.push(n); renderNode(n); });
+        workflowConnections = parsed.connections||[]; renderConnections(); depData = parsed.dependencies||depData; if(depData.nodes) initDependencyGraph(); };
+    input.click(); }
+
+    function resetAll(confirmReset=true){ if(confirmReset && !confirm('Reset canvas and dependencies?')) return; workflowNodes.forEach(n=>{ const el=document.getElementById(n.id); if(el) el.remove(); }); workflowNodes=[]; workflowConnections=[]; nodeCounter=1; renderConnections(); depData={nodes:[],links:[]}; if(simulation) stopSimulation(); if(document.getElementById('graph-container')) d3.select('#graph-container').selectAll('*').remove(); }
+
+    // ------------------------ Dependency Visualizer (from Visualizer.html adapted) ------------------------
+    let depData = {nodes:[], links:[]};
+    let simulation, svg, g, linkNodes, nodeNodes, labels;
+
+    function initDependencyGraph(){
+        const container = d3.select('#graph-container'); container.selectAll('*').remove(); const width = container.node().getBoundingClientRect().width || 900; const height = 600;
+        svg = container.append('svg').attr('width','100%').attr('height',height);
+        g = svg.append('g');
+        simulation = d3.forceSimulation(depData.nodes)
+            .force('link', d3.forceLink(depData.links).id(d=>d.id).distance(120))
+            .force('charge', d3.forceManyBody().strength(-400))
+            .force('center', d3.forceCenter(width/2, height/2))
+            .force('collision', d3.forceCollide().radius(40));
+
+        linkNodes = g.append('g').selectAll('line').data(depData.links).enter().append('line').attr('stroke','#9aa7b2').attr('stroke-width',2).on('click', showLinkInfo);
+        nodeNodes = g.append('g').selectAll('circle').data(depData.nodes).enter().append('circle').attr('r',d=>d.type==='root'?28:20).attr('fill', d=>getSeverityColor(d.cves)).attr('stroke','#fff').attr('stroke-width',2).on('click', showNodeInfo).call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
+        labels = g.append('g').selectAll('text').data(depData.nodes).enter().append('text').attr('class','node-label').attr('text-anchor','middle').attr('dy',35).text(d=>d.name);
+
+        simulation.on('tick', ()=>{
+            linkNodes.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y);
+            nodeNodes.attr('cx', d=>d.x).attr('cy', d=>d.y);
+            labels.attr('x',d=>d.x).attr('y',d=>d.y);
+        });
+    }
+
+    function getSeverityColor(cves){ if(!cves||cves.length===0) return '#95a5a6'; const maxScore = Math.max(...cves.map(c=>c.score||0)); if(maxScore>=9) return '#e74c3c'; if(maxScore>=7) return '#f39c12'; if(maxScore>=4) return '#f1c40f'; return '#2ecc71'; }
+
+    function showNodeInfo(e,d){ const html = `<h3>${d.name}</h3><div>Version: ${d.version || 'n/a'}</div><div>CVEs: ${d.cves?.length||0}</div>`; showInfoPanel(html); }
+    function showLinkInfo(e,d){ const s = depData.nodes.find(n=>n.id===d.source.id||n.id===d.source); const t = depData.nodes.find(n=>n.id===d.target.id||n.id===d.target); const html = `<h3>Dependency</h3><div>From: ${s?.name||d.source}</div><div>To: ${t?.name||d.target}</div><div>Relationship: ${d.relationship||'dependency'}</div>`; showInfoPanel(html); }
+
+    function dragstarted(event,d){ if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+    function dragged(event,d){ d.fx = event.x; d.fy = event.y; }
+    function dragended(event,d){ if(!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+
+    function showAttackPaths(){ if(!depData.links.length) return; // mark links to vulnerable nodes
+        d3.selectAll('line').classed('attack-path', function(d){ const target = depData.nodes.find(n=>n.id===d.target.id||n.id===d.target); return target && target.cves && target.cves.length>0; });
+        d3.selectAll('circle').style('filter', d=> d.cves && d.cves.length>0 ? 'drop-shadow(0 0 12px rgba(231,76,60,0.25))' : 'none'); }
+    function resetDepsView(){ if(svg) svg.selectAll('*').remove(); depData = {nodes:[],links:[]}; }
+
+    function centerGraph(){ if(!svg) return; const container = d3.select('#graph-container'); const width = container.node().getBoundingClientRect().width; const height = 600; svg.transition().duration(750).call(d3.zoom().transform, d3.zoomIdentity.translate(width/2, height/2).scale(1)); }
+
+    // ------------------------ SBOM upload & parsing ------------------------
+    function handleFileUpload(evt){ const file = evt.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e=>{ try{ const text = e.target.result; // try JSON
+            let parsed = null; try{ parsed = JSON.parse(text); }catch(err){ // naive XML/YAML detection omitted for brevity
+                alert('Only JSON SBOMs are supported in this demo.'); return;
+            }
+            // convert parsed SBOM into nodes/links expected
+            populateDependenciesFromSBOM(parsed);
+        }catch(err){ console.error(err); alert('Error parsing file'); } }; reader.readAsText(file); }
+
+    function populateDependenciesFromSBOM(sbom){ // best-effort mapping; supports CycloneDX-like or simple package lists
+        const nodes = []; const links = [];
+        if(Array.isArray(sbom.components)){
+            sbom.components.forEach(c=> nodes.push({id:c.name || c.purl || c.group+'-'+c.name, name:c.name||c.purl, version:c.version||c.release, type:'component', cves:c.vulnerabilities||[]}));
+        } else if(sbom.packages){ sbom.packages.forEach(p=> nodes.push({id:p.name, name:p.name, version:p.version, type:'component', cves:p.vulns||[] })); }
+        // try simple dependency edges
+        if(Array.isArray(sbom.dependencies)){
+            sbom.dependencies.forEach(d=>{ if(d.ref && d.dependsOn) d.dependsOn.forEach(t=> links.push({source:d.ref, target:t, relationship:'dependency'})); });
+        }
+        // fallback sample if nothing
+        if(!nodes.length){ nodes.push({id:'my-app',name:'my-app',version:'1.0.0',type:'root',cves:[]}); nodes.push({id:'express',name:'express',version:'4.17.1',type:'direct',cves:[]}); links.push({source:'my-app',target:'express',relationship:'direct'}); }
+        depData.nodes = nodes; depData.links = links;
+        initDependencyGraph(); switchTab('dependencies');
+    }
+
+    function loadSampleSBOM(){ const sample = {components:[{name:'my-app',version:'1.0.0'},{name:'lodash',version:'4.17.19', vulnerabilities:[{id:'CVE-2021-23337',score:7.2,description:'Prototype pollution'}]},{name:'axios',version:'0.21.0',vulnerabilities:[{id:'CVE-2021-3749',score:9.1,description:'SSRF'}]}], dependencies:[{ref:'my-app',dependsOn:['lodash','axios']}]}; populateDependenciesFromSBOM(sample); }
+
+    // ------------------------ Small integration: create workflow nodes from selected dependency ------------------------
+    function createWorkflowNodesFromSelectedDependency(depId){ const dep = depData.nodes.find(n=>n.id===depId||n.name===depId); if(!dep) return; const node = createWorkflowNode('transform',100,100); node.title = `Depend: ${dep.name}`; node.description = `Scanned dependency ${dep.name}`; node.config.scannedDep = dep; openNodeConfig(node.id); }
+
+    // ------------------------ Utility ------------------------
+    let simulationRunning = false; function stopSimulation(){ simulationRunning=false; }
+
+    // attach quick center on load
+    window.addEventListener('resize', ()=>{ if(depData.nodes?.length) initDependencyGraph(); renderConnections(); });
+
+    // expose some functions to buttons
+    window.saveProject = saveProject; window.loadProject = loadProject; window.resetAll = resetAll; window.executeWorkflow = executeWorkflow; window.toggleExecutionPanel = toggleExecutionPanel; window.startConnect = startConnect; window.showAttackPaths = showAttackPaths; window.resetDepsView = resetDepsView; window.centerGraph = centerGraph; window.loadSampleSBOM = loadSampleSBOM; window.handleFileUpload = handleFileUpload; window.openNodeConfig=openNodeConfig; window.createWorkflowNodesFromSelectedDependency = createWorkflowNodesFromSelectedDependency; window.clearExecutionLog = clearExecutionLog; window.testAgent = testAgent;
+    </script>
+</body>
+</html>

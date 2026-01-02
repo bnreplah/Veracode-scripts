@@ -1,0 +1,114 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/985aa52502eee2111a04db0aa4431f4a/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/1dd7eb87cbfdecf57b030a4ef09d9523"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/e225ba0326292fb7e28a602f5e0aaf64"
+        },
+        "linked_platform_app_url" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#HomeAppProfile:90764:1819267::::::"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/e225ba0326292fb7e28a602f5e0aaf64/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/1dd7eb87cbfdecf57b030a4ef09d9523/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/1dd7eb87cbfdecf57b030a4ef09d9523?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/1dd7eb87cbfdecf57b030a4ef09d9523?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-08-02T21:10:16Z[UTC]",
+      "last_modified_on" : "2023-10-03T15:58:34Z[UTC]",
+      "capabilities" : [ "update_scan", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "1dd7eb87cbfdecf57b030a4ef09d9523",
+      "scheduled_end_date" : "2023-08-03T21:10:14Z[UTC]",
+      "start_date" : "2023-08-02T21:14:19Z[UTC]",
+      "end_date" : "2023-08-02T22:33:56Z[UTC]",
+      "expected_publish_date" : "2023-08-05T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 0,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 7,
+      "count_of_medium_sev_flaws" : 3,
+      "count_of_low_sev_flaws" : 1,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "FINISHED_RESULTS_AVAILABLE"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo.bhalpern.vuln.sa.veracode.io/veradem_1691010613517",
+      "scan_id" : "e225ba0326292fb7e28a602f5e0aaf64",
+      "target_url" : "http://verademo.bhalpern.vuln.sa.veracode.io/verademo",
+      "analysis_id" : "4cf333e6d2af09c41aaf7818c15a520a",
+      "analysis_name" : "Verademo-DA005",
+      "analysis_occurrence_id" : "985aa52502eee2111a04db0aa4431f4a",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "linked_platform_app_id" : "1819267",
+      "linked_platform_app_uuid" : "c6ef98b5-41ad-40c0-ace7-11dba169b4c3",
+      "linked_platform_app_name" : "Verademo",
+      "result_import_status" : "COMPLETED",
+      "duration" : "1h19m37s",
+      "summary" : {
+        "start" : "2023-08-02T21:14:18.819Z",
+        "initial_start_time" : "2023-08-02T21:14:18.819Z",
+        "end" : "2023-08-02T22:33:55.884Z",
+        "total_duration" : 4777065,
+        "duration" : 4777065,
+        "completed" : true,
+        "exit_status" : "MIN_PRIORITY",
+        "bytes_sent" : 3293692,
+        "bytes_received" : 22620615,
+        "requests" : 5639,
+        "responses" : 1559,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : true
+      },
+      "verifications" : [ {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 11,
+      "scan_locked" : false,
+      "linked_app_info" : {
+        "app_ver_id" : "28597704",
+        "analysis_unit_id" : "28584017",
+        "result_import_request_status" : "COMPLETED"
+      },
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "MANUAL",
+      "scan_type" : "WEB_SCAN",
+      "enterprise_mode" : false,
+      "scheduled_start_date" : "2023-08-02T21:10:16Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

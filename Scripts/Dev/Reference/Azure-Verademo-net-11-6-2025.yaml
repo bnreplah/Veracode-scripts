@@ -1,0 +1,266 @@
+  
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# This is an example of using VeraDemoDotNet test application with the Veracode Static Pipeline scanner.  A Veracode subscription is required.
+
+##  Main Branch
+
+trigger:
+- none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+  
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    platform: '$(buildPlatform)'
+    configuration: 'Debug'
+
+############################################################################################################
+# Installing build tools 
+#############################################################################################################
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      wget https://aka.ms/vs/17/release/vs_BuildTools.exe
+      choco --version
+      choco install visualstudio2022buildtools
+      msbuild --version
+
+############################################################################################################
+# Installing Veracode tools 
+############################################################################################################
+#########################################################
+# Installing Veracode CLI and SCA ABS via Choclatey
+#########################################################
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Installing Veracode CLI Tools via Choclatey"
+      choco install srcclr
+      choco install veracode-cli
+      srcclr test
+
+#########################################################
+# Installing Veracode CLI and SCA ABS via powershell
+#########################################################
+
+# - task: PowerShell@2
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       echo "Installing the Veracode CLI via Powershell"
+#       New-Item -Path "veracode" -ItemType Directory
+#       $ProgressPreference = "silentlyContinue"; iex ((New-Object System.Net.WebClient).DownloadString('https://tools.veracode.com/veracode-cli/install.ps1'))
+#       veracode --help 
+#       Set-ExecutionPolicy AllSigned -Scope Process -Force
+#       iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1')) 
+#       srcclr 
+      
+##########################################################
+# Installing Veracode Wrapper
+##########################################################
+
+- task: PowerShell@2
+  displayName: Installing Veracode API Wrapper
+  continueOnError: true
+  inputs:
+    targetType: 'inline'
+    script: |
+      New-Item -Path . -Name ".veracode" -ItemType "directory"
+      Write-Output "Downloading the latest version of the Veracode Java API"
+      $versionstring = curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | findstr /r "latest";
+      $version = $versionstring.Trim() -replace '<latest>', '' -replace '</latest>', '';
+      curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$version/vosp-api-wrappers-java-$version-dist.zip -o .veracode/dist.zip
+      Expand-Archive -Path .veracode/dist.zip 
+
+############################################################################################################
+# Running Veracode Packager
+#############################################################################################################
+
+- task: PowerShell@2
+  env:
+    VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+    VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+  inputs:
+    targetType: 'inline'
+    script: |
+      veracode package -s  Verademo-Dotnet/ -d -a -o veracode/
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      ls
+      ls veracode/
+    
+
+
+# - task: VSTest@2
+#   inputs:
+#     platform: '$(buildPlatform)'
+#     configuration: '$(buildConfiguration)'
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    patterns: '**/*.exe,**/*.dll,**/*.pdb' # ensures Veracode gets the PDB files for Static Analysis
+
+# Add a task here to remove additional runtime files that are not needed for the upload such as the roslyn directory if it is present. Reupload the new artifact and use that artifact for scanning
+
+# This task makes the pipeline build artifacts available in a known location for upload to Veracode
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'veracode/'
+    artifactName: Static-Artifact
+
+
+# You can create a duplicate of your artifact here for scanning optimizing the packaging by removing unnecessary third party components and runtime files
+# Alternatively you can use the autopackager which does this for you
+
+
+####################################################################################################
+## Veracode SCAN
+####################################################################################################
+
+########################################################
+# SCA Agent Based scan
+########################################################
+# https://docs.veracode.com/r/Veracode_SCA_Agent_Commands
+# https://docs.veracode.com/r/c_sc_ci_script
+- task: PowerShell@2
+  displayName: Veracode SCA Scanner
+  continueOnError: true
+  env:
+    SRCCLR_API_TOKEN: $(SRCCLRTOKEN)
+  inputs:
+    targetType: 'inline' #Before it was looking for powershell script to execute, and the target type by default is filepath
+    script: |
+      Set-ExecutionPolicy AllSigned -Scope Process -Force
+      iex ((New-Object System.Net.WebClient).DownloadString('https://download.srcclr.com/ci.ps1')) 
+      srcclr scan --update-advisor --allow-dirty --ws $(WORKSPACE_SLUG) --recursive 
+  # make sure to point the SCA Agent at the right location and or remove workspace slug
+
+# note the CI version of the script doesn't install it each time if it is already saved in the path or as an alias depending on the version
+#
+
+###########################################################
+# SCA Agent Based Scan installation for Bash
+############################################################
+#- task: Bash@3
+#  displayName: Veracode SCA Scanner
+#  continueOnError: true
+#  env:
+#    SRCCLR_API_TOKEN: $(SRCCLRTOKEN)
+#  inputs:
+#    targetType: 'inline' #Before it was looking for powershell script to execute, and the target type by default is filepath
+#    script: |
+#      curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --allow-dirty --update-advisor
+    
+
+- pwsh: ls $(build.artifactstagingdirectory)
+
+####################################################
+# Upload and Scan
+# ####################################################
+
+- task: Veracode@3
+  continueOnError: true
+  inputs:
+    ConnectionDetailsSelection: 'Service Connection'
+    AnalysisService: 'VeracodeServiceConnection'
+    veracodeAppProfile: 'Verademo-net'
+    version: '$(build.buildNumber)'
+    filepath: '$(build.artifactstagingdirectory)/veracode/'
+    sandboxName: 'ADO'
+    createSandBox: true
+    optargs: '-selectedpreviously true -scanallnonfataltoplevelmodules true -deleteincompletescan 1 -includenewmodules true'
+    createProfile: true
+
+#################################################################
+# Pipeline Scanner
+#################################################################
+## https://docs.veracode.com/r/Pipeline_Scan
+- task: CmdLine@2
+  displayName: Veracode Static Pipeline Scanner
+  continueOnError: true
+  inputs:
+    script: |
+      curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      unzip -o pipeline-scan-LATEST.zip
+      echo "----------------------------------------------------- Pulling down a policy to use in a pipeline scan -----------------------------------------------------"
+      java -jar pipeline-scan.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -rp "Vulnerable Policy 2"
+
+      echo "----------------------------------------------------- Running a pipeline scan with a policy -----------------------------------------------------"
+
+      java -jar pipeline-scan.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -f $(build.artifactstagingdirectory)\Verademo-dotnet.zip -id true -sd true -pf "Vulnerable_Policy_2.json"
+########################################################
+# Pipeline scan fail on CWE
+########################################################
+- task: PowerShell@2
+  displayName: Veracode Static Pipeline Scanner
+  continueOnError: true
+  inputs:
+    targetType: 'inline'
+    script: |
+      java -jar pipeline-scan.jar -vid $(VERACODE_API_ID) -vkey $(VERACODE_API_KEY) -f $(build.artifactstagingdirectory)\Verademo-dotnet.zip -id true -sd true -fc "117,81,80"
+
+########################################################
+# Pipeline scan via the CLI
+########################################################
+- task: PowerShell@2
+  displayName: Veracode Static Pipeline Scanner via CLI
+  continueOnError: true
+  inputs:
+    targetType: 'inline'
+    script: |
+      ./veracode static scan $(build.artifactstagingdirectory)\Verademo-dotnet.zip
+
+
+####################################################################
+# Veracode Flaw Importer
+####################################################################
+
+
+# - task: Veracode Flaw Importer@3
+#   inputs:
+#     ConnectionDetailsSelection: 'Service Connection'
+#     AnalysisService: 'APIServiceAccount'
+#     failBuildIfFlawImporterFails: true
+#     veracodeAppProfile: '$(system.teamProject)'
+#     sandboxName: 'ADO'
+#     scanType: 'Dynamic, Static'
+#     importType: 'All Flaws Violating Policy'
+#     workItemType: 'Bug'
+#     area: '$(system.teamProject)'
+#     overwriteAreaPathInWorkItemsOnImport: true
+#     iterationPath: '$(system.teamProject)'
+#     addCweAsATag: true
+#     foundInBuild: true
+#     addScanNameAsATag: true
+#     flawImportLimit: '1000'
+
+
+#################################################
+# Downloading and Running API Wrapper
+#################################################
+# https://docs.veracode.com/r/c_about_wrappers
+

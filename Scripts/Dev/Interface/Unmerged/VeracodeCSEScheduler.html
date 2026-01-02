@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Scheduler - Get Help Fast</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .question-card {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .question-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .question-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.1);
+        }
+
+        .option.selected {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .option-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .option-icon {
+            font-size: 1.5rem;
+            margin-left: 15px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e1e5e9;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .result-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .self-help-section {
+            background: #f8f9ff;
+            border: 1px solid #e1e8ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .self-help-title {
+            font-weight: 600;
+            color: #4facfe;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .self-help-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .self-help-item:last-child {
+            margin-bottom: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Scheduler</h1>
+            <p>Get the right help, at the right time</p>
+        </div>
+        
+        <div class="content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Question 1: Issue Type -->
+            <div class="question-card active" id="question1">
+                <div class="question-title">What type of assistance do you need?</div>
+                <div class="question-subtitle">Help us understand your situation so we can provide the best support.</div>
+                <div class="options">
+                    <div class="option" data-value="technical">
+                        <div class="option-text">
+                            <div class="option-title">Technical Issue</div>
+                            <div class="option-desc">Software problems, bugs, or system errors</div>
+                        </div>
+                        <div class="option-icon">🔧</div>
+                    </div>
+                    <div class="option" data-value="consultation">
+                        <div class="option-text">
+                            <div class="option-title">Consultation</div>
+                            <div class="option-desc">Strategic planning, advice, or guidance</div>
+                        </div>
+                        <div class="option-icon">💡</div>
+                    </div>
+                    <div class="option" data-value="training">
+                        <div class="option-text">
+                            <div class="option-title">Training</div>
+                            <div class="option-desc">Learning new features or best practices</div>
+                        </div>
+                        <div class="option-icon">🎓</div>
+                    </div>
+                    <div class="option" data-value="support">
+                        <div class="option-text">
+                            <div class="option-title">General Support</div>
+                            <div class="option-desc">Questions, clarifications, or other help</div>
+                        </div>
+                        <div class="option-icon">🤝</div>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="nextQuestion()" disabled id="nextBtn1">Next →</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Urgency -->
+            <div class="question-card" id="question2">
+                <div class="question-title">How urgent is this matter?</div>
+                <div class="question-subtitle">This helps us prioritize and determine the best response time.</div>
+                <div class="options">
+                    <div class="option" data-value="critical">
+                        <div class="option-text">
+                            <div class="option-title">Critical - Immediate attention needed</div>
+                            <div class="option-desc">System down, blocking work, or emergency</div>
+                        </div>
+                        <div class="option-icon">🚨</div>
+                    </div>
+                    <div class="option" data-value="high">
+                        <div class="option-text">
+                            <div class="option-title">High - Within 24 hours</div>
+                            <div class="option-desc">Important but not blocking critical operations</div>
+                        </div>
+                        <div class="option-icon">⚡</div>
+                    </div>
+                    <div class="option" data-value="medium">
+                        <div class="option-text">
+                            <div class="option-title">Medium - Within a few days</div>
+                            <div class="option-desc">Standard priority, can wait for proper scheduling</div>
+                        </div>
+                        <div class="option-icon">📅</div>
+                    </div>
+                    <div class="option" data-value="low">
+                        <div class="option-text">
+                            <div class="option-title">Low - When convenient</div>
+                            <div class="option-desc">Nice to have, flexible timing</div>
+                        </div>
+                        <div class="option-icon">⏰</div>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextQuestion()" disabled id="nextBtn2">Next →</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Complexity -->
+            <div class="question-card" id="question3">
+                <div class="question-title">How complex is your situation?</div>
+                <div class="question-subtitle">This helps us determine if we can provide immediate self-help resources.</div>
+                <div class="options">
+                    <div class="option" data-value="simple">
+                        <div class="option-text">
+                            <div class="option-title">Simple - Quick question</div>
+                            <div class="option-desc">Straightforward issue that might have an easy solution</div>
+                        </div>
+                        <div class="option-icon">✅</div>
+                    </div>
+                    <div class="option" data-value="moderate">
+                        <div class="option-text">
+                            <div class="option-title">Moderate - Some explanation needed</div>
+                            <div class="option-desc">Requires some discussion or demonstration</div>
+                        </div>
+                        <div class="option-icon">🔍</div>
+                    </div>
+                    <div class="option" data-value="complex">
+                        <div class="option-text">
+                            <div class="option-title">Complex - Detailed discussion required</div>
+                            <div class="option-desc">Multi-faceted issue needing thorough analysis</div>
+                        </div>
+                        <div class="option-icon">🧩</div>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextQuestion()" disabled id="nextBtn3">Next →</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Platform Preference -->
+            <div class="question-card" id="question4">
+                <div class="question-title">What's your preferred meeting platform?</div>
+                <div class="question-subtitle">Choose the platform you're most comfortable with for our session.</div>
+                <div class="options">
+                    <div class="option" data-value="zoom">
+                        <div class="option-text">
+                            <div class="option-title">Zoom</div>
+                            <div class="option-desc">Full-featured video conferencing with screen sharing</div>
+                        </div>
+                        <div class="option-icon">📹</div>
+                    </div>
+                    <div class="option" data-value="teams">
+                        <div class="option-text">
+                            <div class="option-title">Microsoft Teams</div>
+                            <div class="option-desc">Integrated with Microsoft 365 ecosystem</div>
+                        </div>
+                        <div class="option-icon">👥</div>
+                    </div>
+                    <div class="option" data-value="either">
+                        <div class="option-text">
+                            <div class="option-title">Either works for me</div>
+                            <div class="option-desc">You can choose the most convenient platform</div>
+                        </div>
+                        <div class="option-icon">🤷‍♂️</div>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion()">← Back</button>
+                    <button class="btn btn-primary" onclick="showResults()" disabled id="nextBtn4">Get Recommendations →</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="question-card" id="results">
+                <div class="result-card" id="resultContent">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="restart()">← Start Over</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const userAnswers = {};
+        let currentQuestion = 1;
+        const totalQuestions = 4;
+
+        // Self-help content database
+        const selfHelpContent = {
+            technical: {
+                simple: [
+                    "Try restarting the application or browser",
+                    "Clear your browser cache and cookies",
+                    "Check if your internet connection is stable",
+                    "Update your browser to the latest version"
+                ],
+                moderate: [
+                    "Check system requirements and compatibility",
+                    "Review error logs or console messages",
+                    "Try using an incognito/private browser window"
+                ]
+            },
+            consultation: {
+                simple: [
+                    "Review our FAQ section for common questions",
+                    "Check our knowledge base for best practices",
+                    "Watch our quick tutorial videos"
+                ]
+            },
+            training: {
+                simple: [
+                    "Start with our getting started guide",
+                    "Watch introductory video tutorials",
+                    "Try our interactive demo"
+                ],
+                moderate: [
+                    "Review our comprehensive user manual",
+                    "Join our community forum for tips and tricks"
+                ]
+            },
+            support: {
+                simple: [
+                    "Check our FAQ for common questions",
+                    "Review our troubleshooting guide",
+                    "Search our help center"
+                ]
+            }
+        };
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            setupOptionListeners();
+            updateProgress();
+        });
+
+        function setupOptionListeners() {
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectOption(this);
+                });
+            });
+        }
+
+        function selectOption(selectedOption) {
+            const questionCard = selectedOption.closest('.question-card');
+            const options = questionCard.querySelectorAll('.option');
+            const questionId = questionCard.id;
+            const questionNum = questionId.replace('question', '');
+            
+            // Remove selection from all options in this question
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Select the clicked option
+            selectedOption.classList.add('selected');
+            
+            // Store the answer
+            userAnswers[getQuestionKey(questionNum)] = selectedOption.dataset.value;
+            
+            // Enable next button
+            const nextBtn = document.getElementById(`nextBtn${questionNum}`);
+            if (nextBtn) {
+                nextBtn.disabled = false;
+            }
+        }
+
+        function getQuestionKey(questionNum) {
+            const keys = ['issueType', 'urgency', 'complexity', 'platform'];
+            return keys[questionNum - 1];
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                // Hide current question
+                document.getElementById(`question${currentQuestion}`).classList.remove('active');
+                
+                currentQuestion++;
+                
+                // Show next question
+                document.getElementById(`question${currentQuestion}`).classList.add('active');
+                
+                updateProgress();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                // Hide current question
+                document.getElementById(`question${currentQuestion}`).classList.remove('active');
+                
+                currentQuestion--;
+                
+                // Show previous question
+                document.getElementById(`question${currentQuestion}`).classList.add('active');
+                
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function showResults() {
+            // Hide current question
+            document.getElementById(`question${currentQuestion}`).classList.remove('active');
+            
+            // Generate and show results
+            generateResults();
+            
+            // Show results
+            document.getElementById('results').classList.add('active');
+            
+            // Update progress to 100%
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function generateResults() {
+            const { issueType, urgency, complexity, platform } = userAnswers;
+            const resultContent = document.getElementById('resultContent');
+            
+            let html = '';
+            let recommendedPlatform = platform;
+            
+            // Determine platform if user selected "either"
+            if (platform === 'either') {
+                // Default logic: Teams for consultation/training, Zoom for technical/support
+                recommendedPlatform = (issueType === 'consultation' || issueType === 'training') ? 'teams' : 'zoom';
+            }
+            
+            // Show self-help options for simple issues
+            if (complexity === 'simple' && selfHelpContent[issueType] && selfHelpContent[issueType][complexity]) {
+                html += `
+                    <div class="result-icon">💡</div>
+                    <div class="result-title">Quick Self-Help Solutions</div>
+                    <div class="result-description">
+                        Before scheduling a meeting, try these quick solutions that often resolve ${issueType} issues:
+                    </div>
+                    <div class="self-help-section">
+                        <div class="self-help-title">
+                            <span>🚀</span> Try These First:
+                        </div>
+                `;
+                
+                selfHelpContent[issueType][complexity].forEach(solution => {
+                    html += `<div class="self-help-item">${solution}</div>`;
+                });
+                
+                html += `</div>`;
+                
+                // Still offer scheduling
+                html += `
+                    <div style="margin-top: 30px;">
+                        <strong>Still need help?</strong> No problem! Schedule a ${recommendedPlatform === 'zoom' ? 'Zoom' : 'Microsoft Teams'} session below.
+                    </div>
+                `;
+            } else {
+                // Direct to scheduling for complex issues
+                html += `
+                    <div class="result-icon">${recommendedPlatform === 'zoom' ? '📹' : '👥'}</div>
+                    <div class="result-title">Let's Schedule Your ${recommendedPlatform === 'zoom' ? 'Zoom' : 'Teams'} Session</div>
+                    <div class="result-description">
+                        Based on your responses, we recommend a ${urgency === 'critical' ? 'priority' : 'standard'} 
+                        ${recommendedPlatform === 'zoom' ? 'Zoom' : 'Microsoft Teams'} meeting to address your 
+                        ${complexity} ${issueType} needs.
+                    </div>
+                `;
+            }
+            
+            // Add scheduling buttons
+            html += `
+                <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            `;
+            
+            if (recommendedPlatform === 'zoom' || platform === 'either') {
+                html += `
+                    <a href="#" class="btn btn-primary" onclick="scheduleZoom()">
+                        📹 Schedule Zoom Meeting
+                    </a>
+                `;
+            }
+            
+            if (recommendedPlatform === 'teams' || platform === 'either') {
+                html += `
+                    <a href="#" class="btn btn-primary" onclick="scheduleTeams()">
+                        👥 Schedule Teams Meeting
+                    </a>
+                `;
+            }
+            
+            html += `</div>`;
+            
+            // Add priority indicator for urgent issues
+            if (urgency === 'critical') {
+                html += `
+                    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;">
+                        <strong>🚨 Priority Support:</strong> Your issue has been flagged as critical. We'll prioritize your scheduling request.
+                    </div>
+                `;
+            }
+            
+            resultContent.innerHTML = html;
+        }
+
+        function scheduleZoom() {
+            // In a real implementation, this would redirect to your Zoom scheduling page
+            const { urgency, issueType } = userAnswers;
+            const priority = urgency === 'critical' ? 'priority' : 'standard';
+            
+            // Simulate redirect to Zoom scheduler with parameters
+            alert(`Redirecting to Zoom scheduler...\n\nParameters:\n- Priority: ${priority}\n- Issue Type: ${issueType}\n- Platform: Zoom\n\n(In real implementation, this would redirect to your Zoom booking page)`);
+            
+            // Example: window.location.href = `https://your-zoom-scheduler.com?priority=${priority}&type=${issueType}`;
+        }
+
+        function scheduleTeams() {
+            // In a real implementation, this would redirect to your Teams scheduling page
+            const { urgency, issueType } = userAnswers;
+            const priority = urgency === 'critical' ? 'priority' : 'standard';
+            
+            // Simulate redirect to Teams scheduler with parameters
+            alert(`Redirecting to Microsoft Teams scheduler...\n\nParameters:\n- Priority: ${priority}\n- Issue Type: ${issueType}\n- Platform: Teams\n\n(In real implementation, this would redirect to your Teams booking page)`);
+            
+            // Example: window.location.href = `https://your-teams-scheduler.com?priority=${priority}&type=${issueType}`;
+        }
+
+        function restart() {
+            // Reset state
+            Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
+            currentQuestion = 1;
+            
+            // Hide all question cards
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Show first question
+            document.getElementById('question1').classList.add('active');
+            
+            // Reset all selections
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Disable all next buttons
+            document.querySelectorAll('[id^="nextBtn"]').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Reset progress
+            updateProgress();
+        }
+    </script>
+</body>
+</html>

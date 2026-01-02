@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veracode Status Dashboard</title>
+  <style>
+    
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form, #controls {
+            margin-bottom: 20px;
+        }
+
+        .status-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .status-card {
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .status-green { 
+            background: #28a745; 
+        }
+
+        .status-yellow { 
+            background: #ffc107;
+            color: #000;
+        }
+
+        .status-red {
+            background: #dc3545;
+        }
+
+        .api-details {
+            margin-top: 20px;
+            background: #eee;
+            padding: 10px;
+            border-radius: 6px;
+        }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Veracode Status Dashboard</h1>
+    <p>Please enter your API key and ID to be able to check authenticated services </p>
+    <!-- Credentials Form -->
+    <form id="credentialsForm">
+      <label>API ID:</label>
+      <input type="password" id="apiId" required />
+      <label>API Key:</label>
+      <input type="password" id="apiKey" required />
+      <button type="submit">Start</button>
+    </form>
+
+    <!-- Controls -->
+    <div id="controls" style="display:none;">
+      <button id="refreshBtn">Refresh Now</button>
+      <label>Polling Interval (seconds):</label>
+      <input type="number" id="pollInterval" value="60" min="10" />
+    </div>
+
+    <!-- Status Dashboard -->
+    <div id="statusBoard" class="status-board"></div>
+
+    <!-- API Details -->
+    <div id="apiDetails" class="api-details">
+      <h3>Last API Call Details</h3>
+      <pre id="apiInfo"></pre>
+    </div>
+  </div>
+
+   <script> 
+
+    //variable initialization    
+    let apiId = "";     //initializes the api id and key
+    let apiKey = "";    // inializes the api key
+    let pollingTimer = null;
+    
+    const host = "api.veracode.com";
+    const preFix = "VERACODE-HMAC-SHA-256";
+    const verStr = "vcode_request_version_1";
+    
+        
+const apiServices = [
+  { name: "Annoations REST API", url: "" },
+  { name: "Applications REST API", url: "" },
+  { name: "DAST Essentials REST API", url: "" },
+  { name: "Development Sandbox REST API", url: "" },
+  { name: "Dynamic Analysis Rest API", url: "" },
+  { name: "eLEarning Rest API", url: "" },
+  { name: "Findings REST API", url: "" },
+  { name: "Healthcheck REST API", url: "" },
+  { name: "Identity REST API", url: "" },
+  { name: "Pipeline Scan REST API", url: "" },
+  { name: "Policy REST API", url: "" },
+  { name: "Reporting REST API", url: "" },
+  { name: "SCA REST API", url: "" },
+  { name: "Security Labs REST API", url: "" },
+  { name: "Summary Report REST API", url: "" },
+  { name: "Upload XML APIs", url: "" },
+  { name: "Results XML APIs", url: "" },
+  { name: "RSA Archer XML API", url: "" },
+  { name: "Mitigation and Comments XML API", url: "" },
+  { name: "Dynamic XML API", url: "" },
+  { name: "Flaw Report XML API", url: "" },
+  { name: "Sandbox XML API", url: "" },
+  { name: "VAST XML API", url: "" }
+];
+    
+    document.getElementById("refreshBtn").addEventListener("click", fetchStatus);
+    document.getElementById("pollInterval").addEventListener("change", startPolling);
+
+
+    // functions
+    document.getElementById("credentialsForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        apiId = document.getElementById("apiId").value.trim();
+        apiKey = document.getElementById("apiKey").value.trim();
+
+        if (!apiId || !apiKey) {
+            alert("Please enter both API ID and Key.");
+            return;
+        }
+
+        document.getElementById("controls").style.display = "block";
+        fetchStatus();
+        startPolling();
+    });
+
+    async function generateAuthHeader(url, method) {
+        const timestamp = Date.now().toString();
+        const nonce = hex(window.crypto.getRandomValues(new Uint8Array(16)));
+        const data = `id=${apiId}&host=${host}&url=${url}&method=${method}`;
+        const hashedNonce = await hmac256(getByteArray(nonce), getByteArray(apiKey));
+        const hashedTimestamp = await hmac256(buffer(timestamp), getByteArray(hex(hashedNonce)));
+        const hashedVerStr = await hmac256(buffer(verStr), getByteArray(hex(hashedTimestamp)));
+        const signature = hex(await hmac256(buffer(data), getByteArray(hex(hashedVerStr))));
+
+        return `${preFix} id=${apiId},ts=${timestamp},nonce=${nonce},sig=${signature}`;
+    }
+
+    async function hmac256(data, key) {
+        const keyObj = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+        return await crypto.subtle.sign("HMAC", keyObj, data);
+    }
+
+    function getByteArray(hexStr) {
+        const bytes = [];
+        for (let i = 0; i < hexStr.length - 1; i += 2) {
+            bytes.push(parseInt(hexStr.substr(i, 2), 16));
+        }
+        return Int8Array.from(bytes);
+    }
+
+    function buffer(str) {
+        return new TextEncoder().encode(str);
+    }
+
+    function hex(buffer) {
+        return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function fetchStatus() {
+        const url = "/appsec/v1/applications"; // Example endpoint
+        const method = "GET";
+        const authHeader = await generateAuthHeader(url, method);
+
+        try {
+            const response = await fetch(`https://${host}${url}`, {
+            method,
+            headers: { Authorization: authHeader }
+            });
+
+            const data = await response.json();
+            updateUI(data);
+            showApiDetails(url, method, data);
+        } catch (err) {
+            console.error("Error fetching status:", err);
+        }
+    }
+
+    function updateUI(data) {
+        const board = document.getElementById("statusBoard");
+        board.innerHTML = "";
+
+        const apps = data._embedded?.applications || [];
+        apps.forEach(app => {
+            const card = document.createElement("div");
+            card.className = "status-card " + getStatusClass(app.profile.name);
+            card.textContent = app.profile.name;
+            board.appendChild(card);
+        });
+    }
+
+    function getStatusClass(name) {
+        // Simple mock logic: random status for demo
+        const statuses = ["status-green", "status-yellow", "status-red"];
+        // add logic to query all the list of statuses
+        
+        return statuses[0];
+    }
+
+    function showApiDetails(url, method, data) {
+        const info = {
+            endpoint: url,
+            method,
+            response: data
+        };
+        document.getElementById("apiInfo").textContent = JSON.stringify(info, null, 2);
+    }
+
+    function startPolling() {
+        const interval = parseInt(document.getElementById("pollInterval").value, 10) * 1000;
+        if (pollingTimer) clearInterval(pollingTimer);
+        pollingTimer = setInterval(fetchStatus, interval);
+    }
+
+
+    
+const publicServices = [
+  { name: "Analysis Center UI", url: "https://analysiscenter.veracode.com" },
+  { name: "Tools Download Page", url: "https://tools.veracode.com" },
+  { name: "Status Page", url: "https://status.veracode.com" }
+];
+
+async function checkPublicServices() {
+  const board = document.getElementById("statusBoard");
+  
+  publicServices.forEach(async (service) => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      const response = await fetch(service.url, { method: "HEAD", signal: controller.signal });
+      clearTimeout(timeout);
+
+      const card = document.createElement("div");
+      card.className = "status-card " + (response.ok ? "status-green" : "status-red");
+      card.textContent = service.name + (response.ok ? " ✅" : " ❌");
+      board.appendChild(card);
+    } catch (err) {
+      const card = document.createElement("div");
+      card.className = "status-card status-red";
+      card.textContent = service.name + " ❌";
+      board.appendChild(card);
+    }
+   });
+}
+   </script>
+</body>

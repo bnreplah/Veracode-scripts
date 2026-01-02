@@ -1,0 +1,26 @@
+{
+  "analysis_occurrence_id" : "a18e25dd77c2a5e0f096c3ddf4c798ff",
+  "analysis_id" : "c53535c889ada29c22959de52fa7f7e6",
+  "status" : {
+    "status_type" : "FINISHED_RESULTS_AVAILABLE_WITH_WARNING"
+  },
+  "percent_scanned" : 0,
+  "start_date" : "2023-03-15T20:58:24Z[UTC]",
+  "end_date" : "2023-03-16T20:58:24Z[UTC]",
+  "actual_start_date" : "2023-03-15T21:01:55Z[UTC]",
+  "actual_end_date" : "2023-03-16T21:00:06Z[UTC]",
+  "duration" : "23h58m11s",
+  "verification_only" : false,
+  "count_of_failed_verifications" : 0,
+  "all_scans_passed_verification" : false,
+  "created_on" : "2023-03-15T20:56:36Z[UTC]",
+  "last_modified_on" : "2023-03-16T23:51:08Z[UTC]",
+  "scan_type" : "API_SCAN",
+  "org" : "90764",
+  "_links" : {
+    "analysis_result" : {
+      "href" : "https://analysiscenter.veracode.com/auth/index.jsp#ReviewResultsOneWASFlaws:90764:1680182:24684700:::24671498::505257:1"
+    }
+  },
+  "capabilities" : [ "update_analysis", "delete_analysis", "stop_and_save_analysis_occurrence", "link_platform_result", "view_analysis_history" ]
+}

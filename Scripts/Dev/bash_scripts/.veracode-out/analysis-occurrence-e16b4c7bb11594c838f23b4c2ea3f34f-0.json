@@ -1,0 +1,107 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/e16b4c7bb11594c838f23b4c2ea3f34f/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9507dd04737c7250329aa30d404b0a69"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/e225ba0326292fb7e28a602f5e0aaf64"
+        },
+        "linked_platform_app_url" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#HomeAppProfile:90764:1819267::::::"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/e225ba0326292fb7e28a602f5e0aaf64/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9507dd04737c7250329aa30d404b0a69/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9507dd04737c7250329aa30d404b0a69?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/9507dd04737c7250329aa30d404b0a69?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2024-05-09T16:29:58Z[UTC]",
+      "last_modified_on" : "2024-05-09T16:36:28Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "9507dd04737c7250329aa30d404b0a69",
+      "scheduled_end_date" : "2024-05-12T14:00:00Z[UTC]",
+      "start_date" : "2024-05-09T16:34:02Z[UTC]",
+      "end_date" : "2024-05-09T16:34:31Z[UTC]",
+      "expected_publish_date" : "2024-05-14T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 1,
+      "count_of_very_high_sev_flaws" : 0,
+      "count_of_high_sev_flaws" : 0,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 0,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "VERIFICATION_FAILED"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://verademo.bhalpern.vuln.sa.veracode.io/veradem_1691010613517",
+      "scan_id" : "e225ba0326292fb7e28a602f5e0aaf64",
+      "target_url" : "http://verademo.bhalpern.vuln.sa.veracode.io/verademo",
+      "analysis_id" : "4cf333e6d2af09c41aaf7818c15a520a",
+      "analysis_name" : "Verademo-DA005",
+      "analysis_occurrence_id" : "e16b4c7bb11594c838f23b4c2ea3f34f",
+      "analysis_occurrence_status" : "VERIFICATION_FAILED",
+      "linked_platform_app_id" : "1819267",
+      "linked_platform_app_uuid" : "c6ef98b5-41ad-40c0-ace7-11dba169b4c3",
+      "linked_platform_app_name" : "Verademo",
+      "duration" : "29s",
+      "summary" : {
+        "start" : "2024-05-09T16:34:01.963Z",
+        "initial_start_time" : "2024-05-09T16:34:01.963Z",
+        "end" : "2024-05-09T16:34:31.493Z",
+        "total_duration" : 29530,
+        "duration" : 29530,
+        "completed" : true,
+        "exit_status" : "FAILED_VERIFICATION",
+        "bytes_sent" : 0,
+        "bytes_received" : 0,
+        "requests" : 0,
+        "responses" : 0,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : false
+      },
+      "verifications" : [ {
+        "success" : false,
+        "error_codes" : [ "UNRESOLVABLE_HOSTNAME" ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 0,
+      "scan_locked" : false,
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "MANUAL",
+      "scan_type" : "WEB_SCAN",
+      "scheduled_start_date" : "2024-05-09T16:29:58Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

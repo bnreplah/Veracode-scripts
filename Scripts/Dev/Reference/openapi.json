@@ -1,0 +1,172 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "PetStoreAPI",
+        "version": "1.0.0",
+        "description": "HAR To Postman Generated Collection"
+    },
+    "paths": {
+        "/uptime": {
+            "get": {
+                "summary": "Uptime",
+                "description": "",
+                "operationId": "Uptime",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": " 11:51:00 up 19 min,  0 users,  load average: 0.01, 0.05, 0.02\n"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "summary": "Get Users",
+                "description": "",
+                "operationId": "Get_Users",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": [
+                                    {
+                                        "email": "dcrocket@veracode.com",
+                                        "firstname": "davey",
+                                        "id": 1,
+                                        "lastname": "Crocket",
+                                        "password": "password123",
+                                        "phone": "777.555.1212",
+                                        "userStatus": 1,
+                                        "username": "weld_pond"
+                                    },
+                                    {
+                                        "email": "dcrocket@veracode.com",
+                                        "firstname": "Davey",
+                                        "id": 5,
+                                        "lastname": "Crocket",
+                                        "password": "password123",
+                                        "phone": "777.555.1212",
+                                        "userStatus": null,
+                                        "username": "aaa"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Post User",
+                "description": "",
+                "operationId": "Post_User",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "summary": "Login",
+                "description": "",
+                "operationId": "Login",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/:username": {
+            "put": {
+                "summary": "Put User",
+                "description": "",
+                "operationId": "Put_User",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Get User",
+                "description": "",
+                "operationId": "Get_User",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete User",
+                "description": "",
+                "operationId": "Delete_User",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                },
+                                "example": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

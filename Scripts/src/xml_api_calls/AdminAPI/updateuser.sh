@@ -1,0 +1,1 @@
+http --auth-type=veracode_hmac PUT "https://api.veracode.com/api/authn/v2/users/{userId}" 

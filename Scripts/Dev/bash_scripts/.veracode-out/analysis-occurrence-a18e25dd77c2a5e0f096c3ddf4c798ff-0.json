@@ -1,0 +1,123 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://api.veracode.com/was/configservice/v1/analysis_occurrences/a18e25dd77c2a5e0f096c3ddf4c798ff/scan_occurrences?page=0&size=100"
+    }
+  },
+  "_embedded" : {
+    "scan_occurrences" : [ {
+      "_links" : {
+        "self" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/c85629884f08637c0060c833b7e04f56"
+        },
+        "scan" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/a1f962312ad9a220b0dfaea276627733"
+        },
+        "linked_platform_app_url" : {
+          "href" : "https://analysiscenter.veracode.com/auth/index.jsp#HomeAppProfile:90764:1527388::::::"
+        },
+        "scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scans/a1f962312ad9a220b0dfaea276627733/configuration?runtime=false"
+        },
+        "runtime_scan_config" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/c85629884f08637c0060c833b7e04f56/configuration"
+        },
+        "stop_save" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/c85629884f08637c0060c833b7e04f56?action=STOP_SAVE"
+        },
+        "stop_delete" : {
+          "href" : "https://api.veracode.com/was/configservice/v1/scan_occurrences/c85629884f08637c0060c833b7e04f56?action=STOP_DELETE"
+        }
+      },
+      "created_on" : "2023-03-15T20:58:27Z[UTC]",
+      "last_modified_on" : "2023-03-16T23:51:43Z[UTC]",
+      "capabilities" : [ "update_scan", "delete_scan", "link_platform_app", "read_scan_conf", "access_api_spec_detail" ],
+      "org" : "90764",
+      "scan_occurrence_id" : "c85629884f08637c0060c833b7e04f56",
+      "scheduled_end_date" : "2023-03-16T20:58:24Z[UTC]",
+      "start_date" : "2023-03-15T21:01:58Z[UTC]",
+      "end_date" : "2023-03-16T20:58:27Z[UTC]",
+      "expected_publish_date" : "2023-03-18T12:00:00Z[UTC]",
+      "count_of_failed_verifications" : 0,
+      "count_of_very_high_sev_flaws" : 7,
+      "count_of_high_sev_flaws" : 18,
+      "count_of_medium_sev_flaws" : 0,
+      "count_of_low_sev_flaws" : 2,
+      "has_custom_configuration" : false,
+      "status" : {
+        "status_type" : "TIME_EXPIRED_PARTIAL_RESULTS_AVAILABLE"
+      },
+      "verification_only" : false,
+      "scan_name" : "http://petstoreapi.bhalpern.vuln.sa.veracode.io:500_1678913796424",
+      "scan_id" : "a1f962312ad9a220b0dfaea276627733",
+      "target_url" : "http://petstoreapi.bhalpern.vuln.sa.veracode.io:5000",
+      "analysis_id" : "c53535c889ada29c22959de52fa7f7e6",
+      "analysis_name" : "PetStore Demo API 2.0",
+      "analysis_occurrence_id" : "a18e25dd77c2a5e0f096c3ddf4c798ff",
+      "analysis_occurrence_status" : "PUBLISHED",
+      "linked_platform_app_id" : "1527388",
+      "linked_platform_app_uuid" : "a617b42c-7cfd-481a-a146-0e588a255604",
+      "linked_platform_app_name" : "PetStore API",
+      "result_import_status" : "COMPLETED",
+      "duration" : "23h56m28s",
+      "summary" : {
+        "start" : "2023-03-15T21:01:58.202Z",
+        "initial_start_time" : "2023-03-15T21:01:58.202Z",
+        "end" : "2023-03-16T20:58:26.989Z",
+        "total_duration" : 86188787,
+        "duration" : 86188787,
+        "completed" : true,
+        "exit_status" : "TIME",
+        "bytes_sent" : 3549,
+        "bytes_received" : 9167438,
+        "requests" : 6,
+        "responses" : 24068,
+        "links_crawled" : 0,
+        "links_audited" : 0,
+        "network_errors" : 0,
+        "port_shutdowns" : 0,
+        "login_successes" : 0,
+        "login_failures" : 0,
+        "dropped_events" : 0,
+        "count_of_unique_failed_scripts" : 0,
+        "run_ver_id" : "0",
+        "has_coverage_report" : true
+      },
+      "verifications" : [ {
+        "success" : true,
+        "error_codes" : [ ],
+        "url_type" : "TARGET_URL",
+        "verification_type" : "CONNECTION"
+      } ],
+      "total_flaw_count" : 27,
+      "scan_locked" : false,
+      "linked_app_info" : {
+        "app_ver_id" : "24717020",
+        "analysis_unit_id" : "24703814",
+        "result_import_request_status" : "COMPLETED"
+      },
+      "internal_scan_configuration" : {
+        "enabled" : false
+      },
+      "app_link_type" : "MANUAL",
+      "scan_type" : "API_SCAN",
+      "api_scan_setting" : {
+        "spec_id" : "db9302d03f1dd0b45ac090bead818fe0",
+        "spec_type" : "HAR",
+        "spec_name" : "petstore-template.har",
+        "file_name" : "petstore-template.har",
+        "visibility" : {
+          "setup_type" : "SEC_LEADS_ONLY",
+          "team_identifiers" : [ ]
+        }
+      },
+      "scheduled_start_date" : "2023-03-15T20:58:27Z[UTC]"
+    } ]
+  },
+  "page" : {
+    "total_elements" : 1,
+    "total_pages" : 1,
+    "size" : 100,
+    "number" : 0
+  }
+}

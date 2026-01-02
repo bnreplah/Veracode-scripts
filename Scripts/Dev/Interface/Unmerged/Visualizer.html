@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dependency Attack Path Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #3498db, #8e44ad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .critical { background: #e74c3c; }
+        .high { background: #f39c12; }
+        .medium { background: #f1c40f; }
+        .low { background: #2ecc71; }
+        .clean { background: #95a5a6; }
+
+        #graph-container {
+            width: 100%;
+            height: 600px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 350px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.98);
+            border: 3px solid #3498db;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(15px);
+            display: none;
+            z-index: 1000;
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .cve-item {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
+            border: 2px solid #e74c3c;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .cve-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+        }
+
+        .cve-id {
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 1.1em;
+        }
+
+        .cve-score {
+            float: right;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #c0392b;
+            transform: rotate(90deg);
+        }
+
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .link {
+            stroke: #999;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            stroke: #3498db;
+            stroke-width: 4;
+            filter: drop-shadow(0 0 5px rgba(52, 152, 219, 0.5));
+        }
+
+        .dependency-link {
+            stroke: #3498db;
+            stroke-width: 3;
+            opacity: 0.8;
+        }
+
+        .attack-path {
+            stroke: #e74c3c;
+            stroke-width: 4;
+            stroke-dasharray: 10,5;
+            animation: dash 2s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -15;
+            }
+        }
+
+        .node-label {
+            font-size: 12px;
+            font-weight: bold;
+            text-anchor: middle;
+            fill: #2c3e50;
+            pointer-events: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            pointer-events: none;
+            font-size: 12px;
+            max-width: 200px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Dependency Attack Path Visualizer</h1>
+        
+        <div class="controls">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                <label for="file-upload" style="cursor: pointer; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 12px 24px; border-radius: 25px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);">
+                    📄 Upload SBOM/Manifest
+                </label>
+                <input type="file" id="file-upload" accept=".json,.xml,.yaml,.yml,.txt" style="display: none;" onchange="handleFileUpload(event)">
+                <span id="file-status" style="color: #27ae60; font-weight: bold;"></span>
+            </div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button onclick="showAttackPaths()">🎯 Highlight Attack Paths</button>
+                <button onclick="resetView()">🔄 Reset View</button>
+                <button onclick="centerGraph()">📍 Center Graph</button>
+                <button onclick="loadSampleData()">📊 Load Sample Data</button>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-circle critical"></div>
+                <span>Critical CVE (9.0+)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle high"></div>
+                <span>High CVE (7.0-8.9)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle medium"></div>
+                <span>Medium CVE (4.0-6.9)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle low"></div>
+                <span>Low CVE (0.1-3.9)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle clean"></div>
+                <span>No Known CVEs</span>
+            </div>
+        </div>
+
+        <div id="graph-container"></div>
+    </div>
+
+    <div class="info-panel" id="info-panel">
+        <button class="close-btn" onclick="closeInfoPanel()">×</button>
+        <div id="info-content"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Sample data - in a real application, this would come from your security scanning tools
+        const sampleData = {
+            nodes: [
+                { id: "my-app", name: "My Application", version: "1.0.0", type: "root", cves: [] },
+                { id: "express", name: "Express", version: "4.17.1", type: "direct", cves: [] },
+                { id: "lodash", name: "Lodash", version: "4.17.19", type: "direct", cves: [
+                    { id: "CVE-2021-23337", score: 7.2, description: "Prototype pollution vulnerability" }
+                ]},
+                { id: "moment", name: "Moment.js", version: "2.24.0", type: "transitive", cves: [
+                    { id: "CVE-2022-31129", score: 7.5, description: "ReDoS vulnerability in moment parsing" }
+                ]},
+                { id: "axios", name: "Axios", version: "0.21.0", type: "direct", cves: [
+                    { id: "CVE-2021-3749", score: 9.1, description: "Server-side request forgery vulnerability" }
+                ]},
+                { id: "yargs-parser", name: "Yargs Parser", version: "13.1.1", type: "transitive", cves: [
+                    { id: "CVE-2020-7608", score: 5.3, description: "Prototype pollution vulnerability" }
+                ]},
+                { id: "minimist", name: "Minimist", version: "1.2.0", type: "transitive", cves: [
+                    { id: "CVE-2021-44906", score: 9.8, description: "Prototype pollution leading to RCE" }
+                ]},
+                { id: "serialize-js", name: "Serialize JavaScript", version: "3.1.0", type: "transitive", cves: [] },
+                { id: "handlebars", name: "Handlebars", version: "4.5.3", type: "transitive", cves: [
+                    { id: "CVE-2021-23369", score: 8.1, description: "Remote code execution via template injection" }
+                ]}
+            ],
+            links: [
+                { source: "my-app", target: "express", relationship: "direct dependency" },
+                { source: "my-app", target: "lodash", relationship: "direct dependency" },
+                { source: "my-app", target: "axios", relationship: "direct dependency" },
+                { source: "express", target: "moment", relationship: "transitive dependency" },
+                { source: "express", target: "serialize-js", relationship: "transitive dependency" },
+                { source: "lodash", target: "yargs-parser", relationship: "transitive dependency" },
+                { source: "axios", target: "minimist", relationship: "transitive dependency" },
+                { source: "moment", target: "handlebars", relationship: "transitive dependency" }
+            ]
+        };
+
+        let nodes = sampleData.nodes;
+        let links = sampleData.links;
+        let svg, simulation, node, link, labels;
+
+        function getSeverityColor(cves) {
+            if (!cves || cves.length === 0) return "#95a5a6";
+            const maxScore = Math.max(...cves.map(cve => cve.score));
+            if (maxScore >= 9.0) return "#e74c3c";
+            if (maxScore >= 7.0) return "#f39c12";
+            if (maxScore >= 4.0) return "#f1c40f";
+            return "#2ecc71";
+        }
+
+        function getSeverityLabel(score) {
+            if (score >= 9.0) return "Critical";
+            if (score >= 7.0) return "High";
+            if (score >= 4.0) return "Medium";
+            return "Low";
+        }
+
+        function initGraph() {
+            const container = d3.select("#graph-container");
+            const width = container.node().getBoundingClientRect().width;
+            const height = container.node().getBoundingClientRect().height;
+
+            svg = container.append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Add zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on("zoom", (event) => {
+                    svg.selectAll("g").attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            const g = svg.append("g");
+
+            simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(40));
+
+            link = g.append("g")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("class", d => d.isDependency ? "link dependency-link" : "link")
+                .on("click", showLinkInfo)
+                .on("mouseover", showTooltip)
+                .on("mouseout", hideTooltip);
+
+            node = g.append("g")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("class", "node")
+                .attr("r", d => d.type === "root" ? 25 : 20)
+                .attr("fill", d => getSeverityColor(d.cves))
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 3)
+                .on("click", showNodeInfo)
+                .on("mouseover", showTooltip)
+                .on("mouseout", hideTooltip)
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            labels = g.append("g")
+                .selectAll("text")
+                .data(nodes)
+                .enter().append("text")
+                .attr("class", "node-label")
+                .attr("dy", 35)
+                .text(d => d.name);
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+
+                labels
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y);
+            });
+        }
+
+        function showNodeInfo(event, d) {
+            const panel = document.getElementById("info-panel");
+            const content = document.getElementById("info-content");
+            
+            let html = `
+                <h3>📦 ${d.name}</h3>
+                <p><strong>Version:</strong> ${d.version}</p>
+                <p><strong>Type:</strong> ${d.type}</p>
+                ${d.bomRef ? `<p><strong>BOM Reference:</strong> ${d.bomRef}</p>` : ''}
+                ${d.group ? `<p><strong>Group:</strong> ${d.group}</p>` : ''}
+                ${d.scope ? `<p><strong>Scope:</strong> ${d.scope}</p>` : ''}
+                ${d.publisher ? `<p><strong>Publisher:</strong> ${d.publisher}</p>` : ''}
+                ${d.description ? `<p><strong>Description:</strong> ${d.description}</p>` : ''}
+                <p><strong>CVEs Found:</strong> ${d.cves.length}</p>
+            `;
+
+            if (d.cves.length > 0) {
+                html += '<h4>🚨 Security Vulnerabilities:</h4>';
+                d.cves.forEach(cve => {
+                    const severityClass = getSeverityClass(cve.score);
+                    html += `
+                        <div class="cve-item" style="border-color: ${getSeverityColor([cve])};">
+                            <div class="cve-id">${cve.id}</div>
+                            <div class="cve-score" style="background: ${getSeverityColor([cve])};">${cve.score} (${cve.severity || getSeverityLabel(cve.score)})</div>
+                            <p><strong>Description:</strong> ${cve.description}</p>
+                            ${cve.published ? `<p><strong>Published:</strong> ${new Date(cve.published).toLocaleDateString()}</p>` : ''}
+                            ${cve.updated ? `<p><strong>Updated:</strong> ${new Date(cve.updated).toLocaleDateString()}</p>` : ''}
+                            ${cve.source && cve.source.name ? `<p><strong>Source:</strong> ${cve.source.name}</p>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="color: #27ae60;">✅ No known vulnerabilities</p>';
+            }
+
+            // Show dependency relationships
+            const incomingDeps = links.filter(l => l.target === d.id || (l.targetComponent && l.targetComponent.id === d.id));
+            const outgoingDeps = links.filter(l => l.source === d.id || (l.sourceComponent && l.sourceComponent.id === d.id));
+            
+            if (incomingDeps.length > 0) {
+                html += '<h4>📥 Used By:</h4>';
+                incomingDeps.forEach(dep => {
+                    const sourceNode = dep.sourceComponent || nodes.find(n => n.id === dep.source);
+                    if (sourceNode) {
+                        html += `<p>• ${sourceNode.name} v${sourceNode.version}</p>`;
+                    }
+                });
+            }
+
+            if (outgoingDeps.length > 0) {
+                html += '<h4>📤 Dependencies:</h4>';
+                outgoingDeps.forEach(dep => {
+                    const targetNode = dep.targetComponent || nodes.find(n => n.id === dep.target);
+                    if (targetNode) {
+                        const vulnCount = targetNode.cves ? targetNode.cves.length : 0;
+                        const vulnIndicator = vulnCount > 0 ? ` 🚨(${vulnCount} CVEs)` : '';
+                        html += `<p>• ${targetNode.name} v${targetNode.version}${vulnIndicator}</p>`;
+                    }
+                });
+            }
+
+            content.innerHTML = html;
+            panel.style.display = "block";
+        }
+
+        function showLinkInfo(event, d) {
+            const panel = document.getElementById("info-panel");
+            const content = document.getElementById("info-content");
+            
+            const sourceNode = nodes.find(n => n.id === d.source.id);
+            const targetNode = nodes.find(n => n.id === d.target.id);
+            
+            let html = `
+                <h3>🔗 Dependency Relationship</h3>
+                <p><strong>From:</strong> ${sourceNode.name} (${sourceNode.version})</p>
+                <p><strong>To:</strong> ${targetNode.name} (${targetNode.version})</p>
+                <p><strong>Relationship:</strong> ${d.relationship}</p>
+            `;
+
+            if (targetNode.cves.length > 0) {
+                html += `
+                    <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                        <h4>⚠️ Attack Path Identified</h4>
+                        <p>This dependency introduces <strong>${targetNode.cves.length}</strong> vulnerability(s) into your application:</p>
+                `;
+                
+                targetNode.cves.forEach(cve => {
+                    html += `
+                        <div class="cve-item">
+                            <div class="cve-id">${cve.id}</div>
+                            <div class="cve-score">${cve.score}</div>
+                            <p>${cve.description}</p>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+            panel.style.display = "block";
+        }
+
+        function showAttackPaths() {
+            // Highlight links that lead to vulnerable dependencies
+            link.classed("attack-path", d => {
+                const targetNode = nodes.find(n => n.id === d.target.id);
+                return targetNode.cves && targetNode.cves.length > 0;
+            });
+
+            // Pulse vulnerable nodes
+            node.style("animation", d => {
+                return d.cves && d.cves.length > 0 ? "pulse 2s infinite" : "none";
+            });
+
+            // Add CSS for pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function resetView() {
+            link.classed("attack-path", false);
+            node.style("animation", "none");
+        }
+
+        function centerGraph() {
+            const svg = d3.select("#graph-container svg");
+            const width = svg.node().getBoundingClientRect().width;
+            const height = svg.node().getBoundingClientRect().height;
+            
+            svg.transition().duration(750).call(
+                d3.zoom().transform,
+                d3.zoomIdentity.translate(width / 2, height / 2).scale(1)
+            );
+        }
+
+        function closeInfoPanel() {
+            document.getElementById("info-panel").style.display = "none";
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById("tooltip");
+            let content = "";
+            
+            if (d.name) {
+                // Node tooltip
+                const vulnCount = d.cves ? d.cves.length : 0;
+                const vulnText = vulnCount > 0 ? ` | ${vulnCount} CVEs` : '';
+                content = `${d.name} v${d.version}${vulnText}<br>Type: ${d.type}`;
+                if (d.bomRef && d.bomRef !== d.name) {
+                    content += `<br>Ref: ${d.bomRef}`;
+                }
+            } else {
+                // Link tooltip
+                const linkType = d.isDependency ? ' (SBOM Dependency)' : '';
+                content = `${d.relationship}${linkType}<br>Click for details`;
+            }
+            
+            tooltip.innerHTML = content;
+            tooltip.style.left = (event.pageX + 10) + "px";
+            tooltip.style.top = (event.pageY - 10) + "px";
+            tooltip.style.opacity = 1;
+        }
+
+        function hideTooltip() {
+            document.getElementById("tooltip").style.opacity = 0;
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // Initialize the graph when the page loads
+        window.addEventListener('load', initGraph);
+        window.addEventListener('resize', () => {
+            // Reinitialize on window resize
+            d3.select("#graph-container").select("svg").remove();
+            initGraph();
+        });
+
+        function loadSampleData() {
+            nodes = [...sampleData.nodes];
+            links = [...sampleData.links];
+            updateGraph();
+            document.getElementById("file-status").textContent = "Sample data loaded";
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    const parsedData = parseFileContent(content, file.name);
+                    
+                    if (parsedData) {
+                        nodes = parsedData.nodes;
+                        links = parsedData.links;
+                        updateGraph();
+                        document.getElementById("file-status").textContent = `✅ ${file.name} loaded successfully`;
+                    } else {
+                        document.getElementById("file-status").textContent = "❌ Unsupported file format";
+                    }
+                } catch (error) {
+                    console.error("Error parsing file:", error);
+                    document.getElementById("file-status").textContent = "❌ Error parsing file";
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseFileContent(content, filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            
+            try {
+                if (extension === 'json') {
+                    return parseJSON(content);
+                } else if (extension === 'xml') {
+                    return parseSBOMXML(content);
+                } else if (extension === 'txt') {
+                    return parsePackageList(content);
+                } else if (extension === 'yaml' || extension === 'yml') {
+                    return parseYAML(content);
+                }
+            } catch (error) {
+                console.error("Parsing error:", error);
+                return null;
+            }
+            
+            return null;
+        }
+
+        function parseJSON(content) {
+            const data = JSON.parse(content);
+            
+            // Handle different JSON SBOM formats
+            if (data.bomFormat || data.specVersion) {
+                // CycloneDX format
+                return parseCycloneDX(data);
+            } else if (data.spdxVersion || data.SPDXID) {
+                // SPDX format
+                return parseSPDX(data);
+            } else if (data.name && data.dependencies) {
+                // npm package-lock.json format
+                return parsePackageLock(data);
+            } else if (data.nodes && data.links) {
+                // Custom format (already in our format)
+                return data;
+            } else if (data.dependencies || data.devDependencies) {
+                // package.json format
+                return parsePackageJSON(data);
+            }
+            
+            return null;
+        }
+
+        function parseCycloneDX(data) {
+            const nodes = [];
+            const links = [];
+            const nodeMap = new Map();
+            const vulnerabilityMap = new Map();
+
+            // First, process vulnerabilities and map them by component reference
+            if (data.vulnerabilities) {
+                data.vulnerabilities.forEach(vuln => {
+                    if (vuln.affects && vuln.affects.length > 0) {
+                        vuln.affects.forEach(affect => {
+                            if (affect.ref) {
+                                if (!vulnerabilityMap.has(affect.ref)) {
+                                    vulnerabilityMap.set(affect.ref, []);
+                                }
+                                
+                                // Extract the highest severity rating
+                                let maxScore = 0;
+                                let severity = "Unknown";
+                                
+                                if (vuln.ratings && vuln.ratings.length > 0) {
+                                    vuln.ratings.forEach(rating => {
+                                        if (rating.score && rating.score > maxScore) {
+                                            maxScore = rating.score;
+                                            severity = rating.severity || "Unknown";
+                                        }
+                                    });
+                                }
+
+                                vulnerabilityMap.get(affect.ref).push({
+                                    id: vuln.id || "Unknown CVE",
+                                    score: maxScore,
+                                    severity: severity,
+                                    description: vuln.description || vuln.detail || "No description available",
+                                    source: vuln.source || {},
+                                    published: vuln.published,
+                                    updated: vuln.updated
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Add root component
+            let rootComponent = null;
+            if (data.metadata && data.metadata.component) {
+                const rootRef = data.metadata.component['bom-ref'] || data.metadata.component.name || "root";
+                rootComponent = {
+                    id: rootRef,
+                    name: data.metadata.component.name || "Root Application",
+                    version: data.metadata.component.version || "1.0.0",
+                    type: "root",
+                    bomRef: rootRef,
+                    cves: vulnerabilityMap.get(rootRef) || []
+                };
+                nodes.push(rootComponent);
+                nodeMap.set(rootRef, rootComponent);
+            }
+
+            // Process components
+            if (data.components) {
+                data.components.forEach(component => {
+                    const bomRef = component['bom-ref'] || component.name || Math.random().toString(36).substr(2, 9);
+                    const node = {
+                        id: bomRef,
+                        name: component.name || "Unknown",
+                        version: component.version || "unknown",
+                        type: component.type || "library",
+                        bomRef: bomRef,
+                        scope: component.scope || "required",
+                        supplier: component.supplier || {},
+                        publisher: component.publisher || "",
+                        group: component.group || "",
+                        description: component.description || "",
+                        cves: vulnerabilityMap.get(bomRef) || []
+                    };
+
+                    nodes.push(node);
+                    nodeMap.set(bomRef, node);
+                });
+            }
+
+            // Process dependencies using bom-ref connections
+            if (data.dependencies) {
+                data.dependencies.forEach(dep => {
+                    const sourceRef = dep.ref;
+                    const sourceNode = nodeMap.get(sourceRef);
+                    
+                    if (sourceNode && dep.dependsOn && dep.dependsOn.length > 0) {
+                        dep.dependsOn.forEach(targetRef => {
+                            const targetNode = nodeMap.get(targetRef);
+                            
+                            if (targetNode) {
+                                // Determine relationship type
+                                let relType = "dependency";
+                                if (sourceNode.type === "root" || sourceNode.type === "application") {
+                                    relType = "direct dependency";
+                                } else {
+                                    relType = "transitive dependency";
+                                }
+
+                                links.push({
+                                    source: sourceRef,
+                                    target: targetRef,
+                                    relationship: relType,
+                                    sourceComponent: sourceNode,
+                                    targetComponent: targetNode,
+                                    isDependency: true
+                                });
+
+                                // Update target node type if it's a transitive dependency
+                                if (sourceNode.type !== "root" && targetNode.type !== "root") {
+                                    targetNode.type = "transitive";
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            console.log(`Parsed CycloneDX: ${nodes.length} components, ${links.length} dependencies, ${vulnerabilityMap.size} vulnerability mappings`);
+            
+            return { nodes, links };
+        }
+
+        function parseSPDX(data) {
+            const nodes = [];
+            const links = [];
+            const nodeMap = new Map();
+
+            // Add root package
+            if (data.name) {
+                const root = {
+                    id: data.SPDXID || "root",
+                    name: data.name,
+                    version: data.versionInfo || "1.0.0",
+                    type: "root",
+                    cves: []
+                };
+                nodes.push(root);
+                nodeMap.set(root.id, root);
+            }
+
+            // Process packages
+            if (data.packages) {
+                data.packages.forEach(pkg => {
+                    const node = {
+                        id: pkg.SPDXID || pkg.name || Math.random().toString(36).substr(2, 9),
+                        name: pkg.name || "Unknown",
+                        version: pkg.versionInfo || "unknown",
+                        type: "direct",
+                        cves: []
+                    };
+
+                    nodes.push(node);
+                    nodeMap.set(node.id, node);
+                });
+            }
+
+            // Process relationships
+            if (data.relationships) {
+                data.relationships.forEach(rel => {
+                    if (rel.relationshipType === "DEPENDS_ON" || rel.relationshipType === "DEPENDENCY_OF") {
+                        const sourceNode = nodeMap.get(rel.spdxElementId);
+                        const targetNode = nodeMap.get(rel.relatedSpdxElement);
+                        
+                        if (sourceNode && targetNode) {
+                            links.push({
+                                source: sourceNode.id,
+                                target: targetNode.id,
+                                relationship: rel.relationshipType.toLowerCase().replace('_', ' ')
+                            });
+                        }
+                    }
+                });
+            }
+
+            return { nodes, links };
+        }
+
+        function parsePackageLock(data) {
+            const nodes = [];
+            const links = [];
+            const nodeMap = new Map();
+
+            // Add root package
+            const root = {
+                id: data.name || "root",
+                name: data.name || "Root Application",
+                version: data.version || "1.0.0",
+                type: "root",
+                cves: []
+            };
+            nodes.push(root);
+            nodeMap.set(root.id, root);
+
+            // Process dependencies recursively
+            function processDependencies(deps, parentId, depth = 0) {
+                if (!deps) return;
+                
+                Object.entries(deps).forEach(([name, info]) => {
+                    const nodeId = `${name}@${info.version || 'unknown'}`;
+                    
+                    if (!nodeMap.has(nodeId)) {
+                        const node = {
+                            id: nodeId,
+                            name: name,
+                            version: info.version || "unknown",
+                            type: depth === 0 ? "direct" : "transitive",
+                            cves: []
+                        };
+                        nodes.push(node);
+                        nodeMap.set(nodeId, node);
+                    }
+
+                    // Add link from parent
+                    if (parentId) {
+                        links.push({
+                            source: parentId,
+                            target: nodeId,
+                            relationship: depth === 0 ? "direct dependency" : "transitive dependency"
+                        });
+                    }
+
+                    // Process nested dependencies
+                    if (info.dependencies) {
+                        processDependencies(info.dependencies, nodeId, depth + 1);
+                    }
+                });
+            }
+
+            processDependencies(data.dependencies, root.id);
+
+            return { nodes, links };
+        }
+
+        function parsePackageJSON(data) {
+            const nodes = [];
+            const links = [];
+
+            // Add root package
+            const root = {
+                id: data.name || "root",
+                name: data.name || "Root Application",
+                version: data.version || "1.0.0",
+                type: "root",
+                cves: []
+            };
+            nodes.push(root);
+
+            // Process dependencies
+            const allDeps = {
+                ...data.dependencies,
+                ...data.devDependencies,
+                ...data.peerDependencies,
+                ...data.optionalDependencies
+            };
+
+            Object.entries(allDeps).forEach(([name, version]) => {
+                const node = {
+                    id: `${name}@${version}`,
+                    name: name,
+                    version: version,
+                    type: "direct",
+                    cves: []
+                };
+                nodes.push(node);
+
+                links.push({
+                    source: root.id,
+                    target: node.id,
+                    relationship: "direct dependency"
+                });
+            });
+
+            return { nodes, links };
+        }
+
+        function parsePackageList(content) {
+            const lines = content.split('\n').filter(line => line.trim());
+            const nodes = [];
+            const links = [];
+
+            // Add root
+            const root = {
+                id: "root",
+                name: "Root Application",
+                version: "1.0.0",
+                type: "root",
+                cves: []
+            };
+            nodes.push(root);
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed) {
+                    // Try to parse different formats
+                    let name, version;
+                    
+                    if (trimmed.includes('@')) {
+                        [name, version] = trimmed.split('@');
+                    } else if (trimmed.includes('==')) {
+                        [name, version] = trimmed.split('==');
+                    } else if (trimmed.includes(' ')) {
+                        [name, version] = trimmed.split(' ');
+                    } else {
+                        name = trimmed;
+                        version = "unknown";
+                    }
+
+                    const node = {
+                        id: `${name}@${version}`,
+                        name: name,
+                        version: version,
+                        type: "direct",
+                        cves: []
+                    };
+                    nodes.push(node);
+
+                    links.push({
+                        source: root.id,
+                        target: node.id,
+                        relationship: "direct dependency"
+                    });
+                }
+            });
+
+            return { nodes, links };
+        }
+
+        function parseYAML(content) {
+            // Simple YAML parser for basic cases
+            // In a real implementation, you'd use a proper YAML parser
+            try {
+                // Convert simple YAML to JSON for parsing
+                const jsonContent = content
+                    .replace(/:\s*$/gm, ': null')
+                    .replace(/^(\s*)-\s+/gm, '$1"item": ')
+                    .replace(/^(\s*)([^":\s]+):\s*(.+)$/gm, '$1"$2": "$3"');
+                
+                return parseJSON(`{${jsonContent}}`);
+            } catch (error) {
+                console.error("YAML parsing error:", error);
+                return null;
+            }
+        }
+
+        function getSeverityClass(score) {
+            if (score >= 9.0) return "critical";
+            if (score >= 7.0) return "high";
+            if (score >= 4.0) return "medium";
+            return "low";
+        }
+
+        function updateGraph() {
+            // Remove existing graph
+            d3.select("#graph-container").select("svg").remove();
+            
+            // Reinitialize with new data
+            initGraph();
+            
+            // Log statistics
+            const vulnCount = nodes.reduce((sum, node) => sum + (node.cves ? node.cves.length : 0), 0);
+            const depLinks = links.filter(l => l.isDependency).length;
+            console.log(`Graph updated: ${nodes.length} nodes, ${links.length} links (${depLinks} dependencies), ${vulnCount} total vulnerabilities`);
+        }
+    </script>
+</body>
+</html>
