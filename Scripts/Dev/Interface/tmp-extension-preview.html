@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Salesforce Timesheet</title>
+</head>
+<body>
+  <textarea id="meetingSummary" placeholder="Enter meeting summary"></textarea>
+  <button onclick="submitToSalesforce()">Submit</button>
+  <script>
+    async function submitToSalesforce() {
+      const summary = document.getElementById('meetingSummary').value.trim();
+      if (!summary) return alert('Please enter a summary.');
+
+      const apiVersion = 'v65.0';
+      const url = `/services/data/${apiVersion}/sobjects/TimeCard__c/`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            Name: 'Meeting Summary',
+            Description__c: summary
+          }),
+          credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert('Submitted successfully! Record ID: ' + result.id);
+        } else {
+          alert('Error: ' + (result[0]?.message || JSON.stringify(result)));
+        }
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

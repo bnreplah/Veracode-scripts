@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Navigator</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+    
     <style>
         * {
             margin: 0;
@@ -489,6 +493,94 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4e4e4e;
         }
+
+        .tabs { margin-bottom: 20px; }
+    .tab-button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+    }
+    .tab-button.active {
+      background: #d0d0d0;
+      font-weight: bold;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .task {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10%;
+      cursor: pointer;
+      position: relative;
+      margin-right:2.5%;
+      margin-left: 2.5%;
+      color: #00000f;
+    }
+    .priority-1 { background-color: #d4edda; }
+    .priority-2 { background-color: #fff3cd; }
+    .priority-3 { background-color: #f8d7da; }
+
+    .subitems { margin-left: 20px; margin-top: 5px; }
+    .subitem { margin-bottom: 3px; cursor: pointer; }
+
+    .relation-label {
+      font-size: 0.8em;
+      font-weight: bold;
+      margin-left: 6px;
+      color: #555;
+      padding: 0 4px;
+      border-radius: 3px;
+      background: #eee;
+      user-select: none;
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .popup {
+      position: fixed;
+      top: 10%;
+      left: 30%;
+      width: 40%;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      z-index: 1000;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .tag {
+      display: inline-block;
+      background: #e0e0e0;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 0.8em;
+      margin: 2px 2px 0 0;
+    }
+    .popup input, .popup textarea, .popup select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    .task:hover {
+     cursor: move;
+     transition: opacity 0.2s;
+     margin:0%;
+    }
+
+    .task.drag-over {
+     border-top: 3px solid #007bff;
+    }
     </style>
 </head>
 <body>
@@ -509,15 +601,69 @@
             <button class="filter-btn" data-filter="links">🔗 Links</button>
             <button class="filter-btn" data-filter="lists">📋 Lists</button>
             <button class="filter-btn" data-filter="tables">📊 Tables</button>
+            <button onclick="" hidden>Add Time</button>
+            <button onclick="saveMarkdown()" class="filter-btn">Save</button>
+            <button onclick="toggleNoteEdit()" class="filter-btn">ToggleEditor</button>
         </div>
     </div>
 
     <div class="main-content">
+       
         <div class="sidebar">
             
             <div class="file-list" id="fileList">
                 <div class="no-content">Click "Open Folder" to load markdown files</div>
             </div>
+            <div id="todoTab" class="tab-content active">
+                <h1>Advanced To-Do List</h1>
+                <div style="margin-bottom: 10px;">
+                <input id="taskTitle" type="text" placeholder="Task Title" style="width: 30%; padding: 5px; margin: 2.5%;" />
+                <br/>
+                <textarea id="taskDescription" rows="2" placeholder="Task Description" style="width: 90%; padding: 5px; margin: 2.5%;"></textarea><br>
+                <br/>
+                <input id="taskTags" type="text" placeholder="Tags (comma-separated)" style="width: 90%; padding: 5px; margin: 2.5%;" />
+                <br/>
+                <select id="taskPriority" style="margin: 2.5%;">
+                    <option value="1">Priority 1 (Low)</option>
+                    <option value="2">Priority 2 (Medium)</option>
+                    <option value="3">Priority 3 (High)</option>
+                </select>
+                <button onclick="addTask()">Add Task</button>
+                <br/>
+                </div>
+                <div id="taskList"></div>
+            </div>
+            <div id="overlay" class="overlay" style="display:none;" onclick="closePopup()"></div>
+            <div id="popup" class="popup" style="display:none;">
+                <h3>Edit Task</h3>
+                <input id="popupTitle" type="text" placeholder="Task Title" />
+                <textarea id="popupDescription" rows="3" placeholder="Task Description (Markdown supported)"></textarea>
+                <input id="popupTags" type="text" placeholder="Tags (comma-separated)" />
+                <select id="popupPriority">
+                <option value="1">Priority 1 (Low)</option>
+                <option value="2">Priority 2 (Medium)</option>
+                <option value="3">Priority 3 (High)</option>
+                </select>
+                <textarea id="popupTextarea" rows="3" placeholder="Task Notes"></textarea>
+                <button onclick="savePopup()">Save</button>
+            </div>
+
+            
+      <!-- Upload Viewer -->
+      <!-- <div style="margin:5%;" > 
+        <h4 class="mt-3">Upload and Visualize JSON/XML</h4>
+        <input type="file" id="uploadFile" class="form-control" accept=".json,.xml" onchange="handleFileUpload(event)" />
+        <ul class="nav nav-pills mt-3" id="visual-tabs">
+          <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#tree">Tree</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#accordion">Accordion</a></li>
+        </ul>
+        <div class="tab-content mt-2">
+          <div class="tab-pane fade show active" id="tree"><div id="json-tree"></div></div>
+          <div class="tab-pane fade" id="accordion"><div id="json-accordion"></div></div>
+        </div>
+      </div>  -->
+
+
         </div>
         <div class="content-area">
             <div class="content-preview" id="contentPreview">
@@ -535,7 +681,11 @@
                 
             </div>
             <div class="calendar-grid" id="calendarGrid" style="border: dashed whitesmoke 1px;"></div>
+            <br/>
+            <textarea id="noteInput" style="width:100%; height:300px; color: whitesmoke; background-color:#00000f; border-radius: 5%; padding: 2.5%;" placeholder="Write your notes here..."></textarea>
+    <div id="notePreview"></div>
         </div>
+        <div id="app" style="position: relative ; display: flexbox; margin-top: 10%; clear:both; overflow-y: auto;"></div>
     </div>
 
     <script>
@@ -547,6 +697,21 @@
         let selectedDate = null;
         let dateFileMap = new Map();
         let calendarVisible = false;
+        let currentFilename = null;
+        let tasksById = {};
+        let rootTaskIds = [];
+        const taskList = [];
+        //let draggedTaskId = null;
+        let dropIndicator = null;
+
+        let draggedTaskId = null;
+        let draggedOverTaskId = null;
+
+
+                
+    
+
+
 
         document.getElementById('folderBtn').addEventListener('click', async () => {
             try {
@@ -896,7 +1061,7 @@
         function displayContent(path) {
             const content = fileContents.get(path) || '';
             const preview = document.getElementById('contentPreview');
-            const html = convertMarkdownToHtml(content);
+            const html = marked.parse(content); //convertMarkdownToHtml(content);
             preview.innerHTML = html;
         }
 
@@ -979,6 +1144,991 @@
 
             return html;
         }
+
+        function generateUniqueId() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+
+    
+
+    function startOAuth(service) {
+      const clientId = prompt(`Enter your ${service} client ID:`);
+      const redirectUri = window.location.origin;
+      const scope = service === 'zoom' ? 'meeting:read:admin' : 'OnlineMeetings.Read';
+      const authUrl =
+        service === 'zoom'
+          ? `https://zoom.us/oauth/authorize?response_type=token&client_id=${clientId}&redirect_uri=${redirectUri}`
+          : `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=${scope}`;
+
+      const width = 600, height = 700;
+      const left = (screen.width / 2) - (width / 2);
+      const top = (screen.height / 2) - (height / 2);
+      const authWindow = window.open(authUrl, 'oauthWindow', `width=${width},height=${height},top=${top},left=${left}`);
+
+      window.addEventListener('message', (e) => {
+        if (e.origin !== window.location.origin) return;
+        if (e.data.type === 'oauth-token') {
+          accessToken = e.data.token;
+          alert(`${service} connected.`);
+          checkStatus();
+        }
+      });
+    }
+
+
+    // async function submitToSalesforce() {
+    //   const summary = document.getElementById('meetingSummary').innerText;
+    //   const token = prompt('Enter Salesforce OAuth Token:');
+    //   if (!token) return alert('OAuth token is required.');
+
+    //   const response = await fetch('https://veracode.salesforce.com/services/data/vXX.X/sobjects/TimeCard__c', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Authorization': 'Bearer ' + token,
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //       Name: 'Meeting Summary',
+    //       Description__c: summary
+    //     })
+    //   });
+
+    //   if (response.ok) {
+    //     alert('Submitted to Salesforce successfully!');
+    //     salesforceSubmitted = true;
+    //     checkStatus();
+    //   } else alert('Failed to submit to Salesforce.');
+    // }
+
+    
+
+// curl -H "Authorization: Bearer <token>" \
+//      -H "Accept: application/json" \
+//      "<instance_url>/services/data/v65.0/sobjects/TimeCard__c/describe"
+
+
+
+  async function submitToSalesforce() {
+    const summary = document.getElementById('meetingSummary').innerText.trim();
+    if (!summary) return alert('No meeting summary found.');
+
+    // Prompt for required parameters (interim)
+    const baseUrl = prompt('Enter your Salesforce base URL (e.g., https://<mydomain>.my.salesforce.com):');
+    const token   = prompt('Enter Salesforce OAuth access token:');
+    if (!baseUrl || !token) return alert('Base URL and OAuth token are required.');
+
+    // Use a supported API version
+    const apiVersion = 'v65.0'; // Winter ’26 (supported)
+    const url = `${baseUrl.replace(/\/+$/,'')}/services/data/${apiVersion}/sobjects/TimeCard__c/`;
+
+    const payload = {
+      Name: 'Meeting Summary',
+      Description__c: summary
+      // TODO: include other required fields for TimeCard__c (e.g., Date__c, Hours__c, Project__c)
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload),
+        // If you hit CORS issues in a browser, ensure your site is in SF Setup → CORS
+      });
+
+      const body = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const msg =
+          (Array.isArray(body) && body[0]?.message) ||
+          body?.message ||
+          response.statusText;
+        throw new Error(`Salesforce error (${response.status}): ${msg}`);
+      }
+
+      alert('Submitted to Salesforce successfully!');
+      console.log('Created record:', body); // { id, success: true, errors: [] }
+      // salesforceSubmitted = true; checkStatus(); // if you have these globals elsewhere
+    } catch (err) {
+      console.error(err);
+      alert(err.message || 'Failed to submit to Salesforce.');
+    }
+  }
+
+function toggleDone(index) {
+    taskList[index].done = !taskList[index].done;
+    
+    renderTasks();
+}
+
+        
+function addTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  const description = document.getElementById('taskDescription').value.trim();
+  const tags = document.getElementById('taskTags').value.split(',').map(tag => tag.trim()).filter(Boolean);
+  const priority = parseInt(document.getElementById('taskPriority').value);
+
+  if (!title) return;
+  const id = generateUniqueId();
+  tasksById[id] = { id, name: title, description, tags, priority, expanded: false, notes: '', subtasks: [] };
+  rootTaskIds.push(id);
+  renderTasks();
+}
+
+function renderTasks() {
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  rootTaskIds.forEach(id => renderTask(id, list));
+}
+
+function renderTask(id, container) {
+  const task = tasksById[id];
+  const div = document.createElement('div');
+  div.className = `task priority-${task.priority}`;
+  div.innerHTML = `<div class="task-header"><strong>${task.name}</strong><span>${task.tags.map(tag => `<span class='tag'>${tag}</span>`).join('')}</span></div>`;
+  div.ondblclick = () => openPopup(task.id);
+  div.draggable = true;
+  container.appendChild(div);
+  div.dataset.taskId = id;
+
+   // Drag event listeners
+  div.addEventListener('dragstart', handleDragStart);
+  div.addEventListener('dragover', handleDragOver);
+  div.addEventListener('drop', handleDrop);
+  div.addEventListener('dragend', handleDragEnd);
+  div.addEventListener('dragenter', handleDragEnter);
+  div.addEventListener('dragleave', handleDragLeave);
+  
+
+
+  if (task.expanded && task.subtasks.length) {
+    const subDiv = document.createElement('div');
+    subDiv.className = 'subitems';
+    task.subtasks.forEach(rel => {
+      if (tasksById[rel.taskId]) {
+        const s = document.createElement('div');
+        s.className = 'subitem';
+        s.textContent = tasksById[rel.taskId].name;
+        const label = document.createElement('span');
+        label.className = 'relation-label';
+        label.textContent = rel.type;
+        s.appendChild(label);
+        subDiv.appendChild(s);
+      }
+    });
+    container.appendChild(subDiv);
+  }
+}
+
+function createDropIndicator() {
+  if (!dropIndicator) {
+    dropIndicator = document.createElement('div');
+    dropIndicator.className = 'drop-indicator';
+    dropIndicator.style.cssText = 'height: 3px; background: #007bff; margin: 2px 0; border-radius: 2px;';
+  }
+  return dropIndicator;
+}
+
+function removeDropIndicator() {
+  if (dropIndicator && dropIndicator.parentNode) {
+    dropIndicator.parentNode.removeChild(dropIndicator);
+  }
+}
+
+function handleDragStart(e) {
+  draggedTaskId = e.currentTarget.dataset.taskId;
+  e.currentTarget.style.opacity = '0.4';
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  
+  const targetElement = e.currentTarget;
+  const targetTaskId = targetElement.dataset.taskId;
+  
+  if (draggedTaskId === targetTaskId) {
+    removeDropIndicator();
+    return;
+  }
+  
+  const rect = targetElement.getBoundingClientRect();
+  const midpoint = rect.top + rect.height / 2;
+  const indicator = createDropIndicator();
+  
+  // Show indicator above or below based on cursor position
+  if (e.clientY < midpoint) {
+    targetElement.parentNode.insertBefore(indicator, targetElement);
+  } else {
+    if (targetElement.nextSibling) {
+      targetElement.parentNode.insertBefore(indicator, targetElement.nextSibling);
+    } else {
+      targetElement.parentNode.appendChild(indicator);
+    }
+  }
+  
+  return false;
+}
+
+function handleDrop(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  
+  removeDropIndicator();
+  
+  const targetElement = e.currentTarget;
+  const targetTaskId = targetElement.dataset.taskId;
+  
+  if (draggedTaskId === targetTaskId) {
+    return false;
+  }
+  
+  const draggedIndex = rootTaskIds.indexOf(draggedTaskId);
+  const targetIndex = rootTaskIds.indexOf(targetTaskId);
+  
+  // Remove dragged task from array
+  rootTaskIds.splice(draggedIndex, 1);
+  
+  // Determine new position based on cursor position
+  const rect = targetElement.getBoundingClientRect();
+  const midpoint = rect.top + rect.height / 2;
+  let newIndex = targetIndex;
+  
+  // Adjust index if dragged item was before target
+  if (draggedIndex < targetIndex) {
+    newIndex--;
+  }
+  
+  // Insert above or below based on cursor position
+  if (e.clientY < midpoint) {
+    rootTaskIds.splice(newIndex, 0, draggedTaskId);
+  } else {
+    rootTaskIds.splice(newIndex + 1, 0, draggedTaskId);
+  }
+  
+  renderTasks();
+  return false;
+}
+
+function handleDragEnd(e) {
+  e.currentTarget.style.opacity = '1';
+  removeDropIndicator();
+  draggedTaskId = null;
+}
+
+
+function handleDragStart(e) {
+  draggedTaskId = e.currentTarget.dataset.taskId;
+  e.currentTarget.style.opacity = '0.4';
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragEnter(e) {
+  const targetTaskId = e.currentTarget.dataset.taskId;
+  if (draggedTaskId !== targetTaskId) {
+    e.currentTarget.classList.add('drag-over');
+    draggedOverTaskId = targetTaskId;
+  }
+}
+
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  e.preventDefault();
+  
+  const targetTaskId = e.currentTarget.dataset.taskId;
+  
+  if (draggedTaskId !== targetTaskId) {
+    const draggedIndex = rootTaskIds.indexOf(draggedTaskId);
+    const targetIndex = rootTaskIds.indexOf(targetTaskId);
+    
+    // Remove dragged task from its current position
+    rootTaskIds.splice(draggedIndex, 1);
+    
+    // Insert at new position
+    const newTargetIndex = rootTaskIds.indexOf(targetTaskId);
+    rootTaskIds.splice(newTargetIndex, 0, draggedTaskId);
+    
+    renderTasks();
+  }
+  
+  e.currentTarget.classList.remove('drag-over');
+  return false;
+}
+
+// function handleDragEnd(e) {
+//   e.currentTarget.style.opacity = '1';
+  
+//   // Remove drag-over class from all tasks
+//   document.querySelectorAll('.task').forEach(task => {
+//     task.classList.remove('drag-over');
+//   });
+  
+//   draggedTaskId = null;
+//   draggedOverTaskId = null;
+// }
+
+function openPopup(taskId) {
+  const task = tasksById[taskId];
+  document.getElementById('popupTitle').value = task.name;
+  document.getElementById('popupDescription').value = task.description;
+  document.getElementById('popupTags').value = task.tags.join(', ');
+  document.getElementById('popupPriority').value = task.priority;
+  document.getElementById('popupTextarea').value = task.notes;
+  document.getElementById('popup').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('popup').dataset.taskId = taskId;
+}
+
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
+
+function savePopup() {
+  const taskId = document.getElementById('popup').dataset.taskId;
+  const task = tasksById[taskId];
+  task.name = document.getElementById('popupTitle').value.trim();
+  task.description = document.getElementById('popupDescription').value.trim();
+  task.tags = document.getElementById('popupTags').value.split(',').map(t => t.trim()).filter(Boolean);
+  task.priority = parseInt(document.getElementById('popupPriority').value);
+  task.notes = document.getElementById('popupTextarea').value.trim();
+  closePopup();
+  renderTasks();
+}
+
+  const noteInput = document.getElementById('noteInput');
+  const notePreview = document.getElementById('contentPreview');
+
+
+
+
+  noteInput.addEventListener('input', () => {
+    let content = noteInput.value;
+
+    if (content.includes('[start meeting]') || content.includes('[meeting started]') || content.includes('Starting Meeting') || content.includes('[Meeting Started]')) {
+        const timestamp = new Date().toLocaleString();
+        content = content.replace('[start meeting]', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('[started meeting]', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('[starting meeting]', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('[meeting started]', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('[Start Meeting]', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('Starting Meeting', `\n**Meeting Started:** ${timestamp}\n`);
+        content = content.replace('Start Meeting', `\n**Meeting Started:** ${timestamp}\n`);
+
+        noteInput.value = content; // update textarea with the static timestamp
+    }
+
+    if (content.includes('[end meeting]') || content.includes('[meeting ended]') || content.includes('Ending Meeting') || content.includes('[Meeting Ended]')) {
+        const timestamp = new Date().toLocaleString();
+        content = content.replace('[end meeting]', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('[ended meeting]', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('[ending meeting]', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('[meeting ended]', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('[End Meeting]', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('Ending Meeting', `\n**Meeting Ended:** ${timestamp}\n`);
+        content = content.replace('End Meeting', `\n**Meeting Ended:** ${timestamp}\n`);
+
+        noteInput.value = content;
+    }
+
+    document.getElementById('contentPreview').innerHTML = marked.parse(noteInput.value);
+    
+  } );
+
+  function detectMeetingKeywords(text) {
+      const now = new Date().toLocaleString();
+      if (text.includes('[start meeting]') || text.includes('[meeting started]')) {
+        text = text.replace(/\[(start meeting|meeting started)\]/i, `[Meeting started at ${now}]`);
+        document.getElementById('markdownEditor').value = text;
+      }
+      if (text.includes('[end meeting]') || text.includes('[meeting ended]')) {
+        text = text.replace(/\[(end meeting|meeting ended)\]/i, `[Meeting ended at ${now}]`);
+        document.getElementById('markdownEditor').value = text;
+      }
+    }
+
+    function loadMarkdown(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('noteInput').value = reader.result;
+        updatePreview();
+      };
+      reader.readAsText(file);
+    }
+
+    function updatePreview() {
+      let text = document.getElementById('noteInput').value;
+      //detectMeetingKeywords(text);
+      document.getElementById('contentPreview').innerHTML = marked.parse(text);
+    }
+
+     // Save markdown file function
+    function saveMarkdown() {
+        const content = noteInput.value;
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'document.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function toggleNoteEdit(){
+        let currentValue = document.getElementById('noteInput').hidden;
+        
+        if (currentValue == true){
+            document.getElementById('noteInput').hidden = false;
+        }else{
+            document.getElementById('noteInput').hidden = true;
+        }
+    }
+
+
+
+    
+    // // File Upload handler (basic JSON only for now)
+    // function handleFileUpload(event) {
+    //   const file = event.target.files[0];
+    //   if (!file) return;
+    //   const reader = new FileReader();
+    //   reader.onload = () => {
+    //     try {
+    //       const data = JSON.parse(reader.result);
+    //       renderTree(data, 'json-tree');
+    //       renderAccordion(data, 'json-accordion');
+    //     } catch (e) {
+    //       alert('Only JSON parsing is supported currently.');
+    //     }
+    //   };
+    //   reader.readAsText(file);
+    // }
+
+    // // Render JSON Tree view
+    // function renderTree(obj, containerId, indent = '') {
+    //   const container = document.getElementById(containerId);
+    //   container.innerHTML = '';
+    //   function walk(o, space = '') {
+    //     for (let key in o) {
+    //       const item = document.createElement('div');
+    //       item.innerText = `${space}${key}: ${typeof o[key] === 'object' ? '' : o[key]}`;
+    //       container.appendChild(item);
+    //       if (typeof o[key] === 'object') walk(o[key], space + '  ');
+    //     }
+    //   }
+    //   walk(obj);
+    // }
+
+    // // Render Accordion
+    // function renderAccordion(obj, containerId) {
+    //   const container = document.getElementById(containerId);
+    //   container.innerHTML = '';
+    //   let idx = 0;
+    //   function createItem(key, value) {
+    //     const id = `acc${idx++}`;
+    //     return `
+    //       <div class="accordion-item">
+    //         <h2 class="accordion-header" id="h${id}">
+    //           <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c${id}">
+    //             ${key}
+    //           </button>
+    //         </h2>
+    //         <div id="c${id}" class="accordion-collapse collapse">
+    //           <div class="accordion-body">${typeof value === 'object' ? JSON.stringify(value, null, 2) : value}</div>
+    //         </div>
+    //       </div>`;
+    //   }
+    //   let html = '<div class="accordion" id="jsonAccordion">';
+    //   for (let key in obj) {
+    //     html += createItem(key, obj[key]);
+    //   }
+    //   html += '</div>';
+    //   container.innerHTML = html;
+    // }
+
+    // let tasks = [];
+    // let interruptions = [];
+    // let activeTimer = null;
+    // let timeElapsed = 0;
+    // let timerInterval = null;
+    // let focusMode = false;
+    // let completedToday = 0;
+
+    // const app = document.getElementById("app");
+
+    // function formatTime(seconds) {
+    //   const mins = Math.floor(seconds / 60);
+    //   const secs = seconds % 60;
+    //   return `${mins}:${secs.toString().padStart(2, '0')}`;
+    // }
+    
+    // //seems to be an error around it being undefined here
+
+    // function addTask(text) {
+    //   if (!text.trim()) return;
+    //   tasks.push({
+    //     id: Date.now(),
+    //     text,
+    //     completed: false,
+    //     timeSpent: 0,
+    //     priority: "medium"
+    //   });
+    //   render();
+    // }
+
+    // function toggleTask(id) {
+    //   tasks = tasks.map(task => {
+    //     if (task.id === id) {
+    //       const updated = { ...task, completed: !task.completed };
+    //       if (updated.completed && !task.completed) {
+    //         completedToday++;
+    //       } else if (!updated.completed && task.completed) {
+    //         completedToday = Math.max(0, completedToday - 1);
+    //       }
+    //       return updated;
+    //     }
+    //     return task;
+    //   });
+    //   render();
+    // }
+
+    // function deleteTask(id) {
+    //   const task = tasks.find(t => t.id === id);
+    //   if (task?.completed) {
+    //     completedToday = Math.max(0, completedToday - 1);
+    //   }
+    //   tasks = tasks.filter(t => t.id !== id);
+    //   render();
+    // }
+
+    // function startTimer(taskId) {
+    //   if (activeTimer === taskId) {
+    //     clearInterval(timerInterval);
+    //     activeTimer = null;
+    //   } else {
+    //     clearInterval(timerInterval);
+    //     activeTimer = taskId;
+    //     timeElapsed = 0;
+    //     timerInterval = setInterval(() => {
+    //       timeElapsed++;
+    //       render();
+    //     }, 1000);
+    //   }
+    //   render();
+    // }
+
+    // function logInterruption(text) {
+    //   if (!text.trim()) return;
+    //   interruptions.push({
+    //     id: Date.now(),
+    //     text,
+    //     time: new Date().toLocaleTimeString()
+    //   });
+    //   render();
+    // }
+
+    // function clearInterruptions() {
+    //   interruptions = [];
+    //   render();
+    // }
+
+    // function toggleFocusMode() {
+    //   focusMode = !focusMode;
+    //   render();
+    // }
+
+    // function render() {
+    //   const pendingTasks = tasks.filter(t => !t.completed);
+    //   const completedTasks = tasks.filter(t => t.completed);
+
+    //   app.innerHTML = `
+    //     <div class="w3-container w3-margin-bottom">
+    //       <h1 class="w3-xxxlarge w3-text-gray"><b>Engineering Command Center</b></h1>
+    //       <p class="w3-text-grey">Manage everything from one place. No more drowning in endless piles.</p>
+    //     </div>
+
+    //     <!-- Quick Stats -->
+    //     <div class="w3-row-padding w3-margin-bottom">
+    //       <div class="w3-quarter">
+    //         <div class="w3-container w3-blue w3-padding w3-round-large">
+    //           <i data-lucide="target" class="w3-margin-right"></i>
+    //           <div class="w3-xxxlarge"><b>${pendingTasks.length}</b></div>
+    //           <div class="w3-small">Pending Tasks</div>
+    //         </div>
+    //       </div>
+    //       <div class="w3-quarter">
+    //         <div class="w3-container w3-green w3-padding w3-round-large">
+    //           <i data-lucide="check-circle" class="w3-margin-right"></i>
+    //           <div class="w3-xxxlarge"><b>${completedToday}</b></div>
+    //           <div class="w3-small">Completed Today</div>
+    //         </div>
+    //       </div>
+    //       <div class="w3-quarter">
+    //         <div class="w3-container w3-orange w3-padding w3-round-large">
+    //           <i data-lucide="zap" class="w3-margin-right"></i>
+    //           <div class="w3-xxxlarge"><b>${interruptions.length}</b></div>
+    //           <div class="w3-small">Interruptions</div>
+    //         </div>
+    //       </div>
+    //       <div class="w3-quarter">
+    //         <div class="w3-container w3-purple w3-padding w3-round-large">
+    //           <i data-lucide="brain" class="w3-margin-right"></i>
+    //           <div class="w3-xxxlarge"><b>${focusMode ? "ON" : "OFF"}</b></div>
+    //           <div class="w3-small">Focus Mode</div>
+    //         </div>
+    //       </div>
+    //     </div>
+
+    //     <div class="w3-row-padding">
+    //       <!-- Main Task Panel -->
+    //       <div class="w3-twothird">
+    //         <!-- Add Task -->
+    //         <div class="w3-card w3-white w3-padding w3-margin-bottom">
+    //           <h2 class="w3-xlarge"><b>Add New Task</b></h2>
+    //           <div style="display: flex; gap: 8px; margin-top: 16px;">
+    //             <input id="newTask" type="text" placeholder="What needs to be done?"
+    //               class="w3-input w3-border w3-round" style="flex: 1;"/>
+    //             <button id="addTaskBtn" class="w3-button w3-blue w3-round">
+    //               <i data-lucide="plus"></i> Add
+    //             </button>
+    //           </div>
+    //         </div>
+
+    //         <!-- Active Tasks -->
+    //         <div class="w3-card w3-white w3-padding w3-margin-bottom">
+    //           <h2 class="w3-xlarge"><b>Current Tasks (${pendingTasks.length})</b></h2>
+    //           <div style="margin-top: 16px;">
+    //             ${pendingTasks.map(task => `
+    //               <div class="w3-panel w3-light-grey w3-round" style="display: flex; align-items: center; gap: 12px; padding: 12px;">
+    //                 <button data-action="toggleTask" data-id="${task.id}" class="w3-button w3-text-grey w3-hover-text-green">
+    //                   <i data-lucide="circle"></i>
+    //                 </button>
+    //                 <span style="flex: 1;">${task.text}</span>
+    //                 <div style="display: flex; align-items: center; gap: 8px;">
+    //                   ${activeTimer === task.id ? `<span class="w3-text-blue" style="font-family: monospace;">${formatTime(timeElapsed)}</span>` : ""}
+    //                   <button data-action="startTimer" data-id="${task.id}" class="w3-button ${activeTimer === task.id ? "w3-pale-red w3-text-red" : "w3-pale-blue w3-text-blue"} w3-round">
+    //                     <i data-lucide="${activeTimer === task.id ? "pause" : "play"}"></i>
+    //                   </button>
+    //                   <button data-action="deleteTask" data-id="${task.id}" class="w3-button w3-text-grey w3-hover-text-red">
+    //                     <i data-lucide="trash-2"></i>
+    //                   </button>
+    //                 </div>
+    //               </div>
+    //             `).join("")}
+    //             ${pendingTasks.length === 0 ? `<div class="w3-center w3-padding-32 w3-text-grey">🎉 No pending tasks! Time to add some or take a break.</div>` : ""}
+    //           </div>
+    //         </div>
+
+    //         <!-- Completed Tasks -->
+    //         ${completedTasks.length > 0 ? `
+    //           <div class="w3-card w3-white w3-padding w3-margin-bottom">
+    //             <h2 class="w3-xlarge w3-text-green"><b>Completed Today (${completedTasks.length})</b></h2>
+    //             <div style="margin-top: 16px;">
+    //               ${completedTasks.slice(-5).map(task => `
+    //                 <div class="w3-panel" style="display: flex; align-items: center; gap: 12px; padding: 8px;">
+    //                   <i data-lucide="check-circle" class="w3-text-green"></i>
+    //                   <span class="w3-text-grey" style="text-decoration: line-through;">${task.text}</span>
+    //                 </div>
+    //               `).join("")}
+    //             </div>
+    //           </div>
+    //         ` : ""}
+    //       </div>
+
+    //       <!-- Sidebar -->
+    //       <div class="w3-third">
+    //         <!-- Focus Mode -->
+    //         <div class="w3-card w3-white w3-padding w3-margin-bottom">
+    //           <h3 class="w3-large"><b>Focus Mode</b></h3>
+    //           <button id="focusModeBtn" class="w3-button w3-block w3-round w3-margin-top ${focusMode ? "w3-purple" : "w3-light-grey w3-text-grey"}" style="padding: 12px;">
+    //             ${focusMode ? "Focus Mode ON" : "Activate Focus Mode"}
+    //           </button>
+    //           <p class="w3-small w3-text-grey w3-margin-top">${focusMode ? "Minimize distractions and stay in the zone!" : "Block distractions and enter deep work mode"}</p>
+    //         </div>
+
+    //         <!-- Interruptions -->
+    //         <div class="w3-card w3-white w3-padding w3-margin-bottom">
+    //           <h3 class="w3-large"><b>Log Interruptions</b></h3>
+    //           <div style="margin-top: 16px;">
+    //             <input id="newInterruption" type="text" placeholder="Quick note about interruption..."
+    //               class="w3-input w3-border w3-round w3-small"/>
+    //             <button id="logInterruptionBtn" class="w3-button w3-orange w3-block w3-round w3-margin-top w3-small">Log It</button>
+    //           </div>
+    //           ${interruptions.length > 0 ? `
+    //             <div style="margin-top: 16px;">
+    //               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    //                 <span class="w3-small"><b>Today's Interruptions</b></span>
+    //                 <button id="clearInterruptions" class="w3-button w3-tiny w3-text-grey w3-hover-text-red">Clear</button>
+    //               </div>
+    //               <div style="max-height: 128px; overflow-y: auto;">
+    //                 ${interruptions.slice(-5).map(i => `
+    //                   <div class="w3-panel w3-light-grey w3-round w3-tiny" style="padding: 8px; margin: 4px 0;">
+    //                     <span class="w3-text-grey">${i.time}</span>
+    //                     <div>${i.text}</div>
+    //                   </div>
+    //                 `).join("")}
+    //               </div>
+    //             </div>
+    //           ` : ""}
+    //         </div>
+
+    //         <!-- Quick Tips -->
+    //         <div class="w3-card w3-white w3-padding">
+    //           <h3 class="w3-large"><b>Engineer's Time Tips</b></h3>
+    //           <div class="w3-small w3-text-grey" style="margin-top: 16px;">
+    //             <div style="margin: 8px 0;">• Batch similar tasks together</div>
+    //             <div style="margin: 8px 0;">• Use the timer for focused work blocks</div>
+    //             <div style="margin: 8px 0;">• Log interruptions to see patterns</div>
+    //             <div style="margin: 8px 0;">• Celebrate completed tasks!</div>
+    //             <div style="margin: 8px 0;">• When overwhelmed, pick just ONE task</div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   `;
+
+    //   // Re-initialize icons
+    //   lucide.createIcons();
+
+    //   // Event bindings
+    //   document.getElementById("addTaskBtn").onclick = () => {
+    //     addTask(document.getElementById("newTask").value);
+    //   };
+    //   document.getElementById("newTask").onkeypress = (e) => {
+    //     if (e.key === "Enter") addTask(e.target.value);
+    //   };
+    //   document.getElementById("focusModeBtn").onclick = toggleFocusMode;
+    //   document.getElementById("logInterruptionBtn").onclick = () => {
+    //     logInterruption(document.getElementById("newInterruption").value);
+    //   };
+    //   document.getElementById("newInterruption").onkeypress = (e) => {
+    //     if (e.key === "Enter") logInterruption(e.target.value);
+    //   };
+    //   if (document.getElementById("clearInterruptions")) {
+    //     document.getElementById("clearInterruptions").onclick = clearInterruptions;
+    //   }
+
+    //   document.querySelectorAll("[data-action='toggleTask']").forEach(btn => {
+    //     btn.onclick = () => toggleTask(Number(btn.dataset.id));
+    //   });
+    //   document.querySelectorAll("[data-action='deleteTask']").forEach(btn => {
+    //     btn.onclick = () => deleteTask(Number(btn.dataset.id));
+    //   });
+    //   document.querySelectorAll("[data-action='startTimer']").forEach(btn => {
+    //     btn.onclick = () => startTimer(Number(btn.dataset.id));
+    //   });
+    // }
+
+    // render();
+  
+    
+      /// this section is for markdown rendering with link previews and local image support
+      /// need to conform it to the right data
+      /// otherwise it breaks the whole app in terms of the markdown preview
+
+    // const textarea = document.getElementById('noteInput');
+    // const previewContent = document.getElementById('contentPreview');
+    // const richPreviewCheckbox = document.getElementById('richPreview');
+
+    // // Configure marked with custom renderer
+    // const renderer = new marked.Renderer();
+    
+    // // Custom link renderer
+    // const originalLinkRenderer = renderer.link.bind(renderer);
+    // renderer.link = function(href, title, text) {
+    //   const isRichPreviewEnabled = richPreviewCheckbox.checked;
+      
+    //   // Check if it's a standalone link (link text matches URL or is simple)
+    //   const isStandaloneLink = text === href || text.length < 50;
+      
+    //   // Only create rich previews for standalone external links
+    //   if (isRichPreviewEnabled && isStandaloneLink && (href.startsWith('http://') || href.startsWith('https://'))) {
+    //     const previewId = 'preview-' + Math.random().toString(36).substr(2, 9);
+        
+    //     // Schedule link preview fetch after render
+    //     setTimeout(() => fetchLinkPreview(href, previewId), 0);
+        
+    //     return `<div class="link-preview" id="${previewId}">
+    //       <div class="link-preview-loading">Loading preview...</div>
+    //     </div>`;
+    //   }
+      
+    //   // Regular link rendering
+    //   return originalLinkRenderer(href, title, text);
+    // };
+
+    // // Custom image renderer for local file support
+    // renderer.image = function(href, title, text) {
+    //   // Handle data URIs (local images as base64)
+    //   if (href.startsWith('data:')) {
+    //     return `<img src="${href}" alt="${text}" title="${title || ''}" />`;
+    //   }
+      
+    //   // Handle local file:// protocol (if browser allows)
+    //   if (href.startsWith('file://')) {
+    //     return `<img src="${href}" alt="${text}" title="${title || ''}" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p style=color:#ef4444>⚠️ Local image not accessible: ${text}</p>')"/>`;
+    //   }
+      
+    //   // Handle relative paths (would need to be served by a local server)
+    //   if (!href.startsWith('http://') && !href.startsWith('https://')) {
+    //     return `<img src="${href}" alt="${text}" title="${title || ''}" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p style=color:#ef4444>⚠️ Image not found: ${text}</p>')"/>`;
+    //   }
+      
+    //   // Regular external image
+    //   return `<img src="${href}" alt="${text}" title="${title || ''}" />`;
+    // };
+
+    // marked.setOptions({
+    //   renderer: renderer,
+    //   breaks: true,
+    //   gfm: true
+    // });
+
+    // // Fetch link preview metadata
+    // async function fetchLinkPreview(url, elementId) {
+    //   const element = document.getElementById(elementId);
+    //   if (!element) return;
+
+    //   try {
+    //     // Use a CORS proxy for fetching metadata
+    //     // In production, you'd want your own backend service for this
+    //     const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        
+    //     const response = await fetch(proxyUrl);
+    //     const data = await response.json();
+    //     const html = data.contents;
+        
+    //     // Parse metadata from HTML
+    //     const metadata = parseMetadata(html, url);
+        
+    //     // Render preview card
+    //     element.innerHTML = `
+    //       ${metadata.image ? `<img src="${metadata.image}" alt="${metadata.title}" class="link-preview-image" onerror="this.style.display='none'">` : ''}
+    //       <div class="link-preview-content">
+    //         <div class="link-preview-title">${metadata.title}</div>
+    //         ${metadata.description ? `<div class="link-preview-description">${metadata.description}</div>` : ''}
+    //         <a href="${url}" target="_blank" rel="noopener noreferrer" class="link-preview-url">
+    //           🔗 ${new URL(url).hostname}
+    //         </a>
+    //       </div>
+    //     `;
+    //   } catch (error) {
+    //     // Fallback to simple link if preview fails
+    //     element.innerHTML = `
+    //       <div class="link-preview-content">
+    //         <a href="${url}" target="_blank" rel="noopener noreferrer" class="link-preview-url">
+    //           🔗 ${url}
+    //         </a>
+    //       </div>
+    //     `;
+    //   }
+    // }
+
+    // // Parse Open Graph and meta tags from HTML
+    // function parseMetadata(html, fallbackUrl) {
+    //   const parser = new DOMParser();
+    //   const doc = parser.parseFromString(html, 'text/html');
+      
+    //   const getMetaContent = (name) => {
+    //     const meta = doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`);
+    //     return meta ? meta.getAttribute('content') : null;
+    //   };
+      
+    //   return {
+    //     title: getMetaContent('og:title') || 
+    //            getMetaContent('twitter:title') || 
+    //            doc.querySelector('title')?.textContent ||
+    //            new URL(fallbackUrl).hostname,
+    //     description: getMetaContent('og:description') || 
+    //                 getMetaContent('twitter:description') || 
+    //                 getMetaContent('description') || '',
+    //     image: getMetaContent('og:image') || 
+    //            getMetaContent('twitter:image') || null
+    //   };
+    // }
+
+    // // Update preview
+    // function updatePreview() {
+    //   const markdown = textarea.value;
+    //   const html = marked.parse(markdown);
+    //   previewContent.innerHTML = html;
+    // }
+
+    // // Insert image helper
+    // function insertImage() {
+    //   const url = prompt('Enter image URL or select a local file:');
+    //   if (url) {
+    //     const altText = prompt('Enter alt text (optional):', 'Image');
+    //     const cursor = textarea.selectionStart;
+    //     const before = textarea.value.substring(0, cursor);
+    //     const after = textarea.value.substring(cursor);
+    //     textarea.value = before + `\n![${altText}](${url})\n` + after;
+    //     updatePreview();
+    //   }
+    // }
+
+    // // Insert link helper
+    // function insertLink() {
+    //   const url = prompt('Enter URL:');
+    //   if (url) {
+    //     const text = prompt('Enter link text:', url);
+    //     const cursor = textarea.selectionStart;
+    //     const before = textarea.value.substring(0, cursor);
+    //     const after = textarea.value.substring(cursor);
+    //     textarea.value = before + `[${text}](${url})` + after;
+    //     updatePreview();
+    //   }
+    // }
+
+    // // File upload support for local images
+    // textarea.addEventListener('paste', async (e) => {
+    //   const items = e.clipboardData.items;
+    //   for (let item of items) {
+    //     if (item.type.startsWith('image/')) {
+    //       e.preventDefault();
+    //       const file = item.getAsFile();
+    //       const reader = new FileReader();
+    //       reader.onload = (event) => {
+    //         const dataUrl = event.target.result;
+    //         const cursor = textarea.selectionStart;
+    //         const before = textarea.value.substring(0, cursor);
+    //         const after = textarea.value.substring(cursor);
+    //         textarea.value = before + `\n![Pasted Image](${dataUrl})\n` + after;
+    //         updatePreview();
+    //       };
+    //       reader.readAsDataURL(file);
+    //     }
+    //   }
+    // });
+
+    // // Live preview update
+    // textarea.addEventListener('input', updatePreview);
+    
+    // // Initial render
+    // updatePreview();
+
     </script>
 </body>
 </html>
