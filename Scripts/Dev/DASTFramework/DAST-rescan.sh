@@ -12,7 +12,7 @@ date=""
 #   now=true
 # fi
 
-if [[ -z "$4" ]]; then
+if [[ -z "$3" ]]; then # changed the $4 to $3 since the $3 is commented out above
   date="$today"
   echo $date
 else
