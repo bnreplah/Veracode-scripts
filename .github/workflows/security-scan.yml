@@ -1,0 +1,207 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run weekly on Monday at 08:00 UTC
+    - cron: "0 8 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # ── Python static security analysis (Bandit) ──────────────────────────────
+  python-bandit:
+    name: Python Security Analysis (Bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Bandit
+        run: pip install bandit[toml]
+
+      - name: Run Bandit (high + medium severity)
+        run: |
+          bandit -r Scripts/ \
+            -f json -o bandit-report.json \
+            -ll \
+            --exclude Scripts/Dev/Reference,Scripts/src/bin \
+            || true
+
+      - name: Print Bandit summary
+        run: |
+          bandit -r Scripts/ \
+            -f txt \
+            -ll \
+            --exclude Scripts/Dev/Reference,Scripts/src/bin \
+            || true
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+
+  # ── Shell script security analysis (ShellCheck) ───────────────────────────
+  shell-shellcheck:
+    name: Shell Security Analysis (ShellCheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck on Release scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./Scripts/Release"
+          severity: warning
+          format: tty
+        continue-on-error: true
+
+      - name: Run ShellCheck on Dev bash scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./Scripts/Dev/bash_scripts"
+          severity: warning
+          format: tty
+        continue-on-error: true
+
+      - name: Run ShellCheck on XML API scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./xml_api_calls"
+          severity: warning
+          format: tty
+        continue-on-error: true
+
+  # ── Secret scanning (Gitleaks) ────────────────────────────────────────────
+  secret-scanning:
+    name: Secret Scanning (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  # ── Python dependency audit (pip-audit) ───────────────────────────────────
+  dependency-audit:
+    name: Dependency Vulnerability Audit (pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Audit test dependencies
+        run: |
+          pip install -r requirements-test.txt
+          pip-audit --desc on 2>/dev/null || true
+
+      - name: Audit all Python files for unsafe imports
+        run: |
+          echo "Scanning Python scripts for known vulnerable patterns..."
+          grep -rn "import pickle\|eval(\|exec(\|subprocess.call.*shell=True" \
+            Scripts/ --include="*.py" || echo "No flagged patterns found."
+
+  # ── Semgrep SAST ──────────────────────────────────────────────────────────
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python for Semgrep
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep on Python scripts
+        run: |
+          semgrep --config p/python \
+                  --config p/security-audit \
+                  Scripts/ \
+                  --json -o semgrep-report.json \
+                  || true
+          semgrep --config p/python \
+                  --config p/security-audit \
+                  Scripts/ \
+                  --text \
+                  || true
+
+      - name: Upload Semgrep report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
+
+  # ── Credentials file check ─────────────────────────────────────────────────
+  credentials-check:
+    name: Credentials File Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for committed credential files
+        run: |
+          echo "Checking for credential files that should not be committed..."
+          FOUND=0
+
+          # Check for .veracode/credentials files (except in test fixtures)
+          if find . -path "./.git" -prune -o \
+               -name "credentials" -path "*/.veracode/*" \
+               -not -path "*/Dev/Test/*" -print | grep -q .; then
+            echo "WARNING: .veracode/credentials file found outside of test fixtures"
+            find . -path "./.git" -prune -o \
+               -name "credentials" -path "*/.veracode/*" \
+               -not -path "*/Dev/Test/*" -print
+            FOUND=1
+          fi
+
+          # Check for files with hardcoded API key patterns
+          if grep -rn "veracode_api_key_id\s*=\s*[a-z0-9]\{8\}" \
+               --include="*.sh" --include="*.py" --include="*.ps1" \
+               Scripts/ 2>/dev/null; then
+            echo "WARNING: Possible hardcoded API key ID found"
+            FOUND=1
+          fi
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "No credential issues detected."
+          fi
+        continue-on-error: true

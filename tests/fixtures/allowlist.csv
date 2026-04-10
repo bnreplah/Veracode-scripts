@@ -1,0 +1,5 @@
+directory_restriction_type,http_and_https,url
+NONE,TRUE,https://example.com
+DIRECTORY_AND_SUBDIRECTORY,TRUE,https://api.example.com
+FOLDER_ONLY,TRUE,https://www.example.com
+FILE,TRUE,https://docs.example.com
