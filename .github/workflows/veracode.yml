@@ -1,0 +1,141 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
+
+name: Veracode Static Analysis Pipeline Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+  schedule:
+    - cron: '18 0 * * 1'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions:
+  contents: write
+
+jobs:
+
+  # This workflow contains a job to build and submit pipeline scan, you will need to customize the build process accordingly and make sure the artifact you build is used as the file input to the pipeline scan file parameter
+  build-and-scan:
+    # The type of runner that the job will run on
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    runs-on: ubuntu-latest
+    steps:
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it and copies all sources into ZIP file for submitting for analysis. Replace this section with your applications build steps
+    - uses: actions/checkout@v4
+      with:
+        repository: ''
+
+    - run: zip -r veracode-scan-target.zip ./
+
+    # download the Veracode Static Analysis Pipeline scan jar
+    - run: curl --silent --show-error --fail -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+    - run: unzip -o pipeline-scan-LATEST.zip
+
+    - uses: actions/setup-java@v4
+      with:
+        java-version: 8
+        distribution: 'temurin'
+
+    - name: Veracode Dependency Scanning
+      # You may pin to the exact commit or the version.
+      # uses: veracode/veracode-sca@13cde22e7e4d953c90f65bcebb474951ea012fb8
+      uses: veracode/veracode-sca@v2.1.17
+      with:
+        # Authorization token to query and create issues
+        github_token: ${{ github.token }} # default is ${{ github.token }}
+        # Run the SRCCLR with the `--quick` options
+        #quick: # optional, default is false
+        # Show update advisor
+        update_advisor: true # optional, default is false
+        # A git URL to work with in case the scan is not for the current repository
+        #url: # optional, default is 
+        # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
+        create-issues: true # optional, default is false
+        # An attribute to instruct the action to generate JSON output (scaResults.json) instead of text output (scaResults.txt)
+        #json-output: # optional, default is false
+        # A path within the repository where the build definition starts
+        path: ./Scripts/ # optional, default is .
+        # Run the SRCCLR in debug mode
+        debug: true # optional, default is false
+        # Run the SRCCLR with the `--skip-collectors` options
+        #skip-collectors: # optional, default is false
+        # Run the SRCCLR with the `--scan-collectors` options with comma separated values
+        #scan-collectors: # optional, default is 
+        # Run the SRCCLR with the `--allow-dirty` option
+        allow-dirty: true # optional, default is false
+        # Run the SRCCLR with the `--recursive` option
+        recursive: true # optional, default is false
+        # Run the SRCCLR with the `--skip-vms` option
+        #skip-vms: # optional, default is false
+        # Run the SRCCLR with the `--no-graphs` option
+        #no-graphs: # optional, default is false
+        # Specifies the platform environment type — use CLOUD for GitHub.com or ENTERPRISE for GitHub Enterprise Server (GHES).
+        #platformType: # optional, default is CLOUD
+        # Break the build based on the Policy Findings
+        breakBuildOnPolicyFindings: false # optional, default is false
+        # Enable SCA fix vulnerability listing generation
+        sca_fix_enabled: false # optional, default is false
+        # Profile name for SCA vuln list metadata
+        #profile_name: '' # optional, default is 
+        # Pull request number for SCA vuln list metadata
+        #pr_number: # optional, default is 
+
+        
+    - run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file veracode-scan-target.zip
+      continue-on-error: true
+
+    - name: Veracode Fix
+      # You may pin to the exact commit or the version.
+      # uses: veracode/veracode-fix@b79dd2e730f65553f692173e21c3bef4c3a7d15f
+      uses: veracode/veracode-fix@v1.0.5
+      with:
+        # Veracode API ID
+        vid: ${{secrets.VERACODE_API_ID}}
+        # Veracode API Key
+        vkey: ${{secrets.VERACODE_API_KEY}}
+        # GitHub Token
+        #token: # default is ${{ github.token }}
+        # Results file from Veracode
+        #inputFile: # optional, default is results.json
+        # Fix type
+        #fixType: # default is batch
+        # CWE to fix
+        #cwe: # optional
+        # Debug mode
+        debug: true # optional, default is false
+        # Create comments for fixes on PRs
+        prComment: true # optional, default is false
+        # Create PRs for fixes
+        createPR: true # optional, default is false
+        # Files to fix
+        #files: # default is all
+        # Code suggestion
+        codeSuggestion: true # optional, default is false
+        # Specify an email that should be used for commits. The default value is octocat@github.com
+        #emailForCommits: # default is octocat@github.com
+        # Use GitHub App mode (post single comment with /veracode commands instead of individual fix comments). Options: auto (detect), true (force), false (disable)
+        #useGitHubApp: false # optional, default is false
+              
+    
+    - name: Convert pipeline scan output to SARIF format
+      id: convert
+      uses: veracode/veracode-pipeline-scan-results-to-sarif@ff08ae5b45d5384cb4679932f184c013d34da9be
+      with:
+        pipeline-results-json: results.json
+        
+    - uses: github/codeql-action/upload-sarif@v3
+      with:
+        # Path to SARIF file relative to the root of the repository
+        sarif_file: veracode-results.sarif
