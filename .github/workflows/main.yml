@@ -11,11 +11,7 @@ env:
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
   VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
   OVER_LIMIT_DEFAULT: true
-permissions:
-  security-events: write
-  pull-request: write
-  contents: write
-  
+
 jobs:
   build:
     runs-on: ${{ github.event.inputs.Runner-Image }}
