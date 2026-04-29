@@ -1,5 +1,8 @@
-name: Verademo Default Workflow - Maven Build and Scan MultiJob
+name: Security Scans
 
+on:
+  push:
+  pull_request:
 
 env:
   SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
