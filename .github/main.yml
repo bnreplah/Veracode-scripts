@@ -69,7 +69,7 @@ jobs:
           # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
           create-issues: true # optional, default is false
           # A path within the repository where the build definition starts
-          path: . # optional, default is .
+          path: ./Scripts # optional, default is .
           # Run the SRCCLR in debug mode
           debug: true # optional, default is false
           # Run the SRCCLR with the `--skip-collectors` options
@@ -146,7 +146,6 @@ jobs:
           
       - name: Veracode Pipeline-Scan
         continue-on-error: true
-        if: ${{ ( ! env.OVER_LIMIT ) && ( github.event.inputs.UseActions ) && ( github.event.inputs.Run-Pipeline-Scan ) }}
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
         uses: veracode/Veracode-pipeline-scan-action@v1.0.14
@@ -156,7 +155,7 @@ jobs:
             # vkey
             vkey: ${{secrets.VERACODE_API_KEY}}
             # Filename of the packaged application to upload and scan.
-            file: 
+            file: .veracode/build/*.zip
             # GITHUB_TOKEN or a repo scoped PAT.
             token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
             # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
@@ -216,13 +215,12 @@ jobs:
   
    name: Veracode Upload And Scan
         continue-on-error: true
-        if: ${{ github.event.inputs.UseActions &&  github.event.inputs.Run-Upload-and-Scan }}
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
         uses: veracode/veracode-uploadandscan-action@0.2.4
         with:
           # appname
-          appname: ${{ github.event.inputs.Veracode-App-Name }}
+          appname: 'Veracode-scripts'
           # createprofile
           createprofile: true # default is true
           # filepath
