@@ -86,17 +86,20 @@ jobs:
         # Break the build based on the Policy Findings
         breakBuildOnPolicyFindings: false # optional, default is false
         # Enable SCA fix vulnerability listing generation
-        sca_fix_enabled: false # optional, default is false
+        sca_fix_enabled: true # optional, default is false
         # Profile name for SCA vuln list metadata
         #profile_name: '' # optional, default is 
         # Pull request number for SCA vuln list metadata
         #pr_number: # optional, default is 
 
+
+
         
-    - run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file veracode-scan-target.zip
+    - name: SAST Security Scan - Veracode Pipeline Scan
+      run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file veracode-scan-target.zip
       continue-on-error: true
 
-    - name: Veracode Fix
+    - name: SAST Auto Fix - Veracode Fix
       # You may pin to the exact commit or the version.
       # uses: veracode/veracode-fix@b79dd2e730f65553f692173e21c3bef4c3a7d15f
       uses: veracode/veracode-fix@v1.0.5
