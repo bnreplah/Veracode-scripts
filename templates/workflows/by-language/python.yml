@@ -1,0 +1,132 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Python + Veracode
+# BUILD:     zip source .py files
+# SCANS:     Pipeline Scan (PR) + Policy Scan (main) + SCA
+#
+# PACKAGING NOTE:
+#   Veracode scans Python source. Zip all .py files excluding tests/venv.
+#   See: https://docs.veracode.com/r/compilation_python
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS: VERACODE_API_ID, VERACODE_API_KEY, SRCCLR_API_TOKEN
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Python + Veracode
+
+on:
+  push:
+    branches: [main, master, "release/**"]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  VERACODE_APP_NAME: "YOUR_APP_NAME"   # CUSTOMIZE
+  PYTHON_VERSION: "3.11"               # CUSTOMIZE: 3.9, 3.10, 3.11, 3.12
+  BUILD_VERSION: "${{ github.ref_name }}-${{ github.run_number }}"
+
+jobs:
+  build:
+    name: Python Package for Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies (for SCA and completeness)
+        run: |
+          pip install -r requirements.txt 2>/dev/null || \
+          pip install -r requirements/base.txt 2>/dev/null || true
+
+      # Package source for Veracode — exclude tests, venvs, cache
+      # CUSTOMIZE: adjust excludes based on your project structure
+      - name: Package Python source for scan
+        run: |
+          zip -r app.zip . \
+            -x "*.git*" \
+            -x "__pycache__/*" \
+            -x "*.pyc" \
+            -x ".venv/*" \
+            -x "venv/*" \
+            -x "env/*" \
+            -x "tests/*" \
+            -x "test/*" \
+            -x "*.egg-info/*" \
+            -x "dist/*" \
+            -x "build/*" \
+            -x ".github/*" \
+            -x "htmlcov/*" \
+            -x ".pytest_cache/*"
+          echo "Artifact size: $(du -sh app.zip)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-artifact
+          path: app.zip
+          retention-days: 1
+
+  pipeline-scan:
+    name: Veracode Pipeline Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: python-artifact }
+
+      - uses: veracode/pipeline-scan-action@v1
+        with:
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          file: app.zip
+          fail_build: false
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: pipeline-scan-results, path: results.json }
+
+  policy-scan:
+    name: Veracode Policy Scan
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: python-artifact }
+
+      - uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true
+          filepath: app.zip
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          deleteincompletescan: "1"
+          waitForScan: false
+
+  sca-scan:
+    name: Veracode SCA (pip dependencies)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt 2>/dev/null || true
+
+      - name: SCA Agent Scan
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        run: curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --recursive
+        continue-on-error: true

@@ -1,0 +1,113 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode SCA (Software Composition Analysis) Agent Scan
+# SCAN TYPE: SCA — identifies vulnerable open-source libraries
+# WHEN:      Every PR + pushes to main (catches new vulnerable dependencies early)
+# RUNTIME:   ~2–10 minutes
+# DOCS:      https://docs.veracode.com/r/c_sc_agent_scan
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS:
+#   SRCCLR_API_TOKEN  - SCA Agent token (from Veracode platform → Integrations → SCA)
+#
+# OPTIONAL — for correlating SCA findings with an app profile:
+#   VERACODE_API_ID
+#   VERACODE_API_KEY
+#
+# ONBOARDING STEPS:
+#   1. Create an SCA workspace and agent in the Veracode platform
+#   2. Copy the agent token to SRCCLR_API_TOKEN secret
+#   3. Customize scan flags in the srcclr scan command below
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode SCA Scan
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "release/**"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sca-scan:
+    name: SCA Agent Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Language runtime setup ───────────────────────────────────────────
+      # TODO: Uncomment the runtime that matches your project
+      #
+      # Java:
+      # - uses: actions/setup-java@v4
+      #   with: { java-version: '17', distribution: 'temurin' }
+      #
+      # Node.js:
+      # - uses: actions/setup-node@v4
+      #   with: { node-version: '20', cache: 'npm' }
+      # - run: npm ci
+      #
+      # Python:
+      # - uses: actions/setup-python@v5
+      #   with: { python-version: '3.11' }
+      # - run: pip install -r requirements.txt
+      #
+      # .NET:
+      # - uses: actions/setup-dotnet@v4
+      #   with: { dotnet-version: '8.0.x' }
+      # - run: dotnet restore
+      #
+      # Go:
+      # - uses: actions/setup-go@v5
+      #   with: { go-version: '1.22' }
+
+      # ── SCA agent scan ───────────────────────────────────────────────────
+      - name: Veracode SCA Agent Scan
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        run: |
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan \
+            --allow-dirty \
+            --recursive \
+            --skip-collectors none
+            # CUSTOMIZE additional flags:
+            # --update-advisor           show remediation guidance
+            # --vuln-methods             detect vulnerable methods (Java)
+            # --no-graphs                skip dependency graphs
+            # --json=results.json        write JSON report
+
+      # ── Upload SCA results as artifact ───────────────────────────────────
+      - name: Upload SCA results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sca-results
+          path: |
+            scaResults.json
+            results.json
+        continue-on-error: true
+
+  # ── Optional: SCA scan via Veracode platform (links to app profile) ──────
+  # Uncomment to also run a platform-linked SCA scan (requires VERACODE_API_ID/KEY)
+  #
+  # sca-platform-scan:
+  #   name: SCA Platform Scan
+  #   runs-on: ubuntu-latest
+  #   needs: sca-scan
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Veracode CLI
+  #       run: curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+  #     - name: SCA scan via Veracode CLI
+  #       env:
+  #         VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+  #         VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+  #       run: |
+  #         ./veracode scan \
+  #           --type directory \
+  #           --source . \
+  #           --project-name "YOUR_APP_NAME"   # CUSTOMIZE

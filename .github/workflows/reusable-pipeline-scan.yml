@@ -1,0 +1,150 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# REUSABLE WORKFLOW: Veracode Pipeline Scan (callable from any repo)
+# ──────────────────────────────────────────────────────────────────────────────
+# Call this from another repo's workflow:
+#
+#   jobs:
+#     security:
+#       uses: bnreplah/veracode-scripts/.github/workflows/reusable-pipeline-scan.yml@main
+#       secrets: inherit
+#       with:
+#         artifact_path: "target/app.jar"
+#         app_name: "My Application"
+#         fail_build: false
+#
+# Required secrets (passed via `secrets: inherit` or explicit mapping):
+#   VERACODE_API_ID
+#   VERACODE_API_KEY
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Reusable — Veracode Pipeline Scan
+
+on:
+  workflow_call:
+    inputs:
+      # Path to the compiled/packaged artifact to scan
+      artifact_path:
+        description: "Path to the artifact file to scan (jar, war, zip, dll, exe)"
+        required: true
+        type: string
+
+      # Veracode application name (used for labeling results)
+      app_name:
+        description: "Application name for scan labeling"
+        required: false
+        type: string
+        default: "${{ github.repository }}"
+
+      # Whether to fail the calling workflow on findings above severity threshold
+      fail_build:
+        description: "Fail the workflow if findings exceed severity threshold"
+        required: false
+        type: boolean
+        default: false
+
+      # Severity threshold when fail_build is true
+      fail_on_severity:
+        description: "Comma-separated severities that trigger a build failure"
+        required: false
+        type: string
+        default: "Very High, High"
+
+      # Optional: baseline results file artifact name (from a previous run)
+      baseline_artifact:
+        description: "Name of a GitHub artifact containing a baseline results.json"
+        required: false
+        type: string
+        default: ""
+
+      # Optional: Veracode policy to evaluate against
+      request_policy:
+        description: "Veracode policy name to evaluate results against"
+        required: false
+        type: string
+        default: ""
+
+      # Runner OS — override if your artifact needs Windows (e.g. .NET)
+      runner:
+        description: "GitHub-hosted runner image"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+    secrets:
+      VERACODE_API_ID:
+        description: "Veracode API Key ID"
+        required: true
+      VERACODE_API_KEY:
+        description: "Veracode API Key Secret"
+        required: true
+
+    outputs:
+      results_artifact:
+        description: "Name of the artifact containing pipeline scan results"
+        value: ${{ jobs.pipeline-scan.outputs.results_artifact }}
+      scan_status:
+        description: "Pipeline scan job result (success/failure/skipped)"
+        value: ${{ jobs.pipeline-scan.result }}
+
+jobs:
+  pipeline-scan:
+    name: Veracode Pipeline Scan — ${{ inputs.app_name }}
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      results_artifact: pipeline-scan-results-${{ github.run_id }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      # Download artifact if uploaded by a preceding build job
+      - name: Download scan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact
+          path: .
+        continue-on-error: true   # OK if artifact doesn't exist (file may be in workspace)
+
+      # Optionally download a baseline file for delta-only reporting
+      - name: Download baseline artifact
+        if: inputs.baseline_artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.baseline_artifact }}
+          path: .
+        continue-on-error: true
+
+      - name: Veracode Pipeline Scan
+        id: scan
+        uses: veracode/pipeline-scan-action@v1
+        with:
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          file: ${{ inputs.artifact_path }}
+          fail_build: ${{ inputs.fail_build }}
+          fail_on_severity: ${{ inputs.fail_on_severity }}
+          request_policy: ${{ inputs.request_policy }}
+          baseline_file: ${{ inputs.baseline_artifact != '' && 'results.json' || '' }}
+
+      - name: Upload pipeline scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-scan-results-${{ github.run_id }}
+          path: |
+            results.json
+            filtered_results.json
+          retention-days: 30
+
+      - name: Write step summary
+        if: always()
+        run: |
+          echo "## Veracode Pipeline Scan — ${{ inputs.app_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | \`${{ inputs.artifact_path }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fail Build | ${{ inputs.fail_build }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | ${{ github.repository }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Ref | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run | ${{ github.run_id }} |" >> $GITHUB_STEP_SUMMARY

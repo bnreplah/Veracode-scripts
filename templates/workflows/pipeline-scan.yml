@@ -1,0 +1,100 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode Pipeline Scan
+# SCAN TYPE: SAST (Static Analysis) — Fast inline scan, no platform policy gate
+# WHEN:      Every push and every pull request
+# RUNTIME:   ~2–5 minutes
+# DOCS:      https://docs.veracode.com/r/Pipeline_Scan
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS (Settings → Secrets → Actions):
+#   VERACODE_API_ID   - Veracode API Key ID
+#   VERACODE_API_KEY  - Veracode API Key Secret
+#
+# ONBOARDING STEPS:
+#   1. Replace every # CUSTOMIZE: comment with your actual values
+#   2. Add the two secrets above to your repo
+#   3. Push — the scan runs automatically on next commit/PR
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode Pipeline Scan
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-and-pipeline-scan:
+    name: Build & Pipeline Scan
+    runs-on: ubuntu-latest  # CUSTOMIZE: windows-latest or macos-latest if needed
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── BUILD STEP ──────────────────────────────────────────────────────────
+      # TODO: Replace this section with your actual build commands.
+      # The output must be a single uploadable artifact (jar/war/zip/dll/exe).
+      # See https://docs.veracode.com/r/compilation_packaging for packaging guides.
+      #
+      # Example — Java/Maven:
+      #   - uses: actions/setup-java@v4
+      #     with: { java-version: '17', distribution: 'temurin' }
+      #   - run: mvn -B package -DskipTests
+      #
+      # Example — Node.js (zip source):
+      #   - uses: actions/setup-node@v4
+      #     with: { node-version: '20' }
+      #   - run: npm ci && npm run build
+      #   - run: zip -r app.zip . -x "*.git*" "node_modules/*" "test/*"
+      #
+      # Example — Python (zip source):
+      #   - run: zip -r app.zip . -x "*.git*" "__pycache__/*" "*.pyc" "tests/*"
+      #
+      # Example — .NET:
+      #   - uses: actions/setup-dotnet@v4
+      #     with: { dotnet-version: '8.0.x' }
+      #   - run: dotnet publish -c Release -o publish/
+      #   - run: zip -r app.zip publish/
+
+      - name: TODO - Add your build step here
+        run: echo "Replace this step with your actual build command"  # TODO
+
+      # ── PIPELINE SCAN ───────────────────────────────────────────────────────
+      - name: Veracode Pipeline Scan
+        uses: veracode/pipeline-scan-action@v1
+        with:
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          # CUSTOMIZE: path to your compiled artifact
+          file: "app.zip"
+          # CUSTOMIZE: set to true to fail the build when findings exceed threshold
+          fail_build: false
+          # CUSTOMIZE: comma-separated severities that fail the build (when fail_build=true)
+          # fail_on_severity: "Very High, High"
+          # CUSTOMIZE: only report findings not in a previous baseline
+          # baseline_file: "baseline.json"
+          # CUSTOMIZE: policy name to evaluate against (optional)
+          # request_policy: "Veracode Recommended Medium + SCA"
+        id: pipeline-scan
+
+      # ── RESULTS ─────────────────────────────────────────────────────────────
+      - name: Upload pipeline scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-scan-results
+          path: |
+            results.json
+            filtered_results.json
+
+      # OPTIONAL: Import findings as GitHub code scanning alerts (requires SARIF)
+      # - name: Convert to SARIF and upload
+      #   uses: veracode/veracode-pipeline-scan-results-to-sarif@v2
+      #   with:
+      #     pipeline-results-json: results.json
+      #     output-results-sarif: veracode-results.sarif
+      #     finding-rule-level: "3:1:0"
+      # - uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: veracode-results.sarif
