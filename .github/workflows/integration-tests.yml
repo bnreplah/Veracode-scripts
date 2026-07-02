@@ -1,0 +1,184 @@
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # ── Unit tests: pure logic, no external dependencies ───────────────────────
+  unit-tests:
+    name: Unit Tests (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run unit tests
+        run: pytest tests/unit/ -v --tb=short --junit-xml=unit-test-results.xml
+
+      - name: Upload unit test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: unit-test-results.xml
+
+  # ── Integration tests: scripts invoked end-to-end (no API creds needed) ───
+  python-integration-tests:
+    name: Python Script Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run Python integration tests
+        run: |
+          pytest tests/integration/ \
+            --ignore=tests/integration/test_api_connectivity.py \
+            --ignore=tests/integration/test_shell_scripts.py \
+            -v --tb=short \
+            --junit-xml=integration-test-results.xml
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: integration-test-results.xml
+
+  # ── Shell script integration tests (bash syntax + shellcheck) ─────────────
+  shell-integration-tests:
+    name: Shell Script Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update -q && sudo apt-get install -y shellcheck
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run shell script tests
+        run: |
+          pytest tests/integration/test_shell_scripts.py \
+            -v --tb=short \
+            --junit-xml=shell-test-results.xml
+
+      - name: Upload shell test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shell-test-results
+          path: shell-test-results.xml
+
+  # ── Combined coverage report ───────────────────────────────────────────────
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    needs: [unit-tests, python-integration-tests]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ \
+            --ignore=tests/integration/test_api_connectivity.py \
+            --cov=Scripts \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            -q
+        continue-on-error: true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  # ── Live API connectivity tests (main branch + secrets only) ───────────────
+  api-connectivity-tests:
+    name: Veracode API Connectivity
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      secrets.VERACODE_API_ID != ''
+    environment: veracode-integration
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-test.txt
+          pip install veracode-api-signing 2>/dev/null || true
+
+      - name: Configure Veracode credentials
+        run: |
+          mkdir -p ~/.veracode
+          printf '[default]\nveracode_api_key_id = %s\nveracode_api_key_secret = %s\n' \
+            "$VERACODE_API_ID" "$VERACODE_API_KEY" > ~/.veracode/credentials
+        env:
+          VERACODE_API_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY: ${{ secrets.VERACODE_API_KEY }}
+
+      - name: Run API connectivity tests
+        env:
+          VERACODE_API_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          pytest tests/integration/test_api_connectivity.py \
+            -m api -v --tb=short \
+            --junit-xml=api-test-results.xml
+        continue-on-error: true
+
+      - name: Upload API test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-test-results
+          path: api-test-results.xml

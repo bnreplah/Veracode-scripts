@@ -1,0 +1,180 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode Full DevSecOps Pipeline — All Scans
+# Combines: Pipeline Scan (PR) + SCA (PR) + Policy SAST (main) + Container (main)
+#
+# JOB FLOW:
+#   PR:       build → pipeline-scan (SAST fast) + sca-scan (parallel)
+#   main:     build → pipeline-scan + sca-scan → policy-scan → container-scan
+#
+# RUNTIME:   PR ≈ 5–10 min  |  main ≈ 30 min – several hours
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS:
+#   VERACODE_API_ID   - Veracode API Key ID
+#   VERACODE_API_KEY  - Veracode API Key Secret
+#   SRCCLR_API_TOKEN  - SCA agent token
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "release/**"
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  # CUSTOMIZE: Veracode application profile name
+  VERACODE_APP_NAME: "YOUR_APP_NAME"
+  # CUSTOMIZE: path to your compiled/packaged artifact
+  ARTIFACT_PATH: "app.zip"
+  BUILD_VERSION: "${{ github.ref_name }}-${{ github.run_number }}"
+  # CUSTOMIZE: Docker image name (for container scan on main)
+  IMAGE_NAME: "your-app-image"
+
+jobs:
+  # ── 1. BUILD ────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.artifact.outputs.name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # TODO: Replace with your actual build steps
+      # See by-language/ templates for language-specific examples
+      - name: TODO - Add build steps
+        run: echo "Replace with your build command"
+
+      - name: Upload artifact
+        id: artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-artifact-${{ github.run_id }}
+          path: ${{ env.ARTIFACT_PATH }}
+          retention-days: 1
+
+  # ── 2. PIPELINE SCAN (every branch / PR) ───────────────────────────────────
+  pipeline-scan:
+    name: SAST Pipeline Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact-${{ github.run_id }}
+
+      - name: Veracode Pipeline Scan
+        uses: veracode/pipeline-scan-action@v1
+        with:
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          file: ${{ env.ARTIFACT_PATH }}
+          fail_build: false              # CUSTOMIZE: true to gate PRs on findings
+          # fail_on_severity: "Very High, High"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-scan-results
+          path: results.json
+
+  # ── 3. SCA SCAN (every branch / PR, parallel with pipeline scan) ───────────
+  sca-scan:
+    name: SCA Dependency Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add language-specific dependency install steps here
+
+      - name: SCA Agent Scan
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        run: |
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan \
+            --allow-dirty \
+            --recursive
+        continue-on-error: true
+
+  # ── 4. POLICY SCAN (main branch only, after fast scans pass) ───────────────
+  policy-scan:
+    name: SAST Policy Scan
+    runs-on: ubuntu-latest
+    needs: [pipeline-scan, sca-scan]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact-${{ github.run_id }}
+
+      - name: Veracode Policy Scan
+        uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true
+          filepath: ${{ env.ARTIFACT_PATH }}
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          deleteincompletescan: "1"
+          waitForScan: false             # CUSTOMIZE: true to block on results
+
+  # ── 5. CONTAINER SCAN (main branch only, if Dockerfile exists) ─────────────
+  container-scan:
+    name: Container Scan
+    runs-on: ubuntu-latest
+    needs: [pipeline-scan, sca-scan]
+    if: >
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') &&
+      hashFiles('Dockerfile') != ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Install Veracode CLI
+        run: curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+
+      - name: Veracode container scan
+        env:
+          VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          ./veracode scan \
+            --type image \
+            --source ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --format table
+        continue-on-error: true
+
+  # ── 6. SUMMARY ──────────────────────────────────────────────────────────────
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [pipeline-scan, sca-scan]
+    if: always()
+
+    steps:
+      - name: Write job summary
+        run: |
+          echo "## Veracode DevSecOps Security Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| SAST Pipeline Scan | ${{ needs.pipeline-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| SCA Dependency Scan | ${{ needs.sca-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

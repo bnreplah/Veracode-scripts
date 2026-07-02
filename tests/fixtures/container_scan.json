@@ -1,0 +1,18 @@
+{
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2021-44228",
+      "severity": "critical",
+      "description": "Log4Shell RCE present in the deployed image layer.",
+      "artifact": {"name": "log4j-core"},
+      "package": "log4j-core"
+    },
+    {
+      "cve": "CVE-2016-1000027",
+      "severity": "high",
+      "description": "Spring deserialization vulnerability.",
+      "artifact": {"name": "spring-web"},
+      "package": "spring-web"
+    }
+  ]
+}

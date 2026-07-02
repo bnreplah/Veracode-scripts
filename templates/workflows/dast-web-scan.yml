@@ -1,0 +1,167 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode DAST Web Application Scan
+# SCAN TYPE: DAST — Dynamic Analysis of a running web application
+# WHEN:      Manual trigger or scheduled (requires a live target URL)
+# RUNTIME:   Varies: 30 min – 8+ hours depending on app complexity
+# DOCS:      https://docs.veracode.com/r/c_was_intro
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS:
+#   VERACODE_API_ID   - Veracode API Key ID
+#   VERACODE_API_KEY  - Veracode API Key Secret
+#
+# REQUIRED SETUP:
+#   1. Your application must be running and reachable at TARGET_URL
+#   2. For internal apps, configure an Internal Scan Management (ISM) gateway
+#   3. Provide allowlist.csv and blocklist.csv (see Scripts/Release/ for format)
+#
+# TOOLS USED FROM THIS REPO:
+#   - Scripts/Release/DASTWebAppRequest-std.py  (formats the scan request JSON)
+#   - Scripts/Release/DAST-ls-v2.sh             (list/monitor scan status)
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode DAST Web Scan
+
+on:
+  # Manual trigger with configurable parameters
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Target URL to scan (e.g. https://app.example.com/)"
+        required: true
+        type: string
+      analysis_name:
+        description: "Analysis name in Veracode platform"
+        required: true
+        type: string
+        default: "GH-Actions-DAST"
+      org_email:
+        description: "Notification email for scan owner"
+        required: true
+        type: string
+      org_owner:
+        description: "Scan owner name"
+        required: false
+        default: "DevSecOps"
+      start_now:
+        description: "Start scan immediately?"
+        type: boolean
+        default: true
+
+  # OPTIONAL: Scheduled scan (uncomment and customize cron)
+  # schedule:
+  #   - cron: "0 2 * * 1"   # Every Monday at 02:00 UTC
+
+env:
+  # CUSTOMIZE: base URL of this repo (to pull scripts without cloning)
+  SCRIPTS_REPO: "bnreplah/veracode-scripts"
+  SCRIPTS_BRANCH: "main"
+
+jobs:
+  dast-scan:
+    name: Configure & Submit DAST Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo (or the target repo)
+        uses: actions/checkout@v4
+        with:
+          # CUSTOMIZE: if running from your own repo, remove repository/ref below
+          # and ensure allowlist.csv / blacklist.csv are in the workspace root
+          repository: ${{ env.SCRIPTS_REPO }}
+          ref: ${{ env.SCRIPTS_BRANCH }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install httpie + Veracode HMAC signing
+        run: pip install httpie veracode-api-signing
+
+      # ── Prepare allowlist / blocklist CSVs ──────────────────────────────
+      # CUSTOMIZE: replace these files with your application-specific lists.
+      # Format: directory_restriction_type,http_and_https,url
+      # Valid restriction types: NONE, FILE, FOLDER_ONLY, DIRECTORY_AND_SUBDIRECTORY
+      - name: Prepare scan configuration CSVs
+        run: |
+          # Create a minimal allowlist (CUSTOMIZE: add your app's URLs)
+          cat > allowlist.csv << 'EOF'
+          directory_restriction_type,http_and_https,url
+          DIRECTORY_AND_SUBDIRECTORY,TRUE,${{ github.event.inputs.target_url }}
+          EOF
+
+          # Create a minimal blocklist (CUSTOMIZE: add URLs to exclude)
+          cat > blacklist.csv << 'EOF'
+          directory_restriction_type,http_and_https,url
+          NONE,TRUE,https://logout.example.com
+          EOF
+
+      # ── Format the DAST analysis request JSON ──────────────────────────
+      - name: Format DAST request JSON
+        run: |
+          python Scripts/Release/DASTWebAppRequest-std.py \
+            "${{ github.event.inputs.analysis_name }}" \
+            "${{ github.event.inputs.target_url }}" \
+            "${{ github.event.inputs.org_email }}" \
+            "${{ github.event.inputs.org_owner }}" \
+            > input.json
+          echo "Generated request:"
+          cat input.json | python3 -m json.tool
+
+      # ── Submit the DAST scan to the Veracode platform ─────────────────
+      - name: Submit DAST analysis request
+        env:
+          VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          RESPONSE=$(http --auth-type veracode_hmac \
+            POST "https://api.veracode.com/was/configservice/v1/analyses" \
+            Content-Type:application/json \
+            @input.json)
+          echo "API Response: $RESPONSE"
+          echo "$RESPONSE" > dast-submission-response.json
+
+          # Extract the analysis ID from the response
+          ANALYSIS_ID=$(echo "$RESPONSE" | python3 -c \
+            "import sys,json; d=json.load(sys.stdin); print(d.get('analysis_id','unknown'))" 2>/dev/null || echo "unknown")
+          echo "Analysis ID: $ANALYSIS_ID"
+          echo "ANALYSIS_ID=$ANALYSIS_ID" >> $GITHUB_ENV
+
+      # ── Upload submission details ───────────────────────────────────────
+      - name: Upload DAST submission artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dast-scan-config
+          path: |
+            input.json
+            dast-submission-response.json
+
+      - name: Summary
+        run: |
+          echo "## DAST Scan Submitted" >> $GITHUB_STEP_SUMMARY
+          echo "- **Analysis Name:** ${{ github.event.inputs.analysis_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target URL:** ${{ github.event.inputs.target_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Analysis ID:** ${{ env.ANALYSIS_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Monitor progress in the Veracode platform or run \`DAST-ls-v2.sh\`." >> $GITHUB_STEP_SUMMARY
+
+  # ── OPTIONAL: Monitor DAST scan status ──────────────────────────────────
+  # Uncomment to poll for scan completion (may run for hours)
+  #
+  # monitor-dast-scan:
+  #   name: Monitor DAST Scan
+  #   runs-on: ubuntu-latest
+  #   needs: dast-scan
+  #   if: github.event.inputs.start_now == 'true'
+  #   timeout-minutes: 480   # 8 hours max
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with: { repository: "${{ env.SCRIPTS_REPO }}", ref: "${{ env.SCRIPTS_BRANCH }}" }
+  #     - name: Install httpie
+  #       run: pip install httpie veracode-api-signing
+  #     - name: Poll scan status
+  #       env:
+  #         VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+  #         VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
+  #       run: bash Scripts/Release/DAST-ls-v2.sh

@@ -1,0 +1,4 @@
+directory_restriction_type,http_and_https,url
+NONE,TRUE,https://blocked.example.com
+FILE,FALSE,https://private.example.com
+DIRECTORY_AND_SUBDIRECTORY,TRUE,https://secret.example.com

@@ -1,0 +1,60 @@
+{
+  "_embedded": {
+    "findings": [
+      {
+        "issue_id": 1001,
+        "scan_type": "STATIC",
+        "description": "SQL query built from unsanitized request parameter.",
+        "finding_status": {"status": "OPEN"},
+        "finding_details": {
+          "severity": 4,
+          "cwe": {"id": 89, "name": "SQL Injection"},
+          "finding_category": {"name": "SQL Injection"},
+          "file_name": "src/main/java/com/verademo/UserController.java",
+          "file_line_number": 142,
+          "module": "verademo.war",
+          "attack_vector": "javax.servlet.http.HttpServletRequest.getParameter"
+        }
+      },
+      {
+        "issue_id": 1002,
+        "scan_type": "STATIC",
+        "description": "Second query concatenates the same request parameter.",
+        "finding_status": {"status": "OPEN"},
+        "finding_details": {
+          "severity": 4,
+          "cwe": {"id": 89, "name": "SQL Injection"},
+          "finding_category": {"name": "SQL Injection"},
+          "file_name": "src/main/java/com/verademo/SearchController.java",
+          "file_line_number": 88,
+          "module": "verademo.war",
+          "attack_vector": "javax.servlet.http.HttpServletRequest.getParameter"
+        }
+      },
+      {
+        "issue_id": 2001,
+        "scan_type": "DYNAMIC",
+        "description": "SQL injection confirmed against the live login endpoint.",
+        "finding_status": {"status": "OPEN"},
+        "finding_details": {
+          "severity": 5,
+          "cwe": {"id": 89, "name": "SQL Injection"},
+          "url": "https://app.example.com/login",
+          "hostname": "app.example.com"
+        }
+      },
+      {
+        "issue_id": 3001,
+        "scan_type": "SCA",
+        "description": "log4j-core is vulnerable to remote code execution.",
+        "finding_status": {"status": "OPEN"},
+        "finding_details": {
+          "severity": 5,
+          "cve": {"name": "CVE-2021-44228", "cvss": 10.0},
+          "component_filename": "log4j-core-2.14.1.jar",
+          "component_path": "WEB-INF/lib/log4j-core-2.14.1.jar"
+        }
+      }
+    ]
+  }
+}

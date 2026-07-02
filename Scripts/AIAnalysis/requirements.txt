@@ -1,0 +1,4 @@
+# Veracode AI analysis layer
+# Offline correlation needs no dependencies (stdlib only).
+# The validate/chain stages require the Anthropic SDK:
+anthropic>=0.69.0

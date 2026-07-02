@@ -1,0 +1,154 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode Sandbox Scan + Promote to Policy
+# SCAN TYPE: SAST — Sandbox (feature branch) → promote to policy on merge
+# WHEN:      Feature branches scan to sandbox; main branch promotes + policy scan
+# RUNTIME:   15 min – several hours
+# DOCS:      https://docs.veracode.com/r/c_about_sandbox
+# ──────────────────────────────────────────────────────────────────────────────
+# WORKFLOW:
+#   feature/* push  → scan in sandbox (named after branch)
+#   PR to main      → also scans in sandbox with PR label
+#   push to main    → promote sandbox findings to policy, then policy scan
+#
+# REQUIRED SECRETS:
+#   VERACODE_API_ID   - Veracode API Key ID
+#   VERACODE_API_KEY  - Veracode API Key Secret
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode Sandbox Scan & Promote
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - "bugfix/**"
+      - "hotfix/**"
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  # CUSTOMIZE: your Veracode application profile name
+  VERACODE_APP_NAME: "YOUR_APP_NAME"
+  ARTIFACT_PATH: "app.zip"
+  # Sandbox is named after the branch (sanitized for Veracode)
+  SANDBOX_NAME: ${{ github.head_ref || github.ref_name }}
+  BUILD_VERSION: "${{ github.ref_name }}-${{ github.run_number }}"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Replace with your actual build commands
+      - name: TODO - Add build step
+        run: echo "Replace with your build command"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-artifact
+          path: ${{ env.ARTIFACT_PATH }}
+          retention-days: 1
+
+  # ── Sandbox scan for feature branches and PRs ─────────────────────────────
+  sandbox-scan:
+    name: Sandbox SAST Scan
+    runs-on: ubuntu-latest
+    needs: build
+    # Run on feature branches and pull requests (not on main direct push)
+    if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact
+
+      - name: Veracode Sandbox Scan
+        uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true
+          filepath: ${{ env.ARTIFACT_PATH }}
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          sandboxname: ${{ env.SANDBOX_NAME }}
+          createsandbox: true           # Create sandbox if it doesn't exist
+          deleteincompletescan: "1"
+          waitForScan: true
+          failbuild: false              # CUSTOMIZE: set true to enforce sandbox policy
+
+  # ── Promote sandbox + full policy scan on merge to main ───────────────────
+  promote-and-policy-scan:
+    name: Promote Sandbox & Policy Scan
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact
+
+      # Step 1: promote sandbox to policy (using this repo's promote script)
+      # CUSTOMIZE: set PR_SANDBOX_NAME to the name of the sandbox to promote
+      - name: Promote sandbox to policy
+        env:
+          VERACODE_API_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY: ${{ secrets.VERACODE_API_KEY }}
+        run: |
+          pip install httpie veracode-api-signing 2>/dev/null || true
+          # CUSTOMIZE: replace "feature/my-branch" with the sandbox to promote
+          APP_NAME="${{ env.VERACODE_APP_NAME }}"
+          SANDBOX_NAME="${{ github.event.pull_request.head.ref || 'dev' }}"
+
+          APP_GUID=$(http --auth-type veracode_hmac \
+            "https://api.veracode.com/appsec/v1/applications?name=${APP_NAME}" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['_embedded']['applications'][0]['guid'])" 2>/dev/null || echo "")
+
+          if [ -n "$APP_GUID" ]; then
+            SANDBOX_GUID=$(http --auth-type veracode_hmac \
+              "https://api.veracode.com/appsec/v1/applications/${APP_GUID}/sandboxes" \
+              | python3 -c "
+          import sys,json
+          d=json.load(sys.stdin)
+          name='${SANDBOX_NAME}'
+          sandboxes=d.get('_embedded',{}).get('sandboxes',[])
+          match=[s['guid'] for s in sandboxes if s['name']==name]
+          print(match[0] if match else '')
+          " 2>/dev/null || echo "")
+
+            if [ -n "$SANDBOX_GUID" ]; then
+              echo "Promoting sandbox '$SANDBOX_NAME' (${SANDBOX_GUID}) to policy..."
+              http --auth-type veracode_hmac POST \
+                "https://api.veracode.com/appsec/v1/applications/${APP_GUID}/sandboxes/${SANDBOX_GUID}/promote"
+            else
+              echo "Sandbox '$SANDBOX_NAME' not found — skipping promotion"
+            fi
+          else
+            echo "Application '$APP_NAME' not found — skipping promotion"
+          fi
+        continue-on-error: true
+
+      # Step 2: full policy scan on main
+      - name: Veracode Policy Scan
+        uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true
+          filepath: ${{ env.ARTIFACT_PATH }}
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          deleteincompletescan: "1"
+          waitForScan: true
+          failbuild: false              # CUSTOMIZE: set true to gate deployment on policy pass

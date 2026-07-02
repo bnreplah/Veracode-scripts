@@ -1,0 +1,138 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: Veracode Policy / Full SAST Scan
+# SCAN TYPE: SAST (Static Analysis) — Full scan, evaluated against policy
+# WHEN:      Pushes to main/release branches; not on every PR (long runtime)
+# RUNTIME:   15 min – several hours depending on app size
+# DOCS:      https://docs.veracode.com/r/c_uploadandscan
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS:
+#   VERACODE_API_ID   - Veracode API Key ID
+#   VERACODE_API_KEY  - Veracode API Key Secret
+#
+# ONBOARDING STEPS:
+#   1. Set VERACODE_APP_NAME to match your application's profile in the platform
+#   2. Replace the build step with your actual build commands
+#   3. Set ARTIFACT_PATH to point to your compiled artifact
+#   4. Add secrets to your repo and push
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Veracode Policy Scan (SAST)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "release/**"       # CUSTOMIZE: add other protected branches
+  workflow_dispatch:        # Allow manual trigger
+    inputs:
+      sandbox:
+        description: "Sandbox name (leave blank for policy scan)"
+        required: false
+        default: ""
+
+env:
+  # CUSTOMIZE: name of your application profile in the Veracode platform
+  VERACODE_APP_NAME: "YOUR_APP_NAME"
+  # CUSTOMIZE: path to the artifact produced by your build step
+  ARTIFACT_PATH: "app.zip"
+  # CUSTOMIZE: human-readable build/version label
+  BUILD_VERSION: "${{ github.ref_name }}-${{ github.run_number }}"
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest  # CUSTOMIZE: match your build environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # TODO: Replace with your actual build steps (see pipeline-scan.yml for examples)
+      - name: TODO - Add your build step
+        run: echo "Replace with your build command"  # TODO
+
+      - name: Upload artifact for scan job
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-artifact
+          path: ${{ env.ARTIFACT_PATH }}
+          retention-days: 1
+
+  sast-policy-scan:
+    name: Veracode SAST Policy Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact
+
+      # ── Option A: Official GitHub Action (recommended) ────────────────────
+      - name: Veracode Upload and Scan
+        uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true         # Creates app profile in platform if missing
+          filepath: ${{ env.ARTIFACT_PATH }}
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          # CUSTOMIZE: sandbox name from workflow_dispatch input, or hardcode one
+          sandboxname: ${{ github.event.inputs.sandbox || '' }}
+          # CUSTOMIZE: delete an incomplete scan to unblock (0=cancel, 1=delete)
+          deleteincompletescan: "1"
+          # CUSTOMIZE: set true to wait for scan completion and check policy
+          waitForScan: true
+          # CUSTOMIZE: set true to fail the build if policy is not passed
+          failbuild: false
+
+      # ── Option B: Java Wrapper via this repo's installer (alternative) ─────
+      # Uncomment below and comment out Option A if you prefer the Java wrapper.
+      #
+      # - name: Install Veracode Java API Wrapper
+      #   run: |
+      #     bash <(curl -fsSL https://raw.githubusercontent.com/bnreplah/veracode-scripts/main/Scripts/Release/veracode-installer.sh) \
+      #       --install-java-api-wrapper
+      #
+      # - name: Upload and Scan
+      #   env:
+      #     VERACODE_API_ID: ${{ secrets.VERACODE_API_ID }}
+      #     VERACODE_API_KEY: ${{ secrets.VERACODE_API_KEY }}
+      #   run: |
+      #     java -jar VeracodeJavaAPI.jar \
+      #       -action uploadandscan \
+      #       -filepath ${{ env.ARTIFACT_PATH }} \
+      #       -appname "${{ env.VERACODE_APP_NAME }}" \
+      #       -createprofile true \
+      #       -version "${{ env.BUILD_VERSION }}" \
+      #       -deleteincompletescan 1
+
+  # ── OPTIONAL: Import findings to GitHub Security tab ─────────────────────────
+  import-findings:
+    name: Import Findings to GitHub
+    runs-on: ubuntu-latest
+    needs: sast-policy-scan
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # OPTIONAL: pull findings into GitHub Security > Code scanning alerts
+      # - name: Veracode Flaw Importer
+      #   uses: veracode/veracode-flaw-importer-action@main
+      #   with:
+      #     vid: ${{ secrets.VERACODE_API_ID }}
+      #     vkey: ${{ secrets.VERACODE_API_KEY }}
+      #     type: github
+      #     appname: ${{ env.VERACODE_APP_NAME }}
+      #     sandboxname: ""
+      #     scantype: Dynamic,Static,SCA
+
+      - name: Scan complete
+        run: echo "Policy scan submitted for ${{ env.VERACODE_APP_NAME }} build ${{ env.BUILD_VERSION }}"

@@ -1,0 +1,159 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# REUSABLE WORKFLOW: Veracode Policy Scan (callable from any repo)
+# ──────────────────────────────────────────────────────────────────────────────
+# Call this from another repo's workflow:
+#
+#   jobs:
+#     security:
+#       uses: bnreplah/veracode-scripts/.github/workflows/reusable-policy-scan.yml@main
+#       secrets: inherit
+#       with:
+#         artifact_path: "target/app.jar"
+#         app_name: "My Application"
+#         sandbox_name: ""          # leave blank for policy scan
+#
+# Required secrets (passed via `secrets: inherit` or explicit mapping):
+#   VERACODE_API_ID
+#   VERACODE_API_KEY
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: Reusable — Veracode Policy Scan
+
+on:
+  workflow_call:
+    inputs:
+      artifact_path:
+        description: "Path to the artifact to upload and scan"
+        required: true
+        type: string
+
+      app_name:
+        description: "Veracode application profile name"
+        required: true
+        type: string
+
+      # Leave blank to run a policy (main) scan; provide a name to scan in sandbox
+      sandbox_name:
+        description: "Sandbox name (blank = policy scan, non-blank = sandbox scan)"
+        required: false
+        type: string
+        default: ""
+
+      # Build version label shown in the Veracode platform
+      build_version:
+        description: "Build/version label in the Veracode platform"
+        required: false
+        type: string
+        default: "${{ github.ref_name }}-${{ github.run_number }}"
+
+      # Create sandbox if it doesn't exist (only relevant when sandbox_name set)
+      create_sandbox:
+        description: "Create the sandbox if it doesn't already exist"
+        required: false
+        type: boolean
+        default: true
+
+      # When true, block the calling workflow until scan results are ready
+      wait_for_scan:
+        description: "Wait for scan to complete before returning"
+        required: false
+        type: boolean
+        default: false
+
+      # When true, fail the workflow if the policy is not passed
+      fail_build:
+        description: "Fail the workflow when the policy result is not passed"
+        required: false
+        type: boolean
+        default: false
+
+      # Behaviour when an incomplete scan exists: 0=cancel, 1=delete, 2=ignore
+      delete_incomplete:
+        description: "How to handle an existing incomplete scan (0/1/2)"
+        required: false
+        type: string
+        default: "1"
+
+      runner:
+        description: "GitHub-hosted runner image"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+    secrets:
+      VERACODE_API_ID:
+        required: true
+      VERACODE_API_KEY:
+        required: true
+
+    outputs:
+      scan_status:
+        description: "Policy scan job result (success/failure/skipped)"
+        value: ${{ jobs.policy-scan.result }}
+      scan_type:
+        description: "Whether this ran as a sandbox or policy scan"
+        value: ${{ jobs.policy-scan.outputs.scan_type }}
+
+jobs:
+  policy-scan:
+    name: >
+      Veracode ${{ inputs.sandbox_name != '' && 'Sandbox' || 'Policy' }} Scan
+      — ${{ inputs.app_name }}
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      scan_type: ${{ steps.scan-type.outputs.type }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Download scan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-artifact
+          path: .
+        continue-on-error: true
+
+      - name: Determine scan type
+        id: scan-type
+        run: |
+          if [ -n "${{ inputs.sandbox_name }}" ]; then
+            echo "type=sandbox" >> $GITHUB_OUTPUT
+            echo "Running SANDBOX scan in: ${{ inputs.sandbox_name }}"
+          else
+            echo "type=policy" >> $GITHUB_OUTPUT
+            echo "Running POLICY scan for: ${{ inputs.app_name }}"
+          fi
+
+      - name: Veracode Upload and Scan
+        uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ inputs.app_name }}
+          createprofile: true
+          filepath: ${{ inputs.artifact_path }}
+          version: ${{ inputs.build_version }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          sandboxname: ${{ inputs.sandbox_name }}
+          createsandbox: ${{ inputs.create_sandbox }}
+          deleteincompletescan: ${{ inputs.delete_incomplete }}
+          waitForScan: ${{ inputs.wait_for_scan }}
+          failbuild: ${{ inputs.fail_build }}
+
+      - name: Write step summary
+        if: always()
+        run: |
+          SCAN_TYPE="${{ steps.scan-type.outputs.type }}"
+          echo "## Veracode ${SCAN_TYPE^} Scan — ${{ inputs.app_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Type | ${SCAN_TYPE} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Application | ${{ inputs.app_name }} |" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ inputs.sandbox_name }}" ]; then
+            echo "| Sandbox | ${{ inputs.sandbox_name }} |" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "| Version | ${{ inputs.build_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Wait For Results | ${{ inputs.wait_for_scan }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fail Build | ${{ inputs.fail_build }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | ${{ github.repository }} |" >> $GITHUB_STEP_SUMMARY

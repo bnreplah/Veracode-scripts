@@ -1,0 +1,272 @@
+name: QAT (Quality Assurance Testing)
+
+on:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # ── Python linting (flake8) ────────────────────────────────────────────────
+  python-lint:
+    name: Python Lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8 on Release scripts
+        run: |
+          flake8 Scripts/Release/ \
+            --max-line-length=120 \
+            --extend-ignore=E501,W503,E302,E303 \
+            --statistics \
+            --count \
+            --format=default
+        continue-on-error: true
+
+      - name: Run flake8 on Dev Python scripts
+        run: |
+          flake8 Scripts/Dev/ \
+            --max-line-length=120 \
+            --extend-ignore=E501,W503,E302,E303,F401,F811 \
+            --exclude=Scripts/Dev/Reference,Scripts/Dev/archive \
+            --statistics \
+            --count
+        continue-on-error: true
+
+      - name: Run flake8 on AI Analysis layer
+        run: |
+          flake8 Scripts/AIAnalysis/ \
+            --max-line-length=120 \
+            --extend-ignore=E501,W503,E402 \
+            --statistics \
+            --count
+        continue-on-error: true
+
+      - name: Run flake8 on tests
+        run: |
+          flake8 tests/ \
+            --max-line-length=120 \
+            --extend-ignore=E501,W503,E402 \
+            --statistics \
+            --count
+
+  # ── Shell script linting (ShellCheck) ─────────────────────────────────────
+  shell-lint:
+    name: Shell Lint (ShellCheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update -q && sudo apt-get install -y shellcheck
+
+      - name: Lint Release shell scripts
+        run: |
+          echo "=== Linting Release scripts ==="
+          find Scripts/Release/ -name "*.sh" -print0 | \
+            xargs -0 shellcheck --severity=warning --format=tty
+        continue-on-error: true
+
+      - name: Lint Dev bash scripts
+        run: |
+          echo "=== Linting Dev bash scripts ==="
+          find Scripts/Dev/bash_scripts/ -name "*.sh" -print0 | \
+            xargs -0 shellcheck --severity=warning --format=tty
+        continue-on-error: true
+
+      - name: Lint XML API scripts
+        run: |
+          echo "=== Linting XML API scripts ==="
+          find xml_api_calls/ -name "*.sh" -print0 | \
+            xargs -0 shellcheck --severity=warning --format=tty
+        continue-on-error: true
+
+  # ── JSON validation ────────────────────────────────────────────────────────
+  json-validation:
+    name: JSON File Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate all JSON files
+        run: |
+          FAILED=0
+          while IFS= read -r -d '' file; do
+            if python3 -c "import json; json.load(open('$file'))" 2>/dev/null; then
+              echo "PASS: $file"
+            else
+              echo "FAIL: $file"
+              python3 -c "import json; json.load(open('$file'))" 2>&1 || true
+              FAILED=1
+            fi
+          done < <(find . \
+            -name "*.json" \
+            -not -path "./.git/*" \
+            -not -path "./Scripts/Dev/Test/results.json" \
+            -not -path "./Scripts/Dev/Test/filtered_results.json" \
+            -not -path "./Scripts/results.json" \
+            -not -path "./Scripts/Dev/Reference/*" \
+            -print0)
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo "One or more JSON files failed validation"
+            exit 1
+          fi
+          echo "All JSON files passed validation"
+
+  # ── YAML validation ────────────────────────────────────────────────────────
+  yaml-validation:
+    name: YAML Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Validate GitHub workflow YAML files
+        run: |
+          yamllint .github/workflows/ \
+            -d "{extends: relaxed, rules: {line-length: {max: 120}}}"
+
+  # ── Full test suite execution ──────────────────────────────────────────────
+  full-test-suite:
+    name: Full Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck (for shell tests)
+        run: sudo apt-get update -q && sudo apt-get install -y shellcheck
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run full test suite (excluding API tests)
+        run: |
+          pytest tests/ \
+            --ignore=tests/integration/test_api_connectivity.py \
+            -v \
+            --tb=long \
+            --junit-xml=qat-test-results.xml \
+            -q
+
+      - name: Upload QAT test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qat-test-results
+          path: qat-test-results.xml
+
+      - name: Publish test results summary
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: qat-test-results.xml
+          check_name: "QAT Test Results"
+        continue-on-error: true
+
+  # ── PowerShell script analysis ─────────────────────────────────────────────
+  powershell-analysis:
+    name: PowerShell Script Analysis
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Analyze PowerShell scripts
+        shell: pwsh
+        run: |
+          $scripts = Get-ChildItem -Path "Scripts" -Filter "*.ps1" -Recurse
+          $hasErrors = $false
+          foreach ($script in $scripts) {
+              Write-Host "Analyzing: $($script.FullName)"
+              $results = Invoke-ScriptAnalyzer -Path $script.FullName -Severity Warning,Error
+              if ($results) {
+                  $results | Format-Table -AutoSize
+                  $hasErrors = $true
+              } else {
+                  Write-Host "PASS: $($script.Name)"
+              }
+          }
+          if ($hasErrors) {
+              Write-Warning "PSScriptAnalyzer found issues. Review output above."
+          }
+        continue-on-error: true
+
+  # ── Script structure and metadata checks ──────────────────────────────────
+  structure-checks:
+    name: Script Structure Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Python scripts have shebangs or module docstrings
+        run: |
+          echo "Checking Python script headers..."
+          MISSING=0
+          for f in Scripts/Release/*.py; do
+            if ! head -5 "$f" | grep -qE '^#!|^#|^"""'; then
+              echo "WARNING: $f may be missing a shebang or docstring header"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          echo "Files checked. $MISSING potential header issues found."
+        continue-on-error: true
+
+      - name: Check shell scripts have shebangs
+        run: |
+          echo "Checking shell script shebangs..."
+          MISSING=0
+          for f in Scripts/Release/*.sh; do
+            if ! head -1 "$f" | grep -q '^#!'; then
+              echo "WARNING: $f is missing a shebang line"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          echo "Files checked. $MISSING shebangs missing."
+        continue-on-error: true
+
+      - name: Verify test fixtures exist and are non-empty
+        run: |
+          echo "Verifying test fixtures..."
+          for f in tests/fixtures/allowlist.csv tests/fixtures/blacklist.csv tests/fixtures/glblacklist.csv; do
+            if [ ! -s "$f" ]; then
+              echo "FAIL: $f is missing or empty"
+              exit 1
+            fi
+            echo "PASS: $f"
+          done

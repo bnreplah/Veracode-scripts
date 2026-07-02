@@ -1,0 +1,134 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# TEMPLATE: .NET (C#) + Veracode
+# BUILD:     dotnet publish → zip binaries + PDB files
+# SCANS:     Pipeline Scan (PR) + Policy Scan (main) + SCA
+#
+# PACKAGING NOTE:
+#   Veracode requires compiled DLLs AND PDB files (for source mapping).
+#   Include both in the zip. See: https://docs.veracode.com/r/compilation_net
+# ──────────────────────────────────────────────────────────────────────────────
+# REQUIRED SECRETS: VERACODE_API_ID, VERACODE_API_KEY, SRCCLR_API_TOKEN
+# CUSTOMIZE: VERACODE_APP_NAME, DOTNET_VERSION, project path, configuration
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: .NET + Veracode
+
+on:
+  push:
+    branches: [main, master, "release/**"]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  VERACODE_APP_NAME: "YOUR_APP_NAME"   # CUSTOMIZE
+  DOTNET_VERSION: "8.0.x"              # CUSTOMIZE: 6.0.x, 7.0.x, 8.0.x
+  BUILD_CONFIGURATION: Release
+  # CUSTOMIZE: path to your .csproj / .sln file
+  PROJECT_PATH: "."
+  BUILD_VERSION: "${{ github.ref_name }}-${{ github.run_number }}"
+
+jobs:
+  build:
+    name: .NET Build & Package
+    runs-on: ubuntu-latest   # CUSTOMIZE: windows-latest if Windows-specific dependencies
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: |
+          dotnet build ${{ env.PROJECT_PATH }} \
+            -c ${{ env.BUILD_CONFIGURATION }} \
+            --no-restore
+
+      - name: Publish
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            -c ${{ env.BUILD_CONFIGURATION }} \
+            --no-build \
+            -o publish/
+            # CUSTOMIZE: add --self-contained, -r <runtime>, /p:PublishSingleFile=true
+
+      # Package compiled DLLs + PDBs (both required by Veracode)
+      - name: Package binaries for Veracode
+        run: |
+          zip -r app.zip publish/ \
+            -i "*.dll" "*.pdb" "*.exe" "*.json" "*.config"
+          echo "Artifact size: $(du -sh app.zip)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-artifact
+          path: app.zip
+          retention-days: 1
+
+  pipeline-scan:
+    name: Veracode Pipeline Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: dotnet-artifact }
+
+      - uses: veracode/pipeline-scan-action@v1
+        with:
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          file: app.zip
+          fail_build: false
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: pipeline-scan-results, path: results.json }
+
+  policy-scan:
+    name: Veracode Policy Scan
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: dotnet-artifact }
+
+      - uses: veracode/veracode-uploadandscan-action@master
+        with:
+          appname: ${{ env.VERACODE_APP_NAME }}
+          createprofile: true
+          filepath: app.zip
+          version: ${{ env.BUILD_VERSION }}
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
+          deleteincompletescan: "1"
+          waitForScan: false
+
+  sca-scan:
+    name: Veracode SCA (NuGet)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore (for SCA)
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: SCA Agent Scan
+        env:
+          SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+        run: curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --recursive
+        continue-on-error: true
