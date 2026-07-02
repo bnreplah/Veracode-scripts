@@ -46,11 +46,20 @@ jobs:
             --count
         continue-on-error: true
 
+      - name: Run flake8 on AI Analysis layer
+        run: |
+          flake8 Scripts/AIAnalysis/ \
+            --max-line-length=120 \
+            --extend-ignore=E501,W503,E402 \
+            --statistics \
+            --count
+        continue-on-error: true
+
       - name: Run flake8 on tests
         run: |
           flake8 tests/ \
             --max-line-length=120 \
-            --extend-ignore=E501,W503 \
+            --extend-ignore=E501,W503,E402 \
             --statistics \
             --count
 

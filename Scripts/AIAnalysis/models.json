@@ -1,0 +1,56 @@
+{
+  "_comment": "Model registry for the Veracode AI analysis layer. To onboard a new frontier model (e.g. Claude Mythos 5) set enabled=true — no code changes required. Roles: triage | validate | deep-validate | correlate | chain | second-opinion",
+
+  "models": {
+    "opus": {
+      "id": "claude-opus-4-8",
+      "enabled": true,
+      "thinking": "adaptive",
+      "effort": "high",
+      "max_tokens": 16000,
+      "roles": ["triage", "validate", "correlate", "chain"]
+    },
+    "sonnet": {
+      "id": "claude-sonnet-5",
+      "enabled": true,
+      "thinking": "adaptive",
+      "effort": "medium",
+      "max_tokens": 8000,
+      "roles": ["validate"]
+    },
+    "fable": {
+      "id": "claude-fable-5",
+      "enabled": false,
+      "thinking": "omit",
+      "effort": "high",
+      "max_tokens": 16000,
+      "fallback_model": "claude-opus-4-8",
+      "roles": ["deep-validate", "chain", "second-opinion"]
+    },
+    "mythos": {
+      "id": "claude-mythos-5",
+      "enabled": false,
+      "thinking": "omit",
+      "effort": "xhigh",
+      "max_tokens": 16000,
+      "fallback_model": "claude-opus-4-8",
+      "roles": ["deep-validate", "chain", "second-opinion"]
+    }
+  },
+
+  "strategies": {
+    "fp_reduction": {
+      "mode": "consensus",
+      "validator_roles": ["validate", "deep-validate"],
+      "quorum_fraction": 0.5,
+      "batch_size": 10
+    },
+    "risk_chaining": {
+      "chain_roles": ["chain"],
+      "max_findings_per_request": 60
+    },
+    "second_opinion": {
+      "roles": ["second-opinion"]
+    }
+  }
+}

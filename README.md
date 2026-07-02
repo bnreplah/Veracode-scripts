@@ -43,6 +43,19 @@ It wraps the Veracode REST and XML APIs with helper scripts, automated analysis 
 | `vdb-purl-lte.sh` | Bash | Veracode vulnerability DB PURL lookup (lite) |
 | `veracode-installer.sh` | Bash | Install and configure Veracode CLI tooling |
 
+### Scripts/AIAnalysis — AI Analysis Layer
+
+Model-agnostic pipeline that correlates findings across scan types, uses Claude
+models to reduce false positives, and chains related findings into risk paths.
+New frontier models (Claude Mythos 5, future releases) are onboarded by editing
+`models.json` — no code changes. See [Scripts/AIAnalysis/README.md](Scripts/AIAnalysis/README.md).
+
+| File | Purpose |
+|---|---|
+| `analyze.py` | CLI entry point (offline correlation or full AI pipeline) |
+| `models.json` | Model registry — enable/disable models and assign roles |
+| `veracode_ai/` | Package: config, findings normalization, correlation, validation, chaining, hooks |
+
 ### Scripts/Dev — In Development
 
 | Directory | Contents |
