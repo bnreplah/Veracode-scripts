@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 reconscope — HTTP surface discovery & fingerprinting toolkit
-Cybopsec
+Veracode
 
 Bulk header/banner grabbing, technology fingerprinting, error/information-
 disclosure detection, an authenticated-payload re-test pass, and optional
@@ -115,7 +115,7 @@ def now_iso() -> str:
 
 def banner() -> str:
     return paint(
-        f"\n=== Cybopsec :: {TOOL_NAME} v{VERSION} ===\n"
+        f"\n=== Veracode :: {TOOL_NAME} v{VERSION} ===\n"
         "Authorized use only — scan only what you own or are cleared to test.\n",
         C.BOLD, C.CYAN,
     )
