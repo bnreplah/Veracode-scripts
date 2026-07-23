@@ -1,0 +1,38 @@
+FROM python:3.12-slim
+
+# Playwright's browser cache: install to a shared, world-readable path so the
+# non-root runtime user (created below) can still launch Chromium. Installing
+# to root's default ~/.cache/ms-playwright would leave it unreadable once we
+# drop privileges further down.
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright \
+    PYTHONUNBUFFERED=1 \
+    RECONSCOPE_DATA=/data
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Chromium + its OS-level shared libraries (--with-deps installs the apt
+# packages Chromium needs on a minimal Debian base: fonts, GTK/NSS libs,
+# etc.) — this is the biggest, slowest layer in the image; expect it.
+RUN playwright install --with-deps chromium \
+    && chmod -R a+rX /opt/ms-playwright
+
+COPY . .
+
+# Run as a non-root user rather than adding --no-sandbox to Chrome's launch
+# flags. Chrome's sandbox is a real boundary against a compromised renderer
+# — and a recon tool exists specifically to point a browser at untrusted,
+# possibly hostile pages, which is the worst moment to trade that sandbox
+# away for container convenience. Running as non-root avoids needing to.
+ARG APP_UID=1000
+RUN useradd -m -u ${APP_UID} reconscope \
+    && mkdir -p /data \
+    && chown -R reconscope:reconscope /app /data
+USER reconscope
+
+EXPOSE 5000
+VOLUME ["/data"]
+
+CMD ["python3", "app.py"]
