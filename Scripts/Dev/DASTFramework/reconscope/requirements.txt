@@ -1,0 +1,6 @@
+requests>=2.31
+
+# Optional — only needed for the screenshot menu (feature 5). The rest of
+# the tool works fully without it.
+# playwright>=1.40
+# then run: playwright install chromium
